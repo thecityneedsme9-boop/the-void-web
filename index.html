@@ -4,75 +4,114 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The Void | Anonymous Chat</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
     <style>
+        /* === YOUR ORIGINAL EXACT CSS === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --bg-dark: #030712; --glass-bg: rgba(255, 255, 255, 0.02); --glass-border: rgba(255, 255, 255, 0.05); --text-main: #f8fafc; --text-muted: #64748b; --neon-cyan: #06b6d4; --neon-gold: #fbbf24; --neon-red: #ef4444; --my-bubble: rgba(6, 182, 212, 0.1); --stranger-bubble: rgba(255, 255, 255, 0.05); }
+        :root {
+            --bg-dark: #030712; --glass-bg: rgba(255, 255, 255, 0.02); --glass-border: rgba(255, 255, 255, 0.05);
+            --text-main: #f8fafc; --text-muted: #64748b; --neon-cyan: #06b6d4; --neon-gold: #fbbf24; --neon-red: #ef4444;
+            --my-bubble: rgba(6, 182, 212, 0.1); --stranger-bubble: rgba(255, 255, 255, 0.05);
+        }
+
         body { background-color: var(--bg-dark); background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%); color: var(--text-main); font-family: 'Outfit', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        
-        /* LOBBY */
-        #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+
+        #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; animation: fadeIn 1s ease-in; padding: 20px; }
         .lobby-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); }
+
         .void-portal { width: 90px; height: 90px; margin: 0 auto 20px auto; border-radius: 50%; background: radial-gradient(circle, #000 30%, var(--neon-cyan) 100%); box-shadow: 0 0 25px rgba(6, 182, 212, 0.3), inset 0 0 15px #000; animation: spinPortal 10s linear infinite, pulsePortal 3s ease-in-out infinite alternate; border: 1px solid rgba(6, 182, 212, 0.2); }
         @keyframes spinPortal { 100% { transform: rotate(360deg); } } @keyframes pulsePortal { 100% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.6), inset 0 0 20px #000; transform: scale(1.02); } }
+
         h1 { font-family: 'Cinzel', serif; font-size: 2.8rem; font-weight: 800; letter-spacing: 4px; margin-bottom: 5px; color: #ffffff; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
         .subtitle { font-size: 0.9rem; font-weight: 300; color: var(--text-muted); margin-bottom: 35px; letter-spacing: 1px; }
+
         .stats-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 35px; }
         .stat-box { flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); padding: 12px 5px; border-radius: 12px; }
         .stat-number { font-size: 1.1rem; font-weight: 500; color: #e2e8f0; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; display: block; letter-spacing: 1px; }
         .dot { width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-        .enter-btn { width: 100%; background: transparent; color: var(--neon-cyan); border: 1px solid var(--neon-cyan); padding: 15px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 1rem; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 2px; }
-        .enter-btn:hover:not(:disabled) { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); }
-        .disclaimer { margin-top: 20px; font-size: 0.7rem; color: #475569; }
 
-        /* CHAT SCREEN */
-        #chat-screen { display: none; flex-direction: column; width: 100%; height: 100%; max-width: 600px; margin: 0 auto; position: relative; }
+        .enter-btn { width: 100%; background: transparent; color: var(--neon-cyan); border: 1px solid var(--neon-cyan); padding: 15px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.1); }
+        .enter-btn:hover:not(:disabled) { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); }
+        .enter-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .disclaimer { margin-top: 20px; font-size: 0.7rem; font-weight: 300; color: #475569; }
+
+        #chat-screen { display: none; flex-direction: column; width: 100%; height: 100%; max-width: 600px; margin: 0 auto; position: relative; animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); }
         .user-info { display: flex; align-items: center; gap: 10px; }
-        .user-info h2 { font-size: 1.1rem; font-weight: 500; display: flex; gap: 6px; margin: 0; }
-        .karma-score { font-size: 0.8rem; color: var(--neon-gold); background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(251, 191, 36, 0.15); display: flex; gap: 4px; }
-        .header-actions { display: flex; gap: 12px; }
-        .icon-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-main); padding: 8px; cursor: pointer; display: flex; }
+        .user-info h2 { font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 6px; margin: 0; white-space: nowrap; }
+        .karma-score { font-size: 0.8rem; color: var(--neon-gold); background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(251, 191, 36, 0.15); display: flex; align-items: center; gap: 4px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .icon-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-main); padding: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .icon-btn:hover { background: rgba(255,255,255,0.08); }
+
         .progress-container { width: 100%; height: 4px; background: rgba(0,0,0,0.5); }
-        .progress-bar { height: 100%; width: 100%; background: var(--neon-cyan); transition: width 0.3s, background-color 0.3s; }
-        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
+        .progress-bar { height: 100%; width: 100%; background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); transition: width 0.3s ease, background-color 0.3s ease; }
+
+        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; transition: all 1.5s ease; }
         .chat-box::-webkit-scrollbar { display: none; }
-        .system-message { align-self: center; text-align: center; font-size: 0.8rem; color: var(--text-muted); background: rgba(0,0,0,0.4); padding: 8px 15px; border-radius: 12px; border: 1px solid var(--glass-border); margin: 5px 0; max-width: 80%; }
+        
+        .system-message { text-align: center; font-size: 0.8rem; font-weight: 300; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); margin: 5px 0; }
+        .system-message span { color: var(--neon-cyan); font-weight: 500; }
+        .system-message.gold span { color: var(--neon-gold); }
+        
         .message { display: flex; flex-direction: column; max-width: 82%; animation: slideUp 0.3s ease; }
         .stranger-msg { align-self: flex-start; }
         .my-msg { align-self: flex-end; align-items: flex-end; }
-        .bubble { padding: 12px 16px; border-radius: 16px; font-size: 0.95rem; line-height: 1.5; border: 1px solid var(--glass-border); word-wrap: break-word; }
+        .bubble { padding: 12px 16px; border-radius: 16px; font-size: 0.95rem; font-weight: 300; line-height: 1.5; border: 1px solid var(--glass-border); word-wrap: break-word; }
         .stranger-msg .bubble { background: var(--stranger-bubble); border-top-left-radius: 4px; }
         .my-msg .bubble { background: var(--my-bubble); border-top-right-radius: 4px; border-color: rgba(6, 182, 212, 0.2); }
-        .msg-meta { font-size: 0.7rem; color: #475569; margin-top: 5px; }
+        .msg-meta { font-size: 0.7rem; color: #475569; margin-top: 5px; font-weight: 300; }
+        
         .typing-indicator { display: none; align-self: flex-start; font-size: 0.8rem; color: var(--text-muted); margin-left: 10px; }
+        .typing-indicator span { animation: blink 1.4s infinite; opacity: 0.2; }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #action-toast { padding: 10px 20px; text-align: center; display: none; margin-bottom: 5px;}
+        #extend-btn { background: transparent; color: var(--neon-gold); border: 1px solid var(--neon-gold); padding: 8px 16px; border-radius: 20px; font-family: 'Outfit', sans-serif; font-size: 0.85rem; cursor: pointer; transition: 0.3s; box-shadow: inset 0 0 8px rgba(251, 191, 36, 0.2); }
+        #extend-btn:hover { background: var(--neon-gold); color: #000; box-shadow: 0 0 15px rgba(251, 191, 36, 0.5); }
+        #countdown-text { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--neon-red); font-weight: bold; animation: pulseRed 1s infinite; display: none; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+        @keyframes pulseRed { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.6; transform: scale(0.98); } }
+
+        .chat-footer { display: flex; gap: 10px; padding: 15px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); position: relative; z-index: 10;}
+        #chat-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: 12px; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 0.95rem; outline: none; transition: 0.3s; }
+        #chat-input:focus { border-color: rgba(6, 182, 212, 0.5); }
+        .send-btn { background: var(--neon-cyan); color: #000; border: none; padding: 0 18px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .send-btn:hover { background: #0891b2; }
+
+        #shatter-overlay { position: absolute; top: 70px; left: 0; right: 0; bottom: 70px; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 20; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
+        #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
+        #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
         
-        #action-toast { padding: 10px 20px; text-align: center; display: none; }
-        #extend-btn { background: transparent; color: var(--neon-gold); border: 1px solid var(--neon-gold); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; }
-        .chat-footer { display: flex; gap: 10px; padding: 15px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); }
-        #chat-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: 12px; color: var(--text-main); font-size: 0.95rem; outline: none; }
-        .send-btn { background: var(--neon-cyan); border: none; padding: 0 18px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; }
-        
-        #shatter-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(3, 7, 18, 0.9); backdrop-filter: blur(10px); z-index: 20; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-        .overlay-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 250px; margin-top: 20px; }
-        
-        /* GAMES OVERLAY UI */
+        #rating-box { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 25px; margin-bottom: 25px; width: 100%; max-width: 250px; }
+        .rating-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .star-container { display: flex; justify-content: center; gap: 8px; direction: row; }
+        .star-btn { background: none; border: none; font-size: 1.8rem; color: rgba(255,255,255,0.1); cursor: pointer; transition: color 0.2s, transform 0.2s; padding: 0; line-height: 1; }
+        .star-btn.active, .star-btn:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); transform: scale(1.1); }
+        #rating-thanks { display: none; color: var(--neon-gold); font-size: 0.85rem; margin-top: 10px; font-weight: 500; }
+
+        .overlay-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 250px; }
+        .secondary-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .secondary-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+
+        /* GAMES OVERLAY CSS ADDED SAFELY */
         .game-modal { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(3,7,18,0.95); z-index: 30; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .game-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--neon-cyan); color: var(--text-main); padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; margin: 10px; width: 80%; max-width: 200px; transition: 0.2s; }
-        .game-btn:hover { background: var(--neon-cyan); color: #000; }
+        .game-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--neon-cyan); color: var(--text-main); padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; margin: 10px; width: 80%; max-width: 200px; font-family: 'Outfit'; }
         .close-game { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
-        
-        /* Tic Tac Toe Grid */
         #ttt-board { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; margin-top: 20px; }
         .ttt-cell { width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-family: 'Outfit'; cursor: pointer; color: white; }
     </style>
 </head>
-<body>
+<body id="main-body">
 
     <div id="lobby-screen">
         <div class="lobby-card">
@@ -91,37 +130,58 @@
     <div id="chat-screen">
         <header class="chat-header">
             <div class="user-info">
-                <div class="dot"></div><h2>Stranger 🏳️</h2>
-                <span class="karma-score">⭐ 5.0</span>
+                <div class="dot"></div>
+                <h2>Stranger <span id="stranger-flag">🇧🇩</span></h2>
+                <span class="karma-score">⭐ <span id="stranger-karma">5.0</span></span>
             </div>
             <div class="header-actions">
-                <button class="icon-btn" id="exit-btn">❌</button>
+                <button class="icon-btn" id="exit-btn" title="Exit Chat">❌</button>
             </div>
         </header>
         
         <div class="progress-container"><div class="progress-bar" id="char-bar"></div></div>
 
         <main class="chat-box" id="chat-box">
-            <div class="system-message">A stranger appeared. You have 1,500 characters.</div>
-            <div class="typing-indicator" id="typing-indicator">Stranger is typing...</div>
+            <div class="system-message" id="welcome-msg">
+                A stranger appeared from the void.<br>
+                You have <span>1,500 characters</span> before this chat shatters.
+            </div>
+            
+            <div class="typing-indicator" id="typing-indicator">Stranger is typing<span>.</span><span>.</span><span>.</span></div>
         </main>
 
-        <div id="action-toast"><button id="extend-btn">Request +500 Chars</button></div>
+        <div id="action-toast">
+            <button id="extend-btn">Request +500 Chars</button>
+            <div id="countdown-text">Shattering in 5...</div>
+        </div>
+
+        <div id="shatter-overlay">
+            <h2>Shattered</h2>
+            <p>The void has consumed this connection.</p>
+            
+            <div id="rating-box">
+                <div class="rating-title">Rate the Vibe</div>
+                <div class="star-container">
+                    <button class="star-btn" data-val="1">★</button>
+                    <button class="star-btn" data-val="2">★</button>
+                    <button class="star-btn" data-val="3">★</button>
+                    <button class="star-btn" data-val="4">★</button>
+                    <button class="star-btn" data-val="5">★</button>
+                </div>
+                <div id="rating-thanks">Rating Saved!</div>
+            </div>
+
+            <div class="overlay-buttons">
+                <button class="enter-btn" id="new-stranger-btn">Find New Stranger</button>
+                <button class="secondary-btn" id="return-lobby-btn">Return to Lobby</button>
+            </div>
+        </div>
 
         <footer class="chat-footer">
-            <button class="icon-btn" id="game-btn">🎮</button>
+            <button class="icon-btn" id="game-btn" title="Games">🎮</button>
             <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
             <button class="send-btn" id="send-btn">➤</button>
         </footer>
-        
-        <div id="shatter-overlay">
-            <h2 style="font-family:'Cinzel'; color:var(--neon-cyan);">SHATTERED</h2>
-            <p style="color:var(--text-muted); margin-bottom: 20px;">The void consumed this connection.</p>
-            <div class="overlay-buttons">
-                <button class="enter-btn" id="new-stranger-btn">Find New Stranger</button>
-                <button class="enter-btn" style="background:transparent; border-color:#475569; color:#f8fafc;" id="return-lobby-btn">Lobby</button>
-            </div>
-        </div>
 
         <div class="game-modal" id="game-menu">
             <button class="close-game" onclick="document.getElementById('game-menu').style.display='none'">✖</button>
@@ -151,131 +211,192 @@
     </div>
 
     <script>
-        // --- 1. CORE SETUP ---
         const socket = io("https://the-void-server.onrender.com");
         
-        let currentMax = 1500;
+        const findBtn = document.getElementById('find-btn');
+        const lobbyScreen = document.getElementById('lobby-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const actionToast = document.getElementById('action-toast');
+        const extendBtn = document.getElementById('extend-btn');
+        const countdownText = document.getElementById('countdown-text');
+        const chatInput = document.getElementById('chat-input');
+        const charBar = document.getElementById('char-bar');
+        const chatBox = document.getElementById('chat-box');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const shatterOverlay = document.getElementById('shatter-overlay');
+
+        const BASE_MAX_CHARS = 1500;
+        let currentMax = BASE_MAX_CHARS;
         let usedChars = 0;
+        let extensionUsed = false;
+        let isCountdownRunning = false;
+        let countdownTimer = null;
         let typingTimeout;
 
-        // --- 2. LOBBY & STATS ---
+        // --- STATS & LOBBY ---
         socket.on('stats_update', (data) => {
             document.getElementById('active-users-count').innerText = data.activeUsers;
             document.getElementById('vanished-count').innerText = data.vanishedChats;
         });
 
-        document.getElementById('find-btn').addEventListener('click', () => {
-            document.getElementById('find-btn').innerText = "Searching...";
-            socket.emit('find_match', { localKarma: "5.0" });
+        findBtn.addEventListener('click', () => {
+            findBtn.innerText = "Drifting into the void...";
+            findBtn.disabled = true;
+            socket.emit('find_match', { localKarma: localStorage.getItem('void_karma') || "5.0" });
         });
 
         socket.on('match_found', (data) => {
-            document.getElementById('lobby-screen').style.display = 'none';
-            document.getElementById('chat-screen').style.display = 'flex';
-            document.getElementById('chat-input').focus();
+            lobbyScreen.style.display = 'none';
+            chatScreen.style.display = 'flex';
+            chatInput.maxLength = currentMax;
+            chatInput.focus();
         });
 
-        // --- 3. CHAT ENGINE ---
-        const chatInput = document.getElementById('chat-input');
-        const charBar = document.getElementById('char-bar');
-        const chatBox = document.getElementById('chat-box');
-
+        // --- CHAT LOGIC ---
+        // FIX: Update bar visually while typing, but do NOT shatter.
         chatInput.addEventListener('input', () => {
-            updateBar(usedChars + chatInput.value.length);
+            let totalVisual = usedChars + chatInput.value.length;
+            let remain = currentMax - totalVisual;
+            let percentage = Math.max(0, (remain / currentMax) * 100);
+            charBar.style.width = `${percentage}%`;
+            
+            if (percentage < 20) { charBar.style.backgroundColor = 'var(--neon-red)'; charBar.style.boxShadow = '0 0 10px var(--neon-red)'; } 
+            else { charBar.style.backgroundColor = 'var(--neon-cyan)'; charBar.style.boxShadow = '0 0 10px var(--neon-cyan)'; }
+
+            if (remain <= 300 && !extensionUsed && !isCountdownRunning && totalVisual > 0) {
+                actionToast.style.display = 'block';
+                extendBtn.style.display = 'inline-block';
+            }
+            
             socket.emit('typing');
         });
 
-        function updateBar(total) {
-            let remain = currentMax - total;
-            charBar.style.width = Math.max(0, (remain / currentMax) * 100) + '%';
-            if(remain <= 300) { document.getElementById('action-toast').style.display = 'block'; }
-            if(remain <= 0) triggerShatter();
-        }
+        function sendLocalMessage() {
+            const rawText = chatInput.value;
+            const textToDisplay = rawText.trim();
+            if (textToDisplay === '') return;
 
-        function sendMsg() {
-            const txt = chatInput.value.trim();
-            if(!txt) return;
-            usedChars += txt.length;
+            usedChars += rawText.length;
             chatInput.maxLength = currentMax - usedChars;
-            
-            appendMsg(txt, 'my-msg');
-            socket.emit('send_message', txt);
             chatInput.value = '';
-            updateBar(usedChars);
+
+            appendMessageUI(textToDisplay, 'my-msg');
+            socket.emit('send_message', textToDisplay);
+
+            // FIX: Only trigger the countdown AFTER sending if limits are met.
+            if (usedChars >= currentMax && !isCountdownRunning) {
+                startCountdown();
+            }
         }
 
-        document.getElementById('send-btn').addEventListener('click', sendMsg);
-        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMsg(); });
+        document.getElementById('send-btn').addEventListener('click', sendLocalMessage);
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendLocalMessage(); });
 
-        socket.on('receive_message', (txt) => {
-            document.getElementById('typing-indicator').style.display = 'none';
-            appendMsg(txt, 'stranger-msg');
+        socket.on('receive_message', (text) => {
+            typingIndicator.style.display = 'none';
+            appendMessageUI(text, 'stranger-msg');
         });
 
         socket.on('typing', () => {
-            const ind = document.getElementById('typing-indicator');
-            ind.style.display = 'block';
-            chatBox.appendChild(ind);
+            typingIndicator.style.display = 'flex';
+            chatBox.appendChild(typingIndicator);
+            chatBox.scrollTop = chatBox.scrollHeight;
             clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => ind.style.display = 'none', 2000);
+            typingTimeout = setTimeout(() => typingIndicator.style.display = 'none', 1500);
         });
 
-        function appendMsg(text, type) {
-            const div = document.createElement('div');
-            div.className = `message ${type}`;
-            div.innerHTML = `<div class="bubble">${text}</div>`;
-            chatBox.insertBefore(div, document.getElementById('typing-indicator'));
+        function appendMessageUI(text, type) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${type}`;
+            const timeString = `${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}`;
+            const metaHtml = type === 'my-msg' ? `${timeString} ✓` : timeString;
+            msgDiv.innerHTML = `<div class="bubble">${text}</div><div class="msg-meta">${metaHtml}</div>`;
+            chatBox.insertBefore(msgDiv, typingIndicator);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         function sysMsg(html) {
-            const div = document.createElement('div');
-            div.className = 'system-message'; div.innerHTML = html;
-            chatBox.insertBefore(div, document.getElementById('typing-indicator'));
-            chatBox.scrollTop = chatBox.scrollHeight;
+            const div = document.createElement('div'); div.className = 'system-message gold'; div.innerHTML = html;
+            chatBox.insertBefore(div, typingIndicator); chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // --- 4. EXTEND & SHATTER ---
-        document.getElementById('extend-btn').addEventListener('click', () => {
-            document.getElementById('extend-btn').innerText = "Waiting...";
+        // --- EXTENSION & SHATTER LOGIC ---
+        extendBtn.addEventListener('click', () => {
+            extendBtn.innerText = "Waiting for Stranger..."; extendBtn.disabled = true;
             socket.emit('request_extend');
         });
 
         socket.on('extend_requested', () => {
-            sysMsg('Stranger requested +500 chars. <button onclick="acceptExtend()" style="background:var(--neon-gold); border:none; border-radius:5px; padding:3px 8px; cursor:pointer;">Accept</button>');
+            sysMsg('Stranger requested +500 chars. <button onclick="acceptExtend()" style="background:var(--neon-gold); color:#000; border:none; border-radius:5px; padding:4px 10px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button>');
         });
 
         window.acceptExtend = () => { socket.emit('accept_extend'); executeExtend(); }
         socket.on('extend_accepted', () => executeExtend());
 
         function executeExtend() {
-            currentMax += 500;
-            document.getElementById('action-toast').style.display = 'none';
-            sysMsg('Extension Granted: +500 Chars.');
-            updateBar(usedChars);
+            currentMax += 500; extensionUsed = true;
+            actionToast.style.display = 'none'; extendBtn.style.display = 'none';
+            chatInput.maxLength = currentMax - usedChars;
+            sysMsg('Extension Granted! <span>+500 characters</span> added.');
+            let percentage = ((currentMax - usedChars) / currentMax) * 100;
+            charBar.style.width = `${percentage}%`;
+            charBar.style.backgroundColor = 'var(--neon-cyan)';
         }
 
-        function triggerShatter() {
+        // FIX: Restored the exact 5..4..3..2..1 logic before vanishing.
+        function startCountdown() {
+            isCountdownRunning = true;
             chatInput.disabled = true;
-            socket.emit('chat_shattered');
-            setTimeout(() => document.getElementById('shatter-overlay').style.display = 'flex', 1000);
+            chatInput.placeholder = "Time is up...";
+            actionToast.style.display = 'block';
+            extendBtn.style.display = 'none';
+            countdownText.style.display = 'block';
+            
+            let secondsLeft = 5;
+            countdownText.innerText = `Shattering in ${secondsLeft}...`;
+
+            countdownTimer = setInterval(() => {
+                secondsLeft--;
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    triggerVanish();
+                } else {
+                    countdownText.innerText = `Shattering in ${secondsLeft}...`;
+                }
+            }, 1000);
         }
 
-        socket.on('stranger_disconnected', () => { triggerShatter(); });
-        
-        document.getElementById('exit-btn').addEventListener('click', () => {
-            socket.emit('leave_chat');
-            location.reload();
+        function triggerVanish() {
+            countdownText.innerText = "Shattered.";
+            chatBox.style.opacity = '0.1'; chatBox.style.filter = 'blur(4px)';
+            socket.emit('chat_shattered');
+            setTimeout(() => { actionToast.style.display = 'none'; shatterOverlay.style.display = 'flex'; }, 800);
+        }
+
+        socket.on('stranger_disconnected', () => { if(!isCountdownRunning) { startCountdown(); } });
+
+        // --- RATING & RESTART ---
+        const starBtns = document.querySelectorAll('.star-btn');
+        starBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const rating = parseInt(e.target.getAttribute('data-val'));
+                localStorage.setItem('void_karma', rating + ".0");
+                starBtns.forEach(s => {
+                    if(parseInt(s.getAttribute('data-val')) <= rating) { s.classList.add('active'); s.style.color = "var(--neon-gold)"; } 
+                    else { s.classList.remove('active'); s.style.color = "rgba(255,255,255,0.1)"; }
+                    s.style.pointerEvents = 'none';
+                });
+                document.getElementById('rating-thanks').style.display = 'block';
+            });
         });
+
+        document.getElementById('exit-btn').addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
         document.getElementById('return-lobby-btn').addEventListener('click', () => location.reload());
         document.getElementById('new-stranger-btn').addEventListener('click', () => location.reload());
 
-        // --- 5. GAMES ENGINE ---
-        document.getElementById('game-btn').addEventListener('click', () => {
-            document.getElementById('game-menu').style.display = 'flex';
-        });
+        // --- GAMES LOGIC ---
+        document.getElementById('game-btn').addEventListener('click', () => document.getElementById('game-menu').style.display = 'flex');
 
-        // A. Invite Logic
         window.inviteGame = (gameType) => {
             document.getElementById('game-menu').style.display = 'none';
             sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`);
@@ -284,59 +405,33 @@
 
         socket.on('game_action', (data) => {
             if (data.type === 'invite') {
-                sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <button onclick="acceptGame('${data.game}')" style="background:var(--neon-cyan); border:none; border-radius:5px; padding:3px 8px; cursor:pointer;">Accept</button>`);
-            } else if (data.type === 'accept') {
-                startGame(data.game, true); // true = I am Player 1
-            } else if (data.type === 'rps_move') {
-                resolveRPS(data.move);
-            } else if (data.type === 'ttt_move') {
-                receiveTTT(data.index);
-            }
+                sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <button onclick="acceptGame('${data.game}')" style="background:var(--neon-cyan); color:#000; border:none; border-radius:5px; padding:4px 10px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button>`);
+            } else if (data.type === 'accept') { startGame(data.game, true); } 
+            else if (data.type === 'rps_move') { resolveRPS(data.move); } 
+            else if (data.type === 'ttt_move') { receiveTTT(data.index); }
         });
 
-        window.acceptGame = (gameType) => {
-            socket.emit('game_action', { type: 'accept', game: gameType });
-            startGame(gameType, false); // false = I am Player 2
-        };
+        window.acceptGame = (gameType) => { socket.emit('game_action', { type: 'accept', game: gameType }); startGame(gameType, false); };
 
         function startGame(gameType, isPlayer1) {
-            if (gameType === 'rps') {
-                myRPS = null; strangerRPS = null;
-                document.getElementById('rps-status').innerText = "";
-                document.getElementById('rps-ui').style.display = 'flex';
-            } else if (gameType === 'ttt') {
-                initTTT(isPlayer1);
-            }
+            if (gameType === 'rps') { myRPS = null; strangerRPS = null; document.getElementById('rps-status').innerText = ""; document.getElementById('rps-ui').style.display = 'flex'; } 
+            else if (gameType === 'ttt') { initTTT(isPlayer1); }
         }
 
-        // B. Rock Paper Scissors Logic
         let myRPS = null, strangerRPS = null;
-        window.playRPS = (move) => {
-            myRPS = move;
-            document.getElementById('rps-status').innerText = "Waiting for stranger...";
-            socket.emit('game_action', { type: 'rps_move', move: move });
-            if (strangerRPS) checkRPSWin();
-        };
-        
-        function resolveRPS(strangerMove) {
-            strangerRPS = strangerMove;
-            if (myRPS) checkRPSWin();
-        }
-
+        window.playRPS = (move) => { myRPS = move; document.getElementById('rps-status').innerText = "Waiting for stranger..."; socket.emit('game_action', { type: 'rps_move', move: move }); if (strangerRPS) checkRPSWin(); };
+        function resolveRPS(strangerMove) { strangerRPS = strangerMove; if (myRPS) checkRPSWin(); }
         function checkRPSWin() {
             document.getElementById('rps-ui').style.display = 'none';
             let res = "You Tied!";
-            if ((myRPS==='Rock' && strangerRPS==='Scissors') || (myRPS==='Paper' && strangerRPS==='Rock') || (myRPS==='Scissors' && strangerRPS==='Paper')) res = "You Won!";
-            else if (myRPS !== strangerRPS) res = "You Lost!";
-            sysMsg(`RPS Result: You (${myRPS}) vs Stranger (${strangerRPS}). <b>${res}</b>`);
+            if ((myRPS==='Rock' && strangerRPS==='Scissors') || (myRPS==='Paper' && strangerRPS==='Rock') || (myRPS==='Scissors' && strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>";
+            else if (myRPS !== strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>";
+            sysMsg(`RPS: You (${myRPS}) vs Stranger (${strangerRPS}). <b>${res}</b>`);
         }
 
-        // C. Tic Tac Toe Logic
         let tttBoard = [], mySymbol = '', myTurn = false;
         function initTTT(isPlayer1) {
-            tttBoard = Array(9).fill('');
-            mySymbol = isPlayer1 ? 'X' : 'O';
-            myTurn = isPlayer1;
+            tttBoard = Array(9).fill(''); mySymbol = isPlayer1 ? 'X' : 'O'; myTurn = isPlayer1;
             document.getElementById('ttt-status').innerText = myTurn ? "Your Turn (" + mySymbol + ")" : "Stranger's Turn";
             document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; });
             document.getElementById('ttt-ui').style.display = 'flex';
@@ -344,23 +439,18 @@
 
         window.playTTT = (index) => {
             if (!myTurn || tttBoard[index] !== '') return;
-            makeTTTMove(index, mySymbol);
-            socket.emit('game_action', { type: 'ttt_move', index: index });
-            myTurn = false;
-            document.getElementById('ttt-status').innerText = "Stranger's Turn";
+            makeTTTMove(index, mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index });
+            myTurn = false; document.getElementById('ttt-status').innerText = "Stranger's Turn";
         };
 
         function receiveTTT(index) {
             makeTTTMove(index, mySymbol === 'X' ? 'O' : 'X');
-            myTurn = true;
-            document.getElementById('ttt-status').innerText = "Your Turn (" + mySymbol + ")";
+            myTurn = true; document.getElementById('ttt-status').innerText = "Your Turn (" + mySymbol + ")";
         }
 
         function makeTTTMove(index, symbol) {
-            tttBoard[index] = symbol;
-            const cells = document.querySelectorAll('.ttt-cell');
-            cells[index].innerText = symbol;
-            cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)';
+            tttBoard[index] = symbol; const cells = document.querySelectorAll('.ttt-cell');
+            cells[index].innerText = symbol; cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)';
             checkTTTWin();
         }
 
@@ -368,14 +458,8 @@
             const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
             let winner = null;
             wins.forEach(w => { if(tttBoard[w[0]] && tttBoard[w[0]]===tttBoard[w[1]] && tttBoard[w[0]]===tttBoard[w[2]]) winner = tttBoard[w[0]]; });
-            
-            if (winner) {
-                document.getElementById('ttt-ui').style.display = 'none';
-                sysMsg(`Tic Tac Toe: <b>${winner === mySymbol ? 'You Won!' : 'Stranger Won!'}</b>`);
-            } else if (!tttBoard.includes('')) {
-                document.getElementById('ttt-ui').style.display = 'none';
-                sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`);
-            }
+            if (winner) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`Tic Tac Toe: <b>${winner === mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); } 
+            else if (!tttBoard.includes('')) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); }
         }
     </script>
 </body>
