@@ -211,7 +211,7 @@
 
         <div style="width: 92%; max-width: 380px; display: flex; justify-content: space-between; align-items: center; margin: 20px 0 10px 0;">
             <h3 id="spy-header-text" style="font-size: 0.75rem; color: var(--neon-gold); text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 8px;">
-                <div class="dot" style="width:6px; height:6px;"></div> Global Feed (20)
+                <div class="dot" style="width:6px; height:6px;"></div> Global Feed (1000)
             </h3>
             <button id="spy-unlock-btn" style="display:none; background: var(--neon-red); color: #000; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">Unlock</button>
         </div>
@@ -317,7 +317,7 @@
 
         spyUnlockBtn.addEventListener('click', () => {
             lockedRoomId = null;
-            spyHeaderText.innerHTML = '<div class="dot" style="width:6px; height:6px;"></div> Global Feed (20)';
+            spyHeaderText.innerHTML = '<div class="dot" style="width:6px; height:6px;"></div> Global Feed (1000)';
             spyHeaderText.style.color = 'var(--neon-gold)';
             spyUnlockBtn.style.display = 'none';
             spyContainer.innerHTML = ''; 
@@ -328,7 +328,9 @@
 
             const entry = document.createElement('div');
             entry.style.cssText = "font-size: 0.85rem; color: #e2e8f0; background: rgba(255,255,255,0.04); padding: 10px; border-radius: 8px; border-left: 3px solid var(--neon-cyan); line-height: 1.4; animation: slideUp 0.2s ease; cursor: pointer;";
-            entry.textContent = "💬 " + data.text;
+            
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            entry.textContent = `[${time}] 💬 ` + data.text;
             
             entry.addEventListener('click', () => {
                 if (!lockedRoomId) {
@@ -343,7 +345,7 @@
 
             spyContainer.prepend(entry); 
 
-            if (spyContainer.childNodes.length > 20) {
+            if (spyContainer.childNodes.length > 1000) {
                 spyContainer.removeChild(spyContainer.lastChild);
             }
         });
