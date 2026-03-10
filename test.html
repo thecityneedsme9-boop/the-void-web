@@ -28,7 +28,7 @@
         body.light-theme .icon-btn, body.light-theme #chat-input, body.light-theme .system-message { background: rgba(0,0,0,0.05); }
         body.light-theme .bubble { border-color: rgba(0,0,0,0.1); }
 
-        body { background-color: var(--bg-dark); background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%); color: var(--text-main); font-family: 'Outfit', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; transition: background 0.3s ease, color 0.3s ease; }
+        body { background-color: var(--bg-dark); background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%); color: var(--text-main); font-family: 'Outfit', sans-serif; height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; transition: background 0.3s ease, color 0.3s ease; }
 
         #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; animation: fadeIn 1s ease-in; padding: 20px; }
         .lobby-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); }
@@ -94,13 +94,13 @@
         #countdown-text { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--neon-red); font-weight: bold; animation: pulseRed 1s infinite; display: none; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
         @keyframes pulseRed { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.6; transform: scale(0.98); } }
 
-        .chat-footer { display: flex; gap: 10px; padding: 15px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); position: relative; z-index: 10;}
+        .chat-footer { display: flex; gap: 10px; padding: 15px 20px 20px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); position: relative; z-index: 10;}
         #chat-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: 12px; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 0.95rem; outline: none; transition: 0.3s; }
         #chat-input:focus { border-color: rgba(6, 182, 212, 0.5); }
         .send-btn { background: var(--neon-cyan); color: #000; border: none; padding: 0 18px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .send-btn:hover { background: #0891b2; }
 
-        #shatter-overlay { position: absolute; top: 70px; left: 0; right: 0; bottom: 70px; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 20; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
+        #shatter-overlay { position: absolute; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 20; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
         #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
         #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
         
@@ -140,7 +140,10 @@
             <button class="enter-btn" id="find-btn">Enter</button>
             <p class="disclaimer">100% Anonymous. No logs kept.</p>
             
-            <button id="admin-login-btn" style="margin-top: 15px; background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 5px 15px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-family: 'Outfit', sans-serif;">Admin Login</button>
+            <div id="admin-login-wrapper" style="margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <button id="admin-login-btn" style="background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 5px 15px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: 0.2s;">Admin Login</button>
+                <input type="password" id="admin-pass-input" placeholder="Enter Code" style="display:none; background: rgba(0,0,0,0.4); border: 1px solid var(--neon-cyan); color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; text-align: center; outline: none; width: 120px;">
+            </div>
         </div>
     </div>
 
@@ -273,12 +276,27 @@
         const ratingThanks = document.getElementById('rating-thanks');
 
         let currentMax = 1500; let usedChars = 0; let isCountdownRunning = false; let countdownTimer = null;
+        let myCurrentRoom = null; // Memory tag for iPhone reconnects
 
-        // === PASSWORD PROTECTED ADMIN TRIGGER ===
-        document.getElementById('admin-login-btn').addEventListener('click', () => {
-            const pass = prompt("Enter Admin Password:");
-            if (pass) {
-                socket.emit('get_admin_data', pass);
+        // === BRAVE-SAFE ADMIN LOGIN ===
+        const adminBtn = document.getElementById('admin-login-btn');
+        const adminInput = document.getElementById('admin-pass-input');
+
+        adminBtn.addEventListener('click', () => {
+            if (adminInput.style.display === 'none') {
+                adminInput.style.display = 'block';
+                adminInput.focus();
+                adminBtn.innerText = "Authorize";
+                adminBtn.style.color = "var(--neon-cyan)";
+                adminBtn.style.borderColor = "var(--neon-cyan)";
+            } else {
+                const pass = adminInput.value;
+                if (pass) socket.emit('get_admin_data', pass);
+                adminInput.value = '';
+                adminInput.style.display = 'none';
+                adminBtn.innerText = "Admin Login";
+                adminBtn.style.color = "var(--text-muted)";
+                adminBtn.style.borderColor = "rgba(255,255,255,0.1)";
             }
         });
 
@@ -292,7 +310,6 @@
             document.getElementById('admin-ui').style.display = 'flex';
         });
 
-        // === TARGET LOCK LOGIC ===
         const spyContainer = document.getElementById('spy-container');
         const spyHeaderText = document.getElementById('spy-header-text');
         const spyUnlockBtn = document.getElementById('spy-unlock-btn');
@@ -303,26 +320,22 @@
             spyHeaderText.innerHTML = '<div class="dot" style="width:6px; height:6px;"></div> Global Feed (20)';
             spyHeaderText.style.color = 'var(--neon-gold)';
             spyUnlockBtn.style.display = 'none';
-            spyContainer.innerHTML = ''; // Clear feed when switching modes
+            spyContainer.innerHTML = ''; 
         });
 
         socket.on('spy_feed', (data) => {
-            // If we are locked onto a room, IGNORE messages from other rooms
             if (lockedRoomId && lockedRoomId !== data.roomId) return;
 
             const entry = document.createElement('div');
             entry.style.cssText = "font-size: 0.85rem; color: #e2e8f0; background: rgba(255,255,255,0.04); padding: 10px; border-radius: 8px; border-left: 3px solid var(--neon-cyan); line-height: 1.4; animation: slideUp 0.2s ease; cursor: pointer;";
             entry.textContent = "💬 " + data.text;
             
-            // Tap a message to lock onto it
             entry.addEventListener('click', () => {
                 if (!lockedRoomId) {
                     lockedRoomId = data.roomId;
                     spyHeaderText.innerHTML = '<div class="dot" style="width:6px; height:6px; background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red);"></div> [TARGET LOCKED]';
                     spyHeaderText.style.color = 'var(--neon-red)';
                     spyUnlockBtn.style.display = 'inline-block';
-                    
-                    // Clear out the rest of the global feed, keep only the clicked message
                     spyContainer.innerHTML = '';
                     spyContainer.appendChild(entry);
                 }
@@ -344,7 +357,13 @@
             if (dot && chatScreen.style.display === 'flex') {
                 dot.style.backgroundColor = '#22c55e'; 
                 dot.style.boxShadow = '0 0 8px #22c55e';
-                socket.emit('user_status', 'online'); 
+                
+                // === RECLAIM PROTOCOL TRIGGER ===
+                if (myCurrentRoom) {
+                    socket.emit('reclaim_session', myCurrentRoom);
+                } else {
+                    socket.emit('user_status', 'online'); 
+                }
             }
         });
 
@@ -375,6 +394,7 @@
             document.getElementById('stranger-karma').innerText = strangerData.karma;
             document.getElementById('stranger-flag').innerText = strangerData.flag || "🇧🇩";
             chatInput.maxLength = currentMax - usedChars;
+            myCurrentRoom = strangerData.roomId; // Memory tag for reconnect
             const dot = document.querySelector('.user-info .dot');
             if (dot) {
                 dot.style.backgroundColor = '#22c55e';
@@ -498,9 +518,10 @@
             if (updatedKarma < 1.0) updatedKarma = "1.0"; localStorage.setItem('void_karma', updatedKarma);
         });
 
-        returnLobbyBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
-        exitBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
-        newStrangerBtn.addEventListener('click', () => { socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
+        // Clear memory tag so returning to lobby doesn't auto-reconnect
+        returnLobbyBtn.addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); location.reload(); });
+        exitBtn.addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); location.reload(); });
+        newStrangerBtn.addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
 
         window.inviteGame = (gameType) => {
             document.getElementById('game-menu').style.display = 'none'; sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); socket.emit('game_action', { type: 'invite', game: gameType });
