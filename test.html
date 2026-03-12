@@ -8,173 +8,122 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#030712">
 
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
     <style>
+        /* YOUR EXACT ORIGINAL UI CSS */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --bg-dark: #02040a; 
-            --glass-bg: rgba(10, 15, 30, 0.4); 
-            --glass-border: rgba(6, 182, 212, 0.15);
-            --text-main: #e2e8f0; 
-            --text-muted: #64748b; 
-            --neon-cyan: #06b6d4; 
-            --neon-gold: #fbbf24; 
-            --neon-red: #ef4444;
-            --my-bubble: linear-gradient(-90deg, rgba(6, 182, 212, 0.15), transparent); 
-            --stranger-bubble: linear-gradient(90deg, rgba(255, 255, 255, 0.05), transparent);
+            --bg-dark: #030712; --glass-bg: rgba(255, 255, 255, 0.02); --glass-border: rgba(255, 255, 255, 0.05);
+            --text-main: #f8fafc; --text-muted: #64748b; --neon-cyan: #06b6d4; --neon-gold: #fbbf24; --neon-red: #ef4444;
+            --my-bubble: rgba(6, 182, 212, 0.1); --stranger-bubble: rgba(255, 255, 255, 0.05);
         }
 
-        /* === MASSIVE UI UPGRADE: Animated Void Background === */
-        @keyframes voidPulse {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        body.light-theme {
+            --bg-dark: #f8fafc; --glass-bg: rgba(0, 0, 0, 0.03); --glass-border: rgba(0, 0, 0, 0.1);
+            --text-main: #0f172a; --text-muted: #475569; --neon-cyan: #0284c7;
+            --my-bubble: rgba(2, 132, 199, 0.1); --stranger-bubble: rgba(0, 0, 0, 0.05);
+            background-image: radial-gradient(circle at 50% 50%, #e2e8f0 0%, #f8fafc 100%);
         }
+        body.light-theme h1 { color: #0f172a; text-shadow: none; }
+        body.light-theme .void-portal { box-shadow: 0 0 25px rgba(2, 132, 199, 0.3); border: 1px solid rgba(2, 132, 199, 0.2); background: radial-gradient(circle, #fff 30%, var(--neon-cyan) 100%); }
+        body.light-theme .stat-number, body.light-theme .icon-btn, body.light-theme #chat-input, body.light-theme .system-message { color: #0f172a; }
+        body.light-theme .icon-btn, body.light-theme #chat-input, body.light-theme .system-message { background: rgba(0,0,0,0.05); }
+        body.light-theme .bubble { border-color: rgba(0,0,0,0.1); }
 
-        body { 
-            background: linear-gradient(-45deg, #02040a, #0b1120, #040d1a, #000000);
-            background-size: 400% 400%;
-            animation: voidPulse 20s ease infinite;
-            color: var(--text-main); 
-            font-family: 'Outfit', sans-serif; 
-            height: 100vh; height: 100dvh; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-        }
+        body { background-color: var(--bg-dark); background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%); color: var(--text-main); font-family: 'Outfit', sans-serif; height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; transition: background 0.3s ease, color 0.3s ease; }
 
-        /* Terminal Scanline Overlay */
-        body::after {
-            content: "";
-            position: absolute; inset: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px;
-            z-index: 9999;
-            pointer-events: none;
-        }
+        #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; animation: fadeIn 1s ease-in; padding: 20px; }
+        .lobby-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); }
 
-        #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; animation: fadeIn 1s ease-in; }
-        .lobby-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-top: 1px solid rgba(6, 182, 212, 0.4); border-radius: 15px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(6, 182, 212, 0.05); }
+        .void-portal { width: 90px; height: 90px; margin: 0 auto 20px auto; border-radius: 50%; background: radial-gradient(circle, #000 30%, var(--neon-cyan) 100%); box-shadow: 0 0 25px rgba(6, 182, 212, 0.3), inset 0 0 15px #000; animation: spinPortal 10s linear infinite, pulsePortal 3s ease-in-out infinite alternate; border: 1px solid rgba(6, 182, 212, 0.2); }
+        @keyframes spinPortal { 100% { transform: rotate(360deg); } } @keyframes pulsePortal { 100% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.6), inset 0 0 20px #000; transform: scale(1.02); } }
 
-        /* Blackhole Portal Design */
-        .void-portal { width: 90px; height: 90px; margin: 0 auto 20px auto; border-radius: 50%; background: radial-gradient(circle, #000 40%, var(--neon-cyan) 100%); box-shadow: 0 0 30px rgba(6, 182, 212, 0.5), inset 0 0 20px #000; animation: spinPortal 8s linear infinite, pulsePortal 2s ease-in-out infinite alternate; border: 2px solid rgba(6, 182, 212, 0.3); }
-        @keyframes spinPortal { 100% { transform: rotate(360deg); } } @keyframes pulsePortal { 100% { box-shadow: 0 0 50px rgba(6, 182, 212, 0.8), inset 0 0 25px #000; transform: scale(1.05); } }
-
-        h1 { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 700; letter-spacing: 5px; margin-bottom: 5px; color: #ffffff; text-shadow: 0 0 20px rgba(6, 182, 212, 0.6); user-select: none; text-transform: uppercase;}
-        .subtitle { font-size: 0.9rem; font-weight: 400; color: var(--neon-cyan); margin-bottom: 35px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8;}
-
-        .stat-number, .karma-score, #countdown-text, .admin-stat { font-family: 'Space Grotesk', sans-serif; }
+        h1 { font-family: 'Cinzel', serif; font-size: 2.8rem; font-weight: 800; letter-spacing: 4px; margin-bottom: 5px; color: #ffffff; text-shadow: 0 0 15px rgba(255,255,255,0.2); user-select: none;}
+        .subtitle { font-size: 0.9rem; font-weight: 300; color: var(--text-muted); margin-bottom: 35px; letter-spacing: 1px; }
 
         .stats-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 35px; }
-        .stat-box { flex: 1; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255,255,255,0.1); padding: 12px 5px; border-radius: 8px; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
-        .stat-number { font-size: 1.2rem; font-weight: 700; color: #fff; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .stat-box { flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); padding: 12px 5px; border-radius: 12px; }
+        .stat-number { font-size: 1.1rem; font-weight: 500; color: #e2e8f0; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; display: block; letter-spacing: 1px; }
         
-        .dot { width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; box-shadow: 0 0 10px #22c55e; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        .dot { width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; transition: background-color 0.3s ease, box-shadow 0.3s ease; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
-        .enter-btn { width: 100%; background: rgba(6, 182, 212, 0.1); color: var(--neon-cyan); border: 1px solid var(--neon-cyan); padding: 15px; border-radius: 8px; font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 3px; }
-        .enter-btn:hover:not(:disabled) { background: var(--neon-cyan); color: #000; box-shadow: 0 0 25px rgba(6, 182, 212, 0.6); transform: translateY(-2px); }
-        .enter-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        
-        .install-btn { width: 100%; background: transparent; color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; font-family: 'Outfit'; font-size: 0.85rem; cursor: pointer; transition: 0.2s; margin-top: 15px; display: none; }
-        .install-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); border-color: rgba(255,255,255,0.4); }
+        .enter-btn { width: 100%; background: transparent; color: var(--neon-cyan); border: 1px solid var(--neon-cyan); padding: 15px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.1); }
+        .enter-btn:hover:not(:disabled) { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); }
+        .enter-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        .disclaimer { margin-top: 15px; font-size: 0.7rem; font-weight: 300; color: #475569; text-transform: uppercase; letter-spacing: 1px;}
+        /* PWA Install Button styled perfectly to match your theme */
+        .install-btn { width: 100%; background: transparent; color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.2); padding: 10px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 0.85rem; cursor: pointer; transition: 0.2s; margin-top: 15px; display: none; }
+        .install-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
 
-        #chat-screen { display: none; flex-direction: column; width: 100%; height: 100%; max-width: 600px; margin: 0 auto; position: relative; }
+        .disclaimer { margin-top: 20px; font-size: 0.7rem; font-weight: 300; color: #475569; }
 
-        .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); }
-        .user-info h2 { font-size: 1.2rem; font-weight: 600; font-family: 'Space Grotesk'; }
-        .karma-score { font-size: 0.85rem; color: var(--neon-gold); background: rgba(0,0,0,0.8); padding: 4px 8px; border-radius: 6px; display: flex; align-items: center; gap: 6px; font-weight: 600; border: 1px solid rgba(251, 191, 36, 0.3);}
+        #chat-screen { display: none; flex-direction: column; width: 100%; height: 100%; max-width: 600px; margin: 0 auto; position: relative; animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .progress-bar { height: 3px; width: 100%; background: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan); transition: width 0.3s ease; }
+        .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-info h2 { font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 6px; margin: 0; white-space: nowrap; }
+        .karma-score { font-size: 0.8rem; color: var(--neon-gold); background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(251, 191, 36, 0.15); display: flex; align-items: center; gap: 4px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .icon-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-main); padding: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .icon-btn:hover { background: rgba(255,255,255,0.08); }
+
+        .progress-container { width: 100%; height: 4px; background: rgba(0,0,0,0.5); }
+        .progress-bar { height: 100%; width: 100%; background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); transition: width 0.3s ease, background-color 0.3s ease; }
 
         .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
         .chat-box::-webkit-scrollbar { display: none; }
         
-        @keyframes glassShatter {
-            0% { transform: scale(1); opacity: 1; filter: blur(0px) contrast(1); }
-            100% { transform: scale(0.85) translateY(50px) skewX(10deg); opacity: 0; filter: blur(15px) contrast(2); display: none; }
-        }
-        .shattered-element { animation: glassShatter 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; pointer-events: none; }
-
-        .system-message { text-align: center; font-family: 'Space Grotesk'; font-size: 0.75rem; color: var(--text-muted); background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); margin: 5px 0; text-transform: uppercase; letter-spacing: 1px;}
-        .system-message span { color: var(--neon-cyan); font-weight: 700; }
+        .system-message { text-align: center; font-size: 0.8rem; font-weight: 300; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); margin: 5px 0; }
+        .system-message span { color: var(--neon-cyan); font-weight: 500; }
         .system-message.gold span { color: var(--neon-gold); }
         
-        .message-wrapper { position: relative; width: 100%; display: flex; flex-direction: column; margin-bottom: 5px; animation: slideUp 0.3s ease; }
-        .my-wrapper { align-items: flex-end; }
-        .stranger-wrapper { align-items: flex-start; }
+        /* === MOBILE-SAFE REPLIES/REACTIONS (Keeps your exact bubble style) === */
+        .message { display: flex; flex-direction: column; max-width: 82%; animation: slideUp 0.3s ease; position: relative; }
+        .stranger-msg { align-self: flex-start; }
+        .my-msg { align-self: flex-end; align-items: flex-end; }
         
-        .bubble-container { display: flex; flex-direction: column; max-width: 82%; position: relative; }
-        
-        /* === THE CRITICAL MOBILE FIX: Disabling user-select so tap works === */
         .bubble { 
-            padding: 12px 18px; 
-            border-radius: 4px; /* Terminal Block Style */
+            padding: 12px 16px; 
+            border-radius: 16px; 
             font-size: 0.95rem; 
             font-weight: 300; 
             line-height: 1.5; 
+            border: 1px solid var(--glass-border); 
             word-wrap: break-word; 
+            position: relative; 
             cursor: pointer; 
-            transition: all 0.2s ease; 
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.05);
-            /* Mobile Safari & Chrome Text Selection Kill Switch */
-            -webkit-touch-callout: none; 
-            -webkit-user-select: none; 
-            -khtml-user-select: none; 
-            -moz-user-select: none; 
-            -ms-user-select: none; 
-            user-select: none; 
+            /* THE FIX: Disables mobile copy popup so custom tap menu works */
+            -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; 
         }
+        .stranger-msg .bubble { background: var(--stranger-bubble); border-top-left-radius: 4px; }
+        .my-msg .bubble { background: var(--my-bubble); border-top-right-radius: 4px; border-color: rgba(6, 182, 212, 0.2); }
+        .msg-meta { font-size: 0.7rem; color: #475569; margin-top: 5px; font-weight: 300; }
+        
+        /* Pop-up Menu */
+        .msg-actions { display: none; position: absolute; bottom: -35px; background: rgba(3, 7, 18, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); padding: 4px 10px; border-radius: 20px; gap: 8px; z-index: 50; box-shadow: 0 5px 15px rgba(0,0,0,0.8); white-space: nowrap; }
+        .my-msg .msg-actions { right: 0; }
+        .stranger-msg .msg-actions { left: 0; }
+        .message.active .msg-actions { display: flex; animation: slideUp 0.2s ease; }
+        .action-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; transition: 0.2s; padding: 2px; }
+        .action-btn:hover { transform: scale(1.2); }
+        .action-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.1); margin: 0 2px; align-self: center; }
+        
+        /* Quotes & Badges */
+        .reply-quote { font-size: 0.8rem; background: rgba(0,0,0,0.3); border-left: 2px solid var(--neon-cyan); padding: 6px 10px; margin-bottom: 8px; border-radius: 4px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        .reply-quote strong { color: var(--text-main); font-weight: 500; }
+        .reaction-badge { position: absolute; bottom: -8px; background: rgba(0,0,0,0.8); border: 1px solid var(--glass-border); border-radius: 12px; padding: 2px 6px; font-size: 0.8rem; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.6); display: none; }
+        .my-msg .reaction-badge { left: 10px; }
+        .stranger-msg .reaction-badge { right: 10px; }
+        
+        /* Reply Banner */
+        #reply-banner { display: none; background: rgba(6, 182, 212, 0.1); border-left: 3px solid var(--neon-cyan); padding: 10px 15px; font-size: 0.85rem; color: var(--text-main); position: absolute; bottom: 100%; left: 0; width: 100%; backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); justify-content: space-between; align-items: center; }
 
-        /* Futuristic Bubble Styling */
-        .stranger-wrapper .bubble { 
-            background: var(--stranger-bubble); 
-            border-left: 3px solid var(--text-muted); 
-        }
-        .my-wrapper .bubble { 
-            background: var(--my-bubble); 
-            border-right: 3px solid var(--neon-cyan); 
-            box-shadow: -5px 0 15px rgba(6, 182, 212, 0.05);
-        }
-        .message-wrapper.active .bubble { filter: brightness(1.5); border-color: rgba(255,255,255,0.4); } 
-        
-        .msg-meta { font-size: 0.65rem; font-family: 'Space Grotesk'; color: #475569; margin-top: 6px; padding: 0 4px; text-transform: uppercase; }
-        
-        /* Reaction Menu - Now has a Copy Button! */
-        .msg-actions { display: none; position: absolute; top: -50px; background: rgba(5, 10, 20, 0.95); border: 1px solid var(--neon-cyan); padding: 8px 16px; border-radius: 30px; gap: 15px; z-index: 50; font-size: 1.3rem; box-shadow: 0 10px 30px rgba(0,0,0,0.9), 0 0 15px rgba(6, 182, 212, 0.2); white-space: nowrap; animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .my-wrapper .msg-actions { right: 0; }
-        .stranger-wrapper .msg-actions { left: 0; }
-        
-        @keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        
-        .action-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s; padding: 2px; }
-        .action-btn:hover { transform: scale(1.4) translateY(-3px); }
-        .action-divider { width: 1px; height: 22px; background: rgba(255,255,255,0.2); margin: 0 2px; align-self: center; }
-        
-        .reply-quote { font-size: 0.8rem; background: rgba(0,0,0,0.5); border-left: 2px solid var(--neon-cyan); padding: 8px 10px; margin-bottom: 10px; border-radius: 4px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; border: 1px solid rgba(255,255,255,0.05);}
-        .reply-quote strong { color: var(--text-main); font-weight: 500; font-family: 'Space Grotesk';}
-        
-        .reaction-badge { position: absolute; bottom: -12px; background: #000; border: 1px solid var(--glass-border); border-radius: 12px; padding: 3px 8px; font-size: 0.9rem; z-index: 10; box-shadow: 0 5px 15px rgba(0,0,0,0.9); display: none; }
-        .my-wrapper .reaction-badge { left: 10px; }
-        .stranger-wrapper .reaction-badge { right: 10px; }
-
-        .chat-footer { display: flex; gap: 10px; padding: 15px 20px 20px 20px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px); border-top: 1px solid var(--glass-border); position: relative; z-index: 20;}
-        
-        #chat-input { flex: 1; background: transparent; border: none; border-bottom: 2px solid rgba(6, 182, 212, 0.3); padding: 12px 10px; border-radius: 0; color: var(--text-main); font-family: 'Space Grotesk'; font-size: 1rem; outline: none; transition: 0.3s; }
-        #chat-input:focus { border-bottom-color: var(--neon-cyan); box-shadow: 0 10px 10px -10px var(--neon-cyan); }
-        
-        .send-btn { background: var(--neon-cyan); color: #000; border: none; padding: 0 20px; border-radius: 8px; font-weight: 700; font-family: 'Space Grotesk'; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);}
-        .send-btn:hover { background: #fff; box-shadow: 0 0 25px rgba(255, 255, 255, 0.6); transform: scale(1.05); }
-
-        #reply-banner { display: none; background: rgba(0, 0, 0, 0.9); border-left: 3px solid var(--neon-cyan); padding: 12px 20px; font-size: 0.85rem; color: var(--text-main); position: absolute; bottom: 100%; left: 0; width: 100%; border-top: 1px solid var(--glass-border); justify-content: space-between; align-items: center; box-shadow: 0 -10px 30px rgba(0,0,0,0.8);}
-
-        .typing-indicator { display: none; align-self: flex-start; font-size: 0.75rem; font-family: 'Space Grotesk'; color: var(--neon-cyan); margin-left: 10px; text-transform: uppercase; letter-spacing: 1px;}
+        .typing-indicator { display: none; align-self: flex-start; font-size: 0.8rem; color: var(--text-muted); margin-left: 10px; }
         .typing-indicator span { animation: blink 1.4s infinite; opacity: 0.2; }
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
@@ -182,30 +131,41 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         #action-toast { padding: 10px 20px; text-align: center; display: none; margin-bottom: 5px;}
-        #extend-btn { background: transparent; color: var(--neon-gold); border: 1px solid var(--neon-gold); padding: 8px 16px; border-radius: 8px; font-family: 'Space Grotesk'; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.3s; text-transform: uppercase;}
-        #extend-btn:hover { background: var(--neon-gold); color: #000; box-shadow: 0 0 20px rgba(251, 191, 36, 0.6); }
-        #countdown-text { font-family: 'Space Grotesk', serif; font-size: 1.6rem; color: var(--neon-red); font-weight: bold; animation: pulseRed 1s infinite; display: none; text-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
-        @keyframes pulseRed { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.6; transform: scale(0.98); } }
+        #extend-btn { background: transparent; color: var(--neon-gold); border: 1px solid var(--neon-gold); padding: 8px 16px; border-radius: 20px; font-family: 'Outfit', sans-serif; font-size: 0.85rem; cursor: pointer; transition: 0.3s; box-shadow: inset 0 0 8px rgba(251, 191, 36, 0.2); }
+        #extend-btn:hover { background: var(--neon-gold); color: #000; box-shadow: 0 0 15px rgba(251, 191, 36, 0.5); }
+        #countdown-text { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--neon-red); font-weight: bold; animation: pulseRed 1s infinite; display: none; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+        @keyframes pulseRed { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.6; transform: scale(0.98); } }
 
-        #shatter-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(15px); z-index: 30; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
-        #shatter-overlay h2 { font-family: 'Space Grotesk', serif; color: var(--neon-red); font-size: 2.8rem; margin-bottom: 5px; letter-spacing: 5px; text-shadow: 0 0 20px rgba(239,68,68,0.6);}
-        #shatter-overlay p { font-size: 1rem; color: var(--text-muted); margin-bottom: 25px; font-family: 'Space Grotesk'; text-transform: uppercase;}
+        .chat-footer { display: flex; gap: 10px; padding: 15px 20px 20px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); position: relative; z-index: 10;}
+        #chat-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: 12px; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 0.95rem; outline: none; transition: 0.3s; }
+        #chat-input:focus { border-color: rgba(6, 182, 212, 0.5); }
+        .send-btn { background: var(--neon-cyan); color: #000; border: none; padding: 0 18px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .send-btn:hover { background: #0891b2; }
+
+        #shatter-overlay { position: absolute; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 20; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
+        #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
+        #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
         
-        #rating-box { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-bottom: 25px; width: 100%; max-width: 250px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8);}
-        .rating-title { font-size: 0.85rem; font-family: 'Space Grotesk'; font-weight: 600; color: #fff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
-        .star-container { display: flex; justify-content: center; gap: 10px; direction: row; }
-        .star-btn { background: none; border: none; font-size: 2rem; color: rgba(255,255,255,0.1); cursor: pointer; transition: 0.2s; padding: 0; line-height: 1; }
-        .star-btn.active, .star-btn:hover { color: var(--neon-gold); text-shadow: 0 0 20px var(--neon-gold); transform: scale(1.15); }
-        #rating-thanks { display: none; color: var(--neon-cyan); font-family: 'Space Grotesk'; font-size: 0.85rem; margin-top: 15px; font-weight: 600; letter-spacing: 1px;}
+        #rating-box { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 25px; margin-bottom: 25px; width: 100%; max-width: 250px; }
+        .rating-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .star-container { display: flex; justify-content: center; gap: 8px; direction: row; }
+        .star-btn { background: none; border: none; font-size: 1.8rem; color: rgba(255,255,255,0.1); cursor: pointer; transition: color 0.2s, transform 0.2s; padding: 0; line-height: 1; }
+        .star-btn.active, .star-btn:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); transform: scale(1.1); }
+        #rating-thanks { display: none; color: var(--neon-gold); font-size: 0.85rem; margin-top: 10px; font-weight: 500; }
 
         .overlay-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 250px; }
-        .secondary-btn { background: transparent; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.2); padding: 12px; border-radius: 8px; font-family: 'Space Grotesk'; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;}
-        .secondary-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .secondary-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .secondary-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
 
-        .game-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        /* === GAME & ADMIN MODALS === */
+        .game-modal { position: fixed; inset: 0; background: rgba(3,7,18,0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .game-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--neon-cyan); color: var(--text-main); padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; margin: 10px; width: 80%; max-width: 200px; font-family: 'Outfit'; }
+        .close-game { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; z-index: 50;}
+        #ttt-board { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; margin-top: 20px; }
+        .ttt-cell { width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white; }
         
-        .icon-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: var(--text-main); padding: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .icon-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--neon-cyan); color: var(--neon-cyan);}
+        .admin-stat { font-size: 1.2rem; color: white; margin: 10px 0; font-family: 'Outfit'; }
+        .admin-stat span { color: var(--neon-cyan); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -216,16 +176,16 @@
             <h1>THE VOID</h1>
             <p class="subtitle">1500 characters. Then it shatters.</p>
             <div class="stats-container">
-                <div class="stat-box"><span class="stat-number"><div class="dot"></div> <span id="active-users-count">...</span></span><span class="stat-label">Active</span></div>
-                <div class="stat-box"><span class="stat-number"><span id="vanished-count">...</span></span><span class="stat-label">Vanished</span></div>
+                <div class="stat-box"><span class="stat-number"><div class="dot"></div> <span id="active-users-count">...</span></span><span class="stat-label">Active Now</span></div>
+                <div class="stat-box"><span class="stat-number"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> <span id="vanished-count">...</span></span><span class="stat-label">Vanished</span></div>
             </div>
-            <button class="enter-btn" id="find-btn">Initialize</button>
-            <button id="install-btn" class="install-btn">Install Terminal App</button>
-            <p class="disclaimer">Encrypted. No Logs Kept.</p>
+            <button class="enter-btn" id="find-btn">Enter</button>
+            <button id="install-btn" class="install-btn">Add to Home Screen</button>
+            <p class="disclaimer">100% Anonymous. No logs kept.</p>
             
-            <div id="admin-login-wrapper" style="margin-top: 15px; text-align: center;">
-                <button id="admin-login-btn" style="background: none; border: none; color: var(--text-muted); font-size: 0.7rem; font-family: 'Space Grotesk'; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5;">[ SysAdmin ]</button>
-                <input type="password" id="admin-pass-input" placeholder="ACCESS CODE" style="display:none; background: #000; border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px; border-radius: 4px; font-family: 'Space Grotesk'; font-size: 0.8rem; text-align: center; outline: none; width: 140px; margin: 10px auto 0 auto; box-shadow: 0 0 10px rgba(6,182,212,0.2);">
+            <div id="admin-login-wrapper" style="margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <button id="admin-login-btn" style="background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 5px 15px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: 0.2s;">Admin Login</button>
+                <input type="password" id="admin-pass-input" placeholder="Enter Code" style="display:none; background: rgba(0,0,0,0.4); border: 1px solid var(--neon-cyan); color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; text-align: center; outline: none; width: 120px;">
             </div>
         </div>
     </div>
@@ -234,317 +194,489 @@
         <header class="chat-header">
             <div class="user-info">
                 <div class="dot"></div>
-                <h2>STRANGER <span id="stranger-flag">🇧🇩</span></h2>
-                <span class="karma-score">★ <span id="stranger-karma">5.0</span></span>
+                <h2>Stranger <span id="stranger-flag">🇧🇩</span></h2>
+                <span class="karma-score"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> <span id="stranger-karma">5.0</span></span>
             </div>
             <div class="header-actions">
-                <button class="icon-btn" id="exit-btn" style="font-family:'Space Grotesk'; font-weight:bold;">DISCONNECT</button>
+                <button class="icon-btn" id="theme-btn" title="Toggle Theme"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+                <button class="icon-btn" id="exit-btn" title="Exit Chat"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></button>
             </div>
         </header>
         
-        <div class="progress-bar" id="char-bar"></div>
+        <div class="progress-container"><div class="progress-bar" id="char-bar"></div></div>
 
         <main class="chat-box" id="chat-box">
-            <div class="system-message">Secure Connection Established.</div>
-            <div class="typing-indicator" id="typing-indicator">Incoming Signal<span>.</span><span>.</span><span>.</span></div>
+            <div class="system-message" id="welcome-msg">
+                A stranger appeared from the void.<br>
+                The connection has <span>1,500 characters</span> before it shatters.
+            </div>
+            <div class="typing-indicator" id="typing-indicator">Stranger is typing<span>.</span><span>.</span><span>.</span></div>
         </main>
 
         <div id="action-toast">
-            <button id="extend-btn">Request Extension (+500)</button>
-            <div id="countdown-text">SHATTERING IN 5...</div>
+            <button id="extend-btn">Request +500 Chars</button>
+            <div id="countdown-text">Shattering in 5...</div>
         </div>
 
         <div id="shatter-overlay">
-            <h2>SHATTERED</h2>
-            <p>The connection has been terminated.</p>
+            <h2>Shattered</h2>
+            <p>The void has consumed this connection.</p>
             <div id="rating-box">
-                <div class="rating-title">Rate Signal Quality</div>
+                <div class="rating-title">Rate the Vibe</div>
                 <div class="star-container">
                     <button class="star-btn" data-val="1">★</button><button class="star-btn" data-val="2">★</button><button class="star-btn" data-val="3">★</button><button class="star-btn" data-val="4">★</button><button class="star-btn" data-val="5">★</button>
                 </div>
-                <div id="rating-thanks">Feedback Registered.</div>
+                <div id="rating-thanks">Rating Sent to Stranger!</div>
             </div>
             <div class="overlay-buttons">
-                <button class="enter-btn" id="new-stranger-btn">New Connection</button>
-                <button class="secondary-btn" id="return-lobby-btn">Return to Grid</button>
+                <button class="enter-btn" id="new-stranger-btn">Find New Stranger</button>
+                <button class="secondary-btn" id="return-lobby-btn">Return to Lobby</button>
             </div>
         </div>
 
         <footer class="chat-footer">
             <div id="reply-banner">
-                <div>Replying to: <span id="reply-text" style="font-style:italic; opacity: 0.8;">...</span></div>
-                <button id="close-reply" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem;">✖</button>
+                <div>Replying to: <span id="reply-text" style="color:var(--text-muted); font-style:italic;">...</span></div>
+                <button id="close-reply" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 1.2rem;">✖</button>
             </div>
-            <button class="icon-btn" id="game-btn">🎮</button>
-            <input type="text" id="chat-input" placeholder="Transmit message..." autocomplete="off">
-            <button class="send-btn" id="send-btn">➤</button>
+            
+            <button class="icon-btn" id="game-btn" title="Games"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg></button>
+            <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
+            <button class="send-btn" id="send-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
         </footer>
     </div>
 
     <div class="game-modal" id="admin-ui" style="justify-content: flex-start; padding-top: 40px;">
-        <button class="close-game" onclick="document.getElementById('admin-ui').style.display='none'" style="position:absolute; top:20px; right:20px; background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor: pointer;">✖</button>
-        <h2 style="font-family:'Space Grotesk'; color:var(--neon-red); margin-bottom: 15px; font-weight: 700; text-shadow: 0 0 20px rgba(239, 68, 68, 0.4);">SYSTEM OVERRIDE</h2>
+        <button class="close-game" onclick="document.getElementById('admin-ui').style.display='none'">✖</button>
+        <h2 style="font-family:'Cinzel'; color:var(--neon-red); margin-bottom: 15px; font-size: 1.8rem;">SYSTEM ADMIN</h2>
+        
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 92%; max-width: 600px;">
-            <div class="admin-stat" style="background:rgba(0,0,0,0.8); padding:12px; border-radius:4px; border:1px solid rgba(255,255,255,0.1); border-left: 3px solid var(--neon-cyan);">ACTIVE NODES: <span id="ad-total">0</span></div>
-            <div class="admin-stat" style="background:rgba(0,0,0,0.8); padding:12px; border-radius:4px; border:1px solid rgba(255,255,255,0.1); border-left: 3px solid var(--neon-cyan);">LIVE ROOMS: <span id="ad-rooms">0</span></div>
+            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Online: <span id="ad-total">0</span></div>
+            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Wait: <span id="ad-wait">0</span></div>
+            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Rooms: <span id="ad-rooms">0</span></div>
+            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Vanish: <span id="ad-vanish">0</span></div>
         </div>
 
-        <div style="display: flex; gap: 10px; width: 92%; max-width: 600px; height: 400px; margin-top: 15px;">
-            <div style="width: 35%; background: rgba(0,0,0,0.8); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); padding: 10px; display: flex; flex-direction: column;">
-                <h3 style="font-size: 0.75rem; color: var(--text-muted); font-family: 'Space Grotesk'; margin-bottom: 10px; text-transform: uppercase;">Node Directory</h3>
-                <button id="view-global-btn" style="background: rgba(251, 191, 36, 0.1); color: var(--neon-gold); border: 1px solid var(--neon-gold); padding: 8px; border-radius: 4px; font-size: 0.75rem; font-family: 'Space Grotesk'; font-weight: bold; cursor: pointer; margin-bottom: 10px; text-transform: uppercase;">Global Feed</button>
+        <div style="display: flex; gap: 10px; width: 92%; max-width: 600px; height: 350px; margin-top: 15px;">
+            <div style="width: 35%; background: rgba(0,0,0,0.5); border-radius: 15px; border: 1px solid var(--glass-border); padding: 10px; display: flex; flex-direction: column;">
+                <h3 style="font-size: 0.75rem; color: var(--neon-cyan); margin-bottom: 10px; text-transform: uppercase;">Active Rooms</h3>
+                <button id="view-global-btn" style="background: var(--neon-gold); color: #000; border: none; padding: 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-bottom: 10px;">Global Feed</button>
                 <div id="admin-room-list" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; scrollbar-width: none;"></div>
             </div>
+
             <div style="width: 65%; display: flex; flex-direction: column;">
-                <h3 id="spy-header-text" style="font-size: 0.75rem; font-family: 'Space Grotesk'; color: var(--neon-gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Intercepting: GLOBAL</h3>
-                <div id="spy-container" style="flex: 1; background: rgba(0,0,0,0.8); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: none; font-family: monospace;"></div>
+                <h3 id="spy-header-text" style="font-size: 0.75rem; color: var(--neon-gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                    <div class="dot" style="width:6px; height:6px;"></div> Global Feed
+                </h3>
+                <div id="spy-container" style="flex: 1; background: rgba(0,0,0,0.5); border-radius: 15px; border: 1px solid var(--glass-border); padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: none;"></div>
             </div>
         </div>
     </div>
 
     <div class="game-modal" id="game-menu">
         <button class="close-game" onclick="document.getElementById('game-menu').style.display='none'">✖</button>
-        <h2 style="font-family:'Space Grotesk'; color:var(--neon-cyan); margin-bottom: 20px;">TERMINAL GAMES</h2>
-        <button class="enter-btn" onclick="inviteGame('rps')" style="margin-bottom: 10px; width: 80%; max-width: 250px;">Rock Paper Scissors</button>
-        <button class="enter-btn" onclick="inviteGame('ttt')" style="width: 80%; max-width: 250px;">Tic Tac Toe</button>
+        <h2 style="font-family:'Cinzel'; color:var(--neon-cyan); margin-bottom: 20px;">VOID GAMES</h2>
+        <button class="game-btn" onclick="inviteGame('rps')">Rock Paper Scissors</button>
+        <button class="game-btn" onclick="inviteGame('ttt')">Tic Tac Toe</button>
     </div>
 
     <div class="game-modal" id="rps-ui">
-        <h2 style="font-family: 'Space Grotesk'; color:var(--neon-cyan); margin-bottom: 20px;">Deploy Weapon</h2>
-        <button class="enter-btn" onclick="playRPS('Rock')" style="margin-bottom:10px; width: 200px;">✊ Rock</button>
-        <button class="enter-btn" onclick="playRPS('Paper')" style="margin-bottom:10px; width: 200px;">✋ Paper</button>
-        <button class="enter-btn" onclick="playRPS('Scissors')" style="width: 200px;">✌️ Scissors</button>
-        <p id="rps-status" style="margin-top:20px; color:var(--text-muted); font-family: 'Space Grotesk';"></p>
+        <h2 style="color:var(--neon-cyan); margin-bottom: 20px;">Choose Weapon</h2>
+        <button class="game-btn" onclick="playRPS('Rock')">✊ Rock</button>
+        <button class="game-btn" onclick="playRPS('Paper')">✋ Paper</button>
+        <button class="game-btn" onclick="playRPS('Scissors')">✌️ Scissors</button>
+        <p id="rps-status" style="margin-top:20px; color:var(--text-muted);"></p>
     </div>
 
     <div class="game-modal" id="ttt-ui">
-        <button class="close-game" onclick="document.getElementById('ttt-ui').style.display='none'" style="position:absolute; top:20px; right:20px; background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor: pointer;">✖</button>
-        <h2 style="font-family: 'Space Grotesk'; color:var(--neon-cyan); margin-bottom: 10px;">Tic Tac Toe</h2>
-        <p id="ttt-status" style="color:var(--neon-gold); font-family: 'Space Grotesk'; font-weight: bold;">Your turn (X)</p>
-        <div style="display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; margin-top: 20px;">
-            <div class="ttt-cell" onclick="playTTT(0)" style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white;"></div>
-            <div class="ttt-cell" onclick="playTTT(1)" style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white;"></div>
-            <div class="ttt-cell" onclick="playTTT(2)" style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white;"></div>
-            <div class="ttt-cell" onclick="playTTT(3)" style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white;"></div>
-            <div class="ttt-cell" onclick="playTTT(4)" style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white;"></div>
-            <div class="ttt-cell" onclick="playTTT(5)" style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white;"></div>
-            <div class="ttt-cell" onclick="playTTT(6)" style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white;"></div>
-            <div class="ttt-cell" onclick="playTTT(7)" style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white;"></div>
-            <div class="ttt-cell" onclick="playTTT(8)" style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white;"></div>
+        <button class="close-game" onclick="document.getElementById('ttt-ui').style.display='none'">✖</button>
+        <h2 style="color:var(--neon-cyan); margin-bottom: 10px;">Tic Tac Toe</h2>
+        <p id="ttt-status" style="color:var(--neon-gold);">Your turn (X)</p>
+        <div id="ttt-board">
+            <div class="ttt-cell" onclick="playTTT(0)"></div><div class="ttt-cell" onclick="playTTT(1)"></div><div class="ttt-cell" onclick="playTTT(2)"></div>
+            <div class="ttt-cell" onclick="playTTT(3)"></div><div class="ttt-cell" onclick="playTTT(4)"></div><div class="ttt-cell" onclick="playTTT(5)"></div>
+            <div class="ttt-cell" onclick="playTTT(6)"></div><div class="ttt-cell" onclick="playTTT(7)"></div><div class="ttt-cell" onclick="playTTT(8)"></div>
         </div>
     </div>
 
     <script>
-        // PWA Setup
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+        // === 1. PWA Logic ===
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
+        }
         let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-btn').style.display = 'block'; });
-        document.getElementById('install-btn').addEventListener('click', async () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } });
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e; document.getElementById('install-btn').style.display = 'block';
+        });
+        document.getElementById('install-btn').addEventListener('click', async () => {
+            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; document.getElementById('install-btn').style.display = 'none'; }
+        });
 
         const socket = io("https://the-void-server.onrender.com"); 
+        
+        // === 2. Incoming Message Sound ===
         const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+        notificationSound.volume = 0.5;
 
-        const findBtn = document.getElementById('find-btn'), lobbyScreen = document.getElementById('lobby-screen'), chatScreen = document.getElementById('chat-screen');
-        const chatInput = document.getElementById('chat-input'), sendBtn = document.getElementById('send-btn'), charBar = document.getElementById('char-bar'), chatBox = document.getElementById('chat-box');
+        const findBtn = document.getElementById('find-btn');
+        const lobbyScreen = document.getElementById('lobby-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const exitBtn = document.getElementById('exit-btn');
+        const themeBtn = document.getElementById('theme-btn');
+        const gameBtn = document.getElementById('game-btn');
+        
+        const shatterOverlay = document.getElementById('shatter-overlay');
+        const newStrangerBtn = document.getElementById('new-stranger-btn');
+        const returnLobbyBtn = document.getElementById('return-lobby-btn');
+        
+        const actionToast = document.getElementById('action-toast');
+        const extendBtn = document.getElementById('extend-btn');
+        const countdownText = document.getElementById('countdown-text');
 
-        const messageStore = {}; let currentReplyTo = null; let allAdminMessages = []; let lockedRoomId = null; let knownRooms = new Set();
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const charBar = document.getElementById('char-bar');
+        const chatBox = document.getElementById('chat-box');
+        const typingIndicator = document.getElementById('typing-indicator');
 
-        // Admin Auth
+        const starBtns = document.querySelectorAll('.star-btn');
+        const ratingThanks = document.getElementById('rating-thanks');
+
+        let currentMax = 1500; let usedChars = 0; let isCountdownRunning = false; let countdownTimer = null;
+        let myCurrentRoom = null; 
+
+        // Memory Logic
+        const messageStore = {};
+        let currentReplyTo = null;
+        let allAdminMessages = [];
+
+        // === Admin Panel Logic ===
         document.getElementById('admin-login-btn').addEventListener('click', () => {
             const input = document.getElementById('admin-pass-input');
-            if (input.style.display === 'none') { input.style.display = 'block'; input.focus(); }
-            else { if (input.value) socket.emit('get_admin_data', input.value); input.value = ''; }
+            const btn = document.getElementById('admin-login-btn');
+            if (input.style.display === 'none') {
+                input.style.display = 'block'; input.focus(); btn.innerText = "Authorize"; btn.style.color = "var(--neon-cyan)";
+            } else {
+                if (input.value) socket.emit('get_admin_data', input.value);
+                input.value = ''; input.style.display = 'none'; btn.innerText = "Admin Login"; btn.style.color = "var(--text-muted)";
+            }
         });
+
+        socket.on('admin_error', () => { alert("Access Denied. Incorrect Password."); });
+
+        const adminRoomList = document.getElementById('admin-room-list');
+        const viewGlobalBtn = document.getElementById('view-global-btn');
+        const spyContainer = document.getElementById('spy-container');
+        const spyHeaderText = document.getElementById('spy-header-text');
+        
+        let lockedRoomId = null;
+        let knownRooms = new Set(); 
 
         socket.on('admin_dashboard', (data) => {
             document.getElementById('ad-total').innerText = data.totalUsers;
+            document.getElementById('ad-wait').innerText = data.waitingUsers;
             document.getElementById('ad-rooms').innerText = data.activeRooms;
-            knownRooms.clear(); document.getElementById('admin-room-list').innerHTML = ''; document.getElementById('spy-container').innerHTML = ''; allAdminMessages = [];
+            document.getElementById('ad-vanish').innerText = data.totalVanished;
+            knownRooms.clear(); adminRoomList.innerHTML = ''; spyContainer.innerHTML = ''; allAdminMessages = []; 
             document.getElementById('admin-ui').style.display = 'flex';
         });
 
-        // Admin Feed Logic
+        viewGlobalBtn.addEventListener('click', () => {
+            lockedRoomId = null;
+            spyHeaderText.innerHTML = '<div class="dot" style="width:6px; height:6px;"></div> Global Feed';
+            spyHeaderText.style.color = 'var(--neon-gold)';
+            renderAdminFeed(); 
+        });
+
         socket.on('spy_feed', (data) => {
-            data.timestamp = Date.now(); allAdminMessages.push(data);
+            data.timestamp = Date.now();
+            allAdminMessages.push(data);
+
             if (!knownRooms.has(data.roomId)) {
-                knownRooms.add(data.roomId); const btn = document.createElement('button'); btn.innerText = "Node " + knownRooms.size;
-                btn.style.cssText = "background:transparent; color:var(--text-muted); border:1px solid rgba(255,255,255,0.1); padding:8px; border-radius:4px; cursor:pointer; text-align:left; font-size:0.75rem; font-family:'Space Grotesk'; text-transform:uppercase;";
-                btn.onclick = () => { lockedRoomId = data.roomId; document.getElementById('spy-header-text').innerText = "INTERCEPTING: NODE " + Array.from(knownRooms).indexOf(data.roomId) + 1; document.getElementById('spy-header-text').style.color = "var(--neon-red)"; renderAdminFeed(); };
-                document.getElementById('admin-room-list').appendChild(btn);
+                knownRooms.add(data.roomId);
+                const roomBtn = document.createElement('button');
+                roomBtn.innerText = "Room " + knownRooms.size; 
+                roomBtn.style.cssText = "background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; text-align: left; font-family: 'Outfit'; margin-bottom: 5px;";
+                
+                roomBtn.addEventListener('click', () => {
+                    lockedRoomId = data.roomId;
+                    spyHeaderText.innerHTML = `<div class="dot" style="width:6px; height:6px; background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red);"></div> ${roomBtn.innerText}`;
+                    spyHeaderText.style.color = 'var(--neon-red)';
+                    renderAdminFeed(); 
+                });
+                adminRoomList.appendChild(roomBtn);
             }
+
             if (!lockedRoomId || lockedRoomId === data.roomId) appendAdminMessage(data);
         });
 
+        // 3. 1-Hour Frontend Garbage Collector
+        setInterval(() => {
+            const oneHourAgo = Date.now() - 3600000;
+            allAdminMessages = allAdminMessages.filter(m => m.timestamp > oneHourAgo);
+        }, 60000);
+
         function renderAdminFeed() {
-            document.getElementById('spy-container').innerHTML = '';
-            allAdminMessages.filter(m => !lockedRoomId || m.roomId === lockedRoomId).forEach(m => appendAdminMessage(m));
+            spyContainer.innerHTML = '';
+            const filteredMsgs = lockedRoomId ? allAdminMessages.filter(m => m.roomId === lockedRoomId) : allAdminMessages;
+            filteredMsgs.forEach(m => appendAdminMessage(m));
         }
 
         function appendAdminMessage(data) {
-            const entry = document.createElement('div'); entry.style.cssText = "font-size: 0.8rem; color: #a1a1aa; background: rgba(0,0,0,0.4); padding: 8px; border-radius: 4px; border-left: 2px solid var(--neon-cyan);";
-            entry.textContent = `[${new Date(data.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}] ${data.text}`;
-            document.getElementById('spy-container').prepend(entry);
+            const entry = document.createElement('div');
+            entry.style.cssText = "font-size: 0.85rem; color: #e2e8f0; background: rgba(255,255,255,0.04); padding: 10px; border-radius: 8px; border-left: 3px solid var(--neon-cyan); line-height: 1.4; animation: slideUp 0.2s ease;";
+            const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            entry.textContent = `[${time}] 💬 ` + data.text;
+            spyContainer.prepend(entry); 
+            if (spyContainer.childNodes.length > 1000) spyContainer.removeChild(spyContainer.lastChild);
         }
 
-        // 1-Hour Admin History GC
-        setInterval(() => { const now = Date.now(); allAdminMessages = allAdminMessages.filter(m => now - m.timestamp < 3600000); }, 60000);
+        themeBtn.addEventListener('click', () => { document.body.classList.toggle('light-theme'); });
+        gameBtn.addEventListener('click', () => { document.getElementById('game-menu').style.display = 'flex'; });
 
-        // Core Chat Logic
-        findBtn.onclick = () => { socket.emit('find_match', { localKarma: localStorage.getItem('void_karma') || "5.0" }); };
-        socket.on('match_found', (data) => { lobbyScreen.style.display = 'none'; chatScreen.style.display = 'flex'; myCurrentRoom = data.roomId; });
+        socket.on('connect', () => { 
+            const dot = document.querySelector('.user-info .dot');
+            if (dot && chatScreen.style.display === 'flex') {
+                dot.style.backgroundColor = '#22c55e'; dot.style.boxShadow = '0 0 8px #22c55e';
+                if (myCurrentRoom) socket.emit('reclaim_session', myCurrentRoom);
+                else socket.emit('user_status', 'online'); 
+            }
+        });
 
-        sendBtn.onclick = sendLocalMessage;
-        chatInput.onkeypress = (e) => { if(e.key==='Enter') sendLocalMessage(); };
+        socket.on('stats_update', (data) => {
+            document.getElementById('active-users-count').innerText = data.activeUsers;
+            document.getElementById('vanished-count').innerText = data.vanishedChats;
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('void_auto_search') === 'true') {
+                sessionStorage.removeItem('void_auto_search'); setTimeout(() => findBtn.click(), 300);
+            }
+        });
+
+        findBtn.addEventListener('click', () => {
+            findBtn.innerText = "Drifting into the void..."; findBtn.style.background = "rgba(6, 182, 212, 0.1)"; findBtn.style.color = "#06b6d4"; findBtn.disabled = true;
+            socket.emit('find_match', { localKarma: localStorage.getItem('void_karma') || "5.0" });
+        });
+
+        socket.on('match_found', (strangerData) => { 
+            lobbyScreen.style.display = 'none'; chatScreen.style.display = 'flex';
+            document.getElementById('stranger-karma').innerText = strangerData.karma; document.getElementById('stranger-flag').innerText = strangerData.flag || "🇧🇩";
+            chatInput.maxLength = currentMax - usedChars; myCurrentRoom = strangerData.roomId; 
+            const dot = document.querySelector('.user-info .dot');
+            if (dot) { dot.style.backgroundColor = '#22c55e'; dot.style.boxShadow = '0 0 8px #22c55e'; }
+        });
+
+        socket.on('sync_chars', (data) => { currentMax = data.max; usedChars = data.used; updateVisualBar(usedChars); });
+
+        chatInput.addEventListener('input', () => { socket.emit('typing'); });
+
+        function updateVisualBar(total) {
+            let remaining = currentMax - total; let percentage = (remaining / currentMax) * 100; if (percentage < 0) percentage = 0; 
+            charBar.style.width = `${percentage}%`;
+            if (remaining <= 0) chatInput.disabled = true; chatInput.maxLength = remaining;
+            if (remaining <= 300 && currentMax === 1500 && !isCountdownRunning && total > 0) { actionToast.style.display = 'block'; extendBtn.style.display = 'inline-block'; countdownText.style.display = 'none'; }
+            if (percentage < 20) { charBar.style.backgroundColor = 'var(--neon-red)'; charBar.style.boxShadow = '0 0 10px var(--neon-red)'; } 
+            else { charBar.style.backgroundColor = 'var(--neon-cyan)'; charBar.style.boxShadow = '0 0 10px var(--neon-cyan)'; }
+        }
+
+        sendBtn.addEventListener('click', sendLocalMessage);
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendLocalMessage(); });
 
         function sendLocalMessage() {
-            if (!chatInput.value.trim()) return;
-            const msgObj = { id: 'msg_'+Date.now(), text: chatInput.value.trim(), replyTo: currentReplyTo };
-            appendMessageUI(msgObj, 'my-msg'); socket.emit('send_message', msgObj); chatInput.value = ''; cancelReply();
+            const rawText = chatInput.value; const textToDisplay = rawText.trim();
+            if (textToDisplay === '') return;
+            usedChars += rawText.length;
+            const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
+            const msgObj = { id: msgId, text: textToDisplay };
+            if (currentReplyTo) msgObj.replyTo = currentReplyTo;
+            appendMessageUI(msgObj, 'my-msg'); chatInput.value = ''; updateVisualBar(usedChars); socket.emit('send_message', msgObj); cancelReply();
         }
 
-        socket.on('receive_message', (msg) => { appendMessageUI(msg, 'stranger-msg'); notificationSound.play().catch(()=>{}); });
+        socket.on('receive_message', (msgObj) => { 
+            typingIndicator.style.display = 'none'; 
+            appendMessageUI(msgObj, 'stranger-msg'); 
+            notificationSound.play().catch(()=>{}); 
+        });
 
-        // === MOBILE SAFE UI RENDERING ===
+        let typingTimeout;
+        socket.on('typing', () => {
+            typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight;
+            clearTimeout(typingTimeout); typingTimeout = setTimeout(() => typingIndicator.style.display = 'none', 1500);
+        });
+
+        // === 4. UI Builder using your exact CSS classes but structured for replies ===
         function appendMessageUI(msgData, type) {
-            const isObj = typeof msgData === 'object', text = isObj ? msgData.text : msgData, id = isObj ? msgData.id : 'msg_'+Date.now();
-            messageStore[id] = { text, sender: type === 'my-msg' ? 'You' : 'Stranger' };
-            
-            const wrapper = document.createElement('div'); 
-            wrapper.className = `message-wrapper ${type === 'my-msg' ? 'my-wrapper' : 'stranger-wrapper'}`; 
-            wrapper.id = id;
-            
-            // Replaced the simple text with the advanced HTML layout holding the Copy button
-            wrapper.innerHTML = `
-                <div class="bubble-container">
-                    <div class="msg-actions">
-                        <button class="action-btn" onclick="sendReaction('${id}', '❤️', event)">❤️</button>
-                        <button class="action-btn" onclick="sendReaction('${id}', '😂', event)">😂</button>
-                        <button class="action-btn" onclick="sendReaction('${id}', '👍', event)">👍</button>
-                        <div class="action-divider"></div>
-                        <button class="action-btn" onclick="setReply('${id}', event)" title="Reply">↩️</button>
-                        <button class="action-btn" onclick="copyText('${id}', event)" title="Copy">📋</button>
-                    </div>
-                    <div class="bubble" onclick="toggleMsgActions('${id}', event)">
-                        <div class="reply-container">${msgData.replyTo ? `<div class="reply-quote"><strong>${msgData.replyTo.sender}</strong>: ${msgData.replyTo.text}</div>` : ''}</div>
-                        <span class="msg-text-content"></span>
-                    </div>
-                    <div class="reaction-badge" id="react-${id}"></div>
+            const isObj = typeof msgData === 'object';
+            const text = isObj ? msgData.text : msgData;
+            const msgId = isObj && msgData.id ? msgData.id : 'msg_' + Date.now() + Math.floor(Math.random()*1000);
+            const replyInfo = isObj && msgData.replyTo ? msgData.replyTo : null;
+
+            messageStore[msgId] = { text: text, sender: type === 'my-msg' ? 'You' : 'Stranger' };
+
+            const msgDiv = document.createElement('div'); 
+            msgDiv.className = `message ${type}`;
+            msgDiv.id = msgId;
+
+            const timeString = `${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}`;
+            const metaHtml = type === 'my-msg' ? `${timeString} ✓` : timeString;
+
+            const actionMenu = `
+                <div class="msg-actions">
+                    <button class="action-btn" onclick="sendReaction('${msgId}', '❤️', event)">❤️</button>
+                    <button class="action-btn" onclick="sendReaction('${msgId}', '😂', event)">😂</button>
+                    <button class="action-btn" onclick="sendReaction('${msgId}', '👍', event)">👍</button>
+                    <button class="action-btn" onclick="sendReaction('${msgId}', '😲', event)">😲</button>
+                    <div class="action-divider"></div>
+                    <button class="action-btn" onclick="setReply('${msgId}', event)" title="Reply">↩️</button>
+                    <button class="action-btn" onclick="copyText('${msgId}', event)" title="Copy">📋</button>
                 </div>
             `;
-            wrapper.querySelector('.msg-text-content').textContent = text;
-            chatBox.insertBefore(wrapper, document.getElementById('typing-indicator')); chatBox.scrollTop = chatBox.scrollHeight;
+
+            msgDiv.innerHTML = `
+                <div class="bubble" onclick="toggleMsgActions('${msgId}', event)">
+                    <div class="reply-container"></div>
+                    <span class="msg-text-content"></span>
+                    ${actionMenu}
+                    <div class="reaction-badge" id="react-${msgId}"></div>
+                </div>
+                <div class="msg-meta">${metaHtml}</div>
+            `;
+            
+            msgDiv.querySelector('.msg-text-content').textContent = text;
+            
+            if (replyInfo) {
+                const replyDiv = document.createElement('div'); replyDiv.className = 'reply-quote';
+                replyDiv.innerHTML = `<strong>${replyInfo.sender}</strong>: <span class="quote-text"></span>`;
+                replyDiv.querySelector('.quote-text').textContent = replyInfo.text;
+                msgDiv.querySelector('.reply-container').appendChild(replyDiv);
+            }
+            
+            chatBox.insertBefore(msgDiv, typingIndicator); chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Tapping the bubble triggers this, bypassing default copy/paste!
+        // Tap interactions
         window.toggleMsgActions = (id, e) => {
             e.stopPropagation(); 
-            document.querySelectorAll('.message-wrapper').forEach(m => { m.classList.remove('active'); m.querySelector('.msg-actions').style.display='none'; });
-            const w = document.getElementById(id); 
-            w.classList.add('active'); 
-            w.querySelector('.msg-actions').style.display='flex';
+            const wrapper = document.getElementById(id); const isActive = wrapper && wrapper.classList.contains('active');
+            document.querySelectorAll('.message').forEach(m => m.classList.remove('active'));
+            if (!isActive && wrapper) wrapper.classList.add('active');
         };
-        
-        document.addEventListener('click', () => document.querySelectorAll('.message-wrapper').forEach(m => { m.classList.remove('active'); m.querySelector('.msg-actions').style.display='none'; }));
 
-        // NEW: Custom Copy Text logic because native is disabled
+        document.addEventListener('click', () => { document.querySelectorAll('.message').forEach(m => m.classList.remove('active')); });
+
         window.copyText = (id, e) => {
             e.stopPropagation();
-            const textToCopy = messageStore[id].text;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const toast = document.getElementById('action-toast');
-                document.getElementById('countdown-text').style.display = 'none';
-                document.getElementById('extend-btn').innerText = "Copied to Clipboard!";
-                document.getElementById('extend-btn').style.display = 'inline-block';
-                toast.style.display = 'block';
-                setTimeout(() => toast.style.display = 'none', 2000);
+            navigator.clipboard.writeText(messageStore[id].text).then(() => {
+                const t = document.getElementById('action-toast'); const b = document.getElementById('extend-btn'); const c = document.getElementById('countdown-text');
+                c.style.display = 'none'; b.innerText = "Copied!"; b.style.display = 'inline-block'; t.style.display = 'block';
+                setTimeout(() => { t.style.display = 'none'; b.innerText = "Request +500 Chars"; }, 2000);
             });
-            document.querySelectorAll('.message-wrapper').forEach(m => { m.classList.remove('active'); m.querySelector('.msg-actions').style.display='none'; });
+            document.querySelectorAll('.message').forEach(m => m.classList.remove('active'));
         };
 
-        window.sendReaction = (id, emoji, e) => { e.stopPropagation(); showReaction(id, emoji); socket.emit('react_message', { msgId: id, emoji }); document.querySelectorAll('.message-wrapper').forEach(m => { m.classList.remove('active'); m.querySelector('.msg-actions').style.display='none'; });};
-        socket.on('receive_reaction', (data) => showReaction(data.msgId, data.emoji));
-        function showReaction(id, em) { const b = document.getElementById(`react-${id}`); if(b) { b.innerText = em; b.style.display = 'block'; } }
+        window.setReply = (id, e) => {
+            e.stopPropagation(); const msgInfo = messageStore[id]; if(!msgInfo) return;
+            currentReplyTo = { id, text: msgInfo.text, sender: msgInfo.sender };
+            document.getElementById('reply-text').innerText = msgInfo.text.length > 30 ? msgInfo.text.substring(0,30) + '...' : msgInfo.text;
+            document.getElementById('reply-banner').style.display = 'flex';
+            document.querySelectorAll('.message').forEach(m => m.classList.remove('active')); chatInput.focus();
+        };
 
-        window.setReply = (id, e) => { e.stopPropagation(); const info = messageStore[id]; currentReplyTo = { text: info.text, sender: info.sender }; document.getElementById('reply-text').innerText = info.text.substring(0,30)+'...'; document.getElementById('reply-banner').style.display='flex'; document.querySelectorAll('.message-wrapper').forEach(m => { m.classList.remove('active'); m.querySelector('.msg-actions').style.display='none'; }); chatInput.focus(); };
-        function cancelReply() { currentReplyTo = null; document.getElementById('reply-banner').style.display='none'; }
-        document.getElementById('close-reply').onclick = cancelReply;
+        document.getElementById('close-reply').addEventListener('click', () => { currentReplyTo = null; document.getElementById('reply-banner').style.display = 'none'; });
 
-        // Chat Extension Logic
-        document.getElementById('extend-btn').addEventListener('click', () => {
-            if(document.getElementById('extend-btn').innerText.includes("Copied")) return;
-            document.getElementById('extend-btn').innerText = "Waiting..."; document.getElementById('extend-btn').disabled = true; document.getElementById('extend-btn').style.opacity = '0.6'; socket.emit('request_extend');
+        window.sendReaction = (msgId, emoji, e) => {
+            e.stopPropagation(); showReaction(msgId, emoji); socket.emit('react_message', { msgId, emoji });
+            document.querySelectorAll('.message').forEach(m => m.classList.remove('active'));
+        };
+
+        socket.on('receive_reaction', (data) => { showReaction(data.msgId, data.emoji); });
+
+        function showReaction(msgId, emoji) {
+            const badge = document.getElementById(`react-${msgId}`);
+            if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulsePortal 0.5s ease'; }
+        }
+
+        function sysMsg(html) {
+            const div = document.createElement('div'); div.className = 'system-message gold'; div.innerHTML = html;
+            chatBox.insertBefore(div, typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; return div;
+        }
+
+        extendBtn.addEventListener('click', () => {
+            if(extendBtn.innerText.includes("Copied")) return;
+            extendBtn.innerText = "Waiting..."; extendBtn.disabled = true; extendBtn.style.opacity = '0.6'; socket.emit('request_extend');
         });
 
         socket.on('extend_requested', () => {
             const reqId = 'ext-' + Date.now();
-            sysMsg(`Stranger requested +500 chars. <span id="${reqId}"><button onclick="acceptExtend(this)" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:4px; font-family:'Space Grotesk'; font-weight:bold; margin-left:10px; cursor:pointer;">Accept</button></span>`);
-            setTimeout(() => { const span = document.getElementById(reqId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>[ EXPIRED ]</span>"; }, 30000);
+            sysMsg(`Stranger requested +500 chars. <span id="${reqId}"><button onclick="acceptExtend(this)" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button></span>`);
+            setTimeout(() => { const span = document.getElementById(reqId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000);
         });
 
-        window.acceptExtend = (btn) => { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); margin-left:10px; font-size:0.8rem;'>[ ACCEPTED ]</span>"; socket.emit('accept_extend'); }
+        window.acceptExtend = (btn) => { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); margin-left:10px; font-size:0.8rem;'>(Accepted)</span>"; socket.emit('accept_extend'); }
 
         socket.on('extend_accepted', (data) => {
-            currentMax = data.max; usedChars = data.used; document.getElementById('action-toast').style.display = 'none'; document.getElementById('extend-btn').style.display = 'none';
-            chatInput.maxLength = currentMax - usedChars; updateVisualBar(usedChars); sysMsg('EXTENSION GRANTED. <span>+500 CHARACTERS</span>.');
+            currentMax = data.max; usedChars = data.used; actionToast.style.display = 'none'; extendBtn.style.display = 'none';
+            chatInput.maxLength = currentMax - usedChars; updateVisualBar(usedChars); sysMsg('Extension Granted! <span>+500 characters</span> added.');
         });
 
-        // Chat Shatter Logic
         socket.on('force_shatter', () => { if(!isCountdownRunning) startCountdown(); });
 
         function startCountdown() {
-            isCountdownRunning = true; chatInput.disabled = true; chatInput.placeholder = "CONNECTION FAILING...";
-            document.getElementById('action-toast').style.display = 'block'; document.getElementById('extend-btn').style.display = 'none'; document.getElementById('countdown-text').style.display = 'block';
-            let secondsLeft = 5; document.getElementById('countdown-text').innerText = `SHATTERING IN ${secondsLeft}...`;
+            isCountdownRunning = true; chatInput.disabled = true; chatInput.placeholder = "Time is up...";
+            actionToast.style.display = 'block'; extendBtn.style.display = 'none'; countdownText.style.display = 'block';
+            let secondsLeft = 5; countdownText.innerText = `Shattering in ${secondsLeft}...`;
             countdownTimer = setInterval(() => {
                 secondsLeft--;
                 if (secondsLeft <= 0) { clearInterval(countdownTimer); triggerVanish(); } 
-                else { document.getElementById('countdown-text').innerText = `SHATTERING IN ${secondsLeft}...`; }
+                else { countdownText.innerText = `Shattering in ${secondsLeft}...`; }
             }, 1000);
         }
 
         function triggerVanish() {
-            document.getElementById('countdown-text').innerText = "SHATTERED."; 
-            chatBox.classList.add('shattered-element'); 
-            socket.emit('chat_shattered'); 
-            setTimeout(() => { 
-                document.getElementById('action-toast').style.display = 'none'; 
-                document.getElementById('shatter-overlay').style.display = 'flex'; 
-            }, 1200); 
+            countdownText.innerText = "Shattered."; chatBox.style.opacity = '0.1'; chatBox.style.filter = 'blur(4px)';
+            for (let key in messageStore) delete messageStore[key];
+            socket.emit('chat_shattered'); setTimeout(() => { actionToast.style.display = 'none'; shatterOverlay.style.display = 'flex'; }, 800);
         }
 
         socket.on('stranger_disconnected', () => { if(!isCountdownRunning) startCountdown(); });
-        
-        // Games & Ext logic remains safe
-        document.getElementById('return-lobby-btn').addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); location.reload(); });
-        document.getElementById('exit-btn').addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); location.reload(); });
-        document.getElementById('new-stranger-btn').addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
 
-        // Rating
-        document.querySelectorAll('.star-btn').forEach(btn => {
+        starBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const rating = parseInt(e.target.getAttribute('data-val')); socket.emit('submit_rating', rating);
-                document.querySelectorAll('.star-btn').forEach(s => {
+                starBtns.forEach(s => {
                     if(parseInt(s.getAttribute('data-val')) <= rating) { s.classList.add('active'); } else { s.classList.remove('active'); }
                     s.style.pointerEvents = 'none';
                 });
-                document.getElementById('rating-thanks').style.display = 'block';
+                ratingThanks.style.display = 'block';
             });
         });
-        socket.on('receive_rating', (newRating) => { let myCurrentKarma = parseFloat(localStorage.getItem('void_karma') || 5.0); localStorage.setItem('void_karma', ((myCurrentKarma + newRating) / 2).toFixed(1)); });
 
-        // Games
-        window.inviteGame = (gameType) => { document.getElementById('game-menu').style.display = 'none'; sysMsg(`INVITE SENT: ${gameType.toUpperCase()}.`); socket.emit('game_action', { type: 'invite', game: gameType }); };
+        socket.on('receive_rating', (newRating) => {
+            let myCurrentKarma = parseFloat(localStorage.getItem('void_karma') || 5.0);
+            let updatedKarma = ((myCurrentKarma + newRating) / 2).toFixed(1);
+            if (updatedKarma < 1.0) updatedKarma = "1.0"; localStorage.setItem('void_karma', updatedKarma);
+        });
+
+        returnLobbyBtn.addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); location.reload(); });
+        exitBtn.addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); location.reload(); });
+        newStrangerBtn.addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
+
+        window.inviteGame = (gameType) => {
+            document.getElementById('game-menu').style.display = 'none'; sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); socket.emit('game_action', { type: 'invite', game: gameType });
+        };
+
         socket.on('game_action', (data) => {
             if (data.type === 'invite') {
                 const inviteId = 'inv-' + Date.now();
-                sysMsg(`CHALLENGE: ${data.game.toUpperCase()}. <span id="${inviteId}"><button onclick="acceptGame('${data.game}', this)" style="background:var(--neon-cyan); border:none; border-radius:4px; padding:3px 8px; cursor:pointer; color:#000; font-weight:bold; font-family:'Space Grotesk'; margin-left:10px;">Accept</button></span>`);
-                setTimeout(() => { const span = document.getElementById(inviteId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>[ EXPIRED ]</span>"; }, 30000);
+                sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <span id="${inviteId}"><button onclick="acceptGame('${data.game}', this)" style="background:var(--neon-cyan); border:none; border-radius:5px; padding:3px 8px; cursor:pointer; color:#000; font-weight:bold; margin-left:10px;">Accept</button></span>`);
+                setTimeout(() => { const span = document.getElementById(inviteId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000);
             } else if (data.type === 'accept') { startGame(data.game, true); } 
             else if (data.type === 'rps_move') { resolveRPS(data.move); } 
             else if (data.type === 'ttt_move') { receiveTTT(data.index); }
         });
 
-        window.acceptGame = (gameType, btn) => { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); font-size:0.8rem; margin-left:5px;'>[ ACCEPTED ]</span>"; socket.emit('game_action', { type: 'accept', game: gameType }); startGame(gameType, false); };
+        window.acceptGame = (gameType, btn) => { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); font-size:0.8rem; margin-left:5px;'>(Accepted)</span>"; socket.emit('game_action', { type: 'accept', game: gameType }); startGame(gameType, false); };
 
         function startGame(gameType, isPlayer1) {
             if (gameType === 'rps') { myRPS = null; strangerRPS = null; document.getElementById('rps-status').innerText = ""; document.getElementById('rps-ui').style.display = 'flex'; } 
@@ -552,27 +684,50 @@
         }
 
         let myRPS = null, strangerRPS = null;
-        window.playRPS = (move) => { myRPS = move; document.getElementById('rps-status').innerText = "AWAITING OPPONENT..."; socket.emit('game_action', { type: 'rps_move', move: move }); if (strangerRPS) checkRPSWin(); };
+        window.playRPS = (move) => { myRPS = move; document.getElementById('rps-status').innerText = "Waiting for stranger..."; socket.emit('game_action', { type: 'rps_move', move: move }); if (strangerRPS) checkRPSWin(); };
         function resolveRPS(strangerMove) { strangerRPS = strangerMove; if (myRPS) checkRPSWin(); }
         function checkRPSWin() {
-            document.getElementById('rps-ui').style.display = 'none'; let res = "DRAW.";
-            if ((myRPS==='Rock' && strangerRPS==='Scissors') || (myRPS==='Paper' && strangerRPS==='Rock') || (myRPS==='Scissors' && strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>VICTORY.</span>"; else if (myRPS !== strangerRPS) res = "<span style='color:var(--neon-red)'>DEFEAT.</span>";
-            sysMsg(`RPS: YOU (${myRPS}) vs OP (${strangerRPS}). <b>${res}</b>`);
+            document.getElementById('rps-ui').style.display = 'none'; let res = "You Tied!";
+            if ((myRPS==='Rock' && strangerRPS==='Scissors') || (myRPS==='Paper' && strangerRPS==='Rock') || (myRPS==='Scissors' && strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>"; else if (myRPS !== strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>";
+            sysMsg(`RPS: You (${myRPS}) vs Stranger (${strangerRPS}). <b>${res}</b>`);
         }
 
         let tttBoard = [], mySymbol = '', myTurn = false;
-        function initTTT(isPlayer1) { tttBoard = Array(9).fill(''); mySymbol = isPlayer1 ? 'X' : 'O'; myTurn = isPlayer1; document.getElementById('ttt-status').innerText = myTurn ? "YOUR TURN (" + mySymbol + ")" : "AWAITING OPPONENT"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); document.getElementById('ttt-ui').style.display = 'flex'; }
-        window.playTTT = (index) => { if (!myTurn || tttBoard[index] !== '') return; makeTTTMove(index, mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); myTurn = false; document.getElementById('ttt-status').innerText = "AWAITING OPPONENT"; };
-        function receiveTTT(index) { makeTTTMove(index, mySymbol === 'X' ? 'O' : 'X'); myTurn = true; document.getElementById('ttt-status').innerText = "YOUR TURN (" + mySymbol + ")"; }
+        function initTTT(isPlayer1) { tttBoard = Array(9).fill(''); mySymbol = isPlayer1 ? 'X' : 'O'; myTurn = isPlayer1; document.getElementById('ttt-status').innerText = myTurn ? "Your Turn (" + mySymbol + ")" : "Stranger's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); document.getElementById('ttt-ui').style.display = 'flex'; }
+        window.playTTT = (index) => { if (!myTurn || tttBoard[index] !== '') return; makeTTTMove(index, mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); myTurn = false; document.getElementById('ttt-status').innerText = "Stranger's Turn"; };
+        function receiveTTT(index) { makeTTTMove(index, mySymbol === 'X' ? 'O' : 'X'); myTurn = true; document.getElementById('ttt-status').innerText = "Your Turn (" + mySymbol + ")"; }
         function makeTTTMove(index, symbol) { tttBoard[index] = symbol; const cells = document.querySelectorAll('.ttt-cell'); cells[index].innerText = symbol; cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)'; checkTTTWin(); }
         function checkTTTWin() {
             const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null;
             wins.forEach(w => { if(tttBoard[w[0]] && tttBoard[w[0]]===tttBoard[w[1]] && tttBoard[w[0]]===tttBoard[w[2]]) winner = tttBoard[w[0]]; });
-            if (winner) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`TTT: <b>${winner === mySymbol ? '<span style="color:var(--neon-cyan)">VICTORY.</span>' : '<span style="color:var(--neon-red)">DEFEAT.</span>'}</b>`); } 
-            else if (!tttBoard.includes('')) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`TTT: <b>DRAW.</b>`); }
+            if (winner) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`Tic Tac Toe: <b>${winner === mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); } 
+            else if (!tttBoard.includes('')) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); }
         }
 
-        document.getElementById('game-btn').addEventListener('click', () => { document.getElementById('game-menu').style.display = 'flex'; });
+        document.addEventListener("visibilitychange", () => {
+            if (socket.connected) {
+                const status = document.hidden ? 'offline' : 'online';
+                socket.emit('user_status', status);
+            }
+        });
+
+        socket.on('stranger_status', (status) => {
+            const dot = document.querySelector('.user-info .dot');
+            if (!dot) return; 
+
+            if (status === 'offline') {
+                dot.style.backgroundColor = '#64748b'; 
+                dot.style.boxShadow = 'none';
+            } else {
+                dot.style.backgroundColor = '#22c55e'; 
+                dot.style.boxShadow = '0 0 8px #22c55e';
+            }
+        });
+
+        socket.on('disconnect', () => {
+            const dot = document.querySelector('.user-info .dot');
+            if (dot) dot.style.backgroundColor = '#ef4444'; 
+        });
 
     </script>
 </body>
