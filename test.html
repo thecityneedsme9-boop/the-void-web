@@ -11,9 +11,9 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --bg-dark: #030712; --glass-bg: rgba(255, 255, 255, 0.02); --glass-border: rgba(255, 255, 255, 0.05);
+            --bg-dark: #030712; --glass-bg: rgba(255, 255, 255, 0.03); --glass-border: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc; --text-muted: #64748b; --neon-cyan: #06b6d4; --neon-gold: #fbbf24; --neon-red: #ef4444;
-            --my-bubble: rgba(6, 182, 212, 0.1); --stranger-bubble: rgba(255, 255, 255, 0.05);
+            --my-bubble: rgba(6, 182, 212, 0.15); --stranger-bubble: rgba(255, 255, 255, 0.05);
         }
 
         body.light-theme {
@@ -28,21 +28,30 @@
         body.light-theme .icon-btn, body.light-theme #chat-input, body.light-theme .system-message { background: rgba(0,0,0,0.05); }
         body.light-theme .bubble { border-color: rgba(0,0,0,0.1); }
 
-        body { background-color: var(--bg-dark); background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%); color: var(--text-main); font-family: 'Outfit', sans-serif; height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; transition: background 0.3s ease, color 0.3s ease; }
+        body { 
+            background-color: var(--bg-dark); 
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%);
+            background-size: 30px 30px, 30px 30px, 100% 100%;
+            background-position: center center;
+            color: var(--text-main); font-family: 'Outfit', sans-serif; height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; transition: background 0.3s ease, color 0.3s ease; 
+        }
 
         #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; animation: fadeIn 1s ease-in; padding: 20px; }
-        .lobby-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); }
+        .lobby-card { background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(6, 182, 212, 0.05); }
 
         .void-portal { width: 90px; height: 90px; margin: 0 auto 20px auto; border-radius: 50%; background: radial-gradient(circle, #000 30%, var(--neon-cyan) 100%); box-shadow: 0 0 25px rgba(6, 182, 212, 0.3), inset 0 0 15px #000; animation: spinPortal 10s linear infinite, pulsePortal 3s ease-in-out infinite alternate; border: 1px solid rgba(6, 182, 212, 0.2); }
         @keyframes spinPortal { 100% { transform: rotate(360deg); } } @keyframes pulsePortal { 100% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.6), inset 0 0 20px #000; transform: scale(1.02); } }
 
-        h1 { font-family: 'Cinzel', serif; font-size: 2.8rem; font-weight: 800; letter-spacing: 4px; margin-bottom: 5px; color: #ffffff; text-shadow: 0 0 15px rgba(255,255,255,0.2); user-select: none;}
+        h1 { font-family: 'Cinzel', serif; font-size: 2.8rem; font-weight: 800; letter-spacing: 4px; margin-bottom: 5px; color: #ffffff; text-shadow: 0 0 20px rgba(6, 182, 212, 0.4); user-select: none;}
         .subtitle { font-size: 0.9rem; font-weight: 300; color: var(--text-muted); margin-bottom: 35px; letter-spacing: 1px; }
 
         .stat-number, .karma-score, #countdown-text, .admin-stat { font-family: 'Space Grotesk', sans-serif; }
 
         .stats-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 35px; }
-        .stat-box { flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); padding: 12px 5px; border-radius: 12px; }
+        .stat-box { flex: 1; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); padding: 12px 5px; border-radius: 12px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
         .stat-number { font-size: 1.1rem; font-weight: 600; color: #e2e8f0; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; display: block; letter-spacing: 1px; }
         
@@ -50,22 +59,22 @@
         @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
         .enter-btn { width: 100%; background: transparent; color: var(--neon-cyan); border: 1px solid var(--neon-cyan); padding: 15px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.1); }
-        .enter-btn:hover:not(:disabled) { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); }
-        .enter-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .enter-btn:hover:not(:disabled) { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); transform: translateY(-2px); }
+        .enter-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
         .disclaimer { margin-top: 20px; font-size: 0.7rem; font-weight: 300; color: #475569; }
 
         #chat-screen { display: none; flex-direction: column; width: 100%; height: 100%; max-width: 600px; margin: 0 auto; position: relative; animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); }
+        .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(3, 7, 18, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); }
         .user-info { display: flex; align-items: center; gap: 10px; }
         .user-info h2 { font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 6px; margin: 0; white-space: nowrap; }
-        .karma-score { font-size: 0.85rem; color: var(--neon-gold); background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(251, 191, 36, 0.15); display: flex; align-items: center; gap: 4px; font-weight: 600;}
+        .karma-score { font-size: 0.85rem; color: var(--neon-gold); background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(251, 191, 36, 0.2); display: flex; align-items: center; gap: 4px; font-weight: 600; box-shadow: inset 0 0 5px rgba(251, 191, 36, 0.1);}
         .header-actions { display: flex; gap: 12px; align-items: center; }
         .icon-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-main); padding: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .icon-btn:hover { background: rgba(255,255,255,0.08); }
+        .icon-btn:hover { background: rgba(255,255,255,0.08); transform: scale(1.05); }
 
-        .progress-container { width: 100%; height: 4px; background: rgba(0,0,0,0.5); }
+        .progress-container { width: 100%; height: 4px; background: rgba(0,0,0,0.8); }
         .progress-bar { height: 100%; width: 100%; background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); transition: width 0.3s ease, background-color 0.3s ease; }
 
         .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
@@ -83,37 +92,43 @@
             pointer-events: none;
         }
 
-        .system-message { text-align: center; font-size: 0.8rem; font-weight: 300; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); margin: 5px 0; }
+        .system-message { text-align: center; font-size: 0.8rem; font-weight: 300; color: var(--text-muted); background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); margin: 5px 0; backdrop-filter: blur(5px); }
         .system-message span { color: var(--neon-cyan); font-weight: 500; }
         .system-message.gold span { color: var(--neon-gold); }
         
-        /* === REFINED: Messenger Style Interactions === */
-        .message { display: flex; flex-direction: column; max-width: 82%; animation: slideUp 0.3s ease; position: relative;}
-        .stranger-msg { align-self: flex-start; }
-        .my-msg { align-self: flex-end; align-items: flex-end; }
+        .message-wrapper { position: relative; width: 100%; display: flex; flex-direction: column; margin-bottom: 5px; animation: slideUp 0.3s ease; }
+        .my-wrapper { align-items: flex-end; }
+        .stranger-wrapper { align-items: flex-start; }
         
-        .bubble { padding: 12px 16px; border-radius: 16px; font-size: 0.95rem; font-weight: 300; line-height: 1.5; border: 1px solid var(--glass-border); word-wrap: break-word; position: relative; cursor: pointer; transition: filter 0.2s; }
-        .stranger-msg .bubble { background: var(--stranger-bubble); border-top-left-radius: 4px; }
-        .my-msg .bubble { background: var(--my-bubble); border-top-right-radius: 4px; border-color: rgba(6, 182, 212, 0.2); }
-        .message.active .bubble { filter: brightness(1.3); } /* Highlight selected bubble */
-        .msg-meta { font-size: 0.7rem; color: #475569; margin-top: 5px; font-weight: 300; }
+        .bubble-container { display: flex; flex-direction: column; max-width: 82%; position: relative; }
+        .my-wrapper .bubble-container { align-items: flex-end; }
+        .stranger-wrapper .bubble-container { align-items: flex-start; }
+
+        .bubble { padding: 12px 16px; border-radius: 16px; font-size: 0.95rem; font-weight: 300; line-height: 1.5; border: 1px solid var(--glass-border); word-wrap: break-word; cursor: pointer; transition: all 0.2s ease; backdrop-filter: blur(10px); }
+        .stranger-wrapper .bubble { background: var(--stranger-bubble); border-top-left-radius: 4px; box-shadow: 2px 5px 15px rgba(0,0,0,0.2); }
+        .my-wrapper .bubble { background: var(--my-bubble); border-top-right-radius: 4px; border-color: rgba(6, 182, 212, 0.3); box-shadow: -2px 5px 15px rgba(6, 182, 212, 0.05); }
+        .message-wrapper.active .bubble { filter: brightness(1.4); transform: scale(0.98); } 
         
-        .msg-actions { opacity: 0; pointer-events: none; position: absolute; top: -45px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); padding: 6px 12px; border-radius: 25px; display: flex; gap: 8px; z-index: 5; font-size: 1.2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.8); white-space: nowrap; transform: scale(0.9) translateY(10px); transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .my-msg .msg-actions { right: 0; transform-origin: bottom right; }
-        .stranger-msg .msg-actions { left: 0; transform-origin: bottom left; }
-        .message.active .msg-actions { opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
+        .msg-meta { font-size: 0.7rem; color: #475569; margin-top: 6px; font-weight: 300; padding: 0 4px; }
+        
+        .msg-actions { display: none; position: absolute; top: -45px; background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(6, 182, 212, 0.3); padding: 6px 14px; border-radius: 25px; gap: 12px; z-index: 50; font-size: 1.3rem; box-shadow: 0 10px 30px rgba(0,0,0,0.9); white-space: nowrap; animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .my-wrapper .msg-actions { right: 0; }
+        .stranger-wrapper .msg-actions { left: 0; }
+        
+        @keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
         .action-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s; padding: 2px; }
         .action-btn:hover { transform: scale(1.3) translateY(-2px); }
-        .action-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); margin: 0 4px; align-self: center; }
+        .action-divider { width: 1px; height: 22px; background: rgba(255,255,255,0.15); margin: 0 2px; align-self: center; }
         
-        .reply-quote { font-size: 0.8rem; background: rgba(0,0,0,0.3); border-left: 2px solid var(--neon-cyan); padding: 6px 10px; margin-bottom: 8px; border-radius: 4px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        .reply-quote { font-size: 0.8rem; background: rgba(0,0,0,0.4); border-left: 3px solid var(--neon-cyan); padding: 6px 10px; margin-bottom: 8px; border-radius: 4px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
         .reply-quote strong { color: var(--text-main); font-weight: 500; }
         
-        .reaction-badge { position: absolute; bottom: -10px; background: rgba(15, 23, 42, 0.95); border: 1px solid var(--glass-border); border-radius: 12px; padding: 2px 6px; font-size: 0.85rem; z-index: 2; box-shadow: 0 4px 12px rgba(0,0,0,0.8); display: none; }
-        .my-msg .reaction-badge { left: 10px; }
-        .stranger-msg .reaction-badge { right: 10px; }
+        .reaction-badge { position: absolute; bottom: -12px; background: rgba(15, 23, 42, 1); border: 1px solid var(--glass-border); border-radius: 12px; padding: 2px 6px; font-size: 0.9rem; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.8); display: none; }
+        .my-wrapper .reaction-badge { left: 10px; }
+        .stranger-wrapper .reaction-badge { right: 10px; }
 
-        #reply-banner { display: none; background: rgba(6, 182, 212, 0.1); border-left: 3px solid var(--neon-cyan); padding: 10px 15px; font-size: 0.85rem; color: var(--text-main); position: absolute; bottom: 100%; left: 0; width: 100%; backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); justify-content: space-between; align-items: center; }
+        #reply-banner { display: none; background: rgba(6, 182, 212, 0.1); border-left: 3px solid var(--neon-cyan); padding: 10px 15px; font-size: 0.85rem; color: var(--text-main); position: absolute; bottom: 100%; left: 0; width: 100%; backdrop-filter: blur(15px); border-top: 1px solid var(--glass-border); justify-content: space-between; align-items: center; box-shadow: 0 -5px 20px rgba(0,0,0,0.5);}
         #close-reply { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; transition: 0.2s;}
         #close-reply:hover { color: var(--neon-red); }
 
@@ -130,21 +145,21 @@
         #countdown-text { font-family: 'Space Grotesk', serif; font-size: 1.4rem; color: var(--neon-red); font-weight: bold; animation: pulseRed 1s infinite; display: none; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
         @keyframes pulseRed { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.6; transform: scale(0.98); } }
 
-        .chat-footer { display: flex; gap: 10px; padding: 15px 20px 20px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); position: relative; z-index: 10;}
-        #chat-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: 12px; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 0.95rem; outline: none; transition: 0.3s; }
-        #chat-input:focus { border-color: rgba(6, 182, 212, 0.5); }
-        .send-btn { background: var(--neon-cyan); color: #000; border: none; padding: 0 18px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .send-btn:hover { background: #0891b2; }
+        .chat-footer { display: flex; gap: 10px; padding: 15px 20px 20px 20px; background: rgba(3, 7, 18, 0.8); backdrop-filter: blur(15px); border-top: 1px solid var(--glass-border); position: relative; z-index: 20;}
+        #chat-input { flex: 1; background: rgba(0,0,0,0.6); border: 1px solid rgba(6, 182, 212, 0.3); padding: 12px 15px; border-radius: 12px; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 0.95rem; outline: none; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        #chat-input:focus { border-color: rgba(6, 182, 212, 0.8); box-shadow: 0 0 15px rgba(6, 182, 212, 0.2); }
+        .send-btn { background: var(--neon-cyan); color: #000; border: none; padding: 0 18px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);}
+        .send-btn:hover { background: #0891b2; transform: scale(1.05); }
 
-        #shatter-overlay { position: absolute; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 20; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
+        #shatter-overlay { position: absolute; inset: 0; background: rgba(3, 7, 18, 0.9); backdrop-filter: blur(12px); z-index: 30; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
         #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
         #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
         
-        #rating-box { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 25px; margin-bottom: 25px; width: 100%; max-width: 250px; }
+        #rating-box { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 25px; margin-bottom: 25px; width: 100%; max-width: 250px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8);}
         .rating-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .star-container { display: flex; justify-content: center; gap: 8px; direction: row; }
         .star-btn { background: none; border: none; font-size: 1.8rem; color: rgba(255,255,255,0.1); cursor: pointer; transition: color 0.2s, transform 0.2s; padding: 0; line-height: 1; }
-        .star-btn.active, .star-btn:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); transform: scale(1.1); }
+        .star-btn.active, .star-btn:hover { color: var(--neon-gold); text-shadow: 0 0 15px var(--neon-gold); transform: scale(1.1); }
         #rating-thanks { display: none; color: var(--neon-gold); font-size: 0.85rem; margin-top: 10px; font-weight: 500; }
 
         .overlay-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 250px; }
@@ -152,11 +167,14 @@
         .secondary-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
 
         /* === GAME & ADMIN MODALS === */
-        .game-modal { position: fixed; inset: 0; background: rgba(3,7,18,0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .game-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--neon-cyan); color: var(--text-main); padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; margin: 10px; width: 80%; max-width: 200px; font-family: 'Outfit'; }
-        .close-game { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; z-index: 50;}
+        .game-modal { position: fixed; inset: 0; background: rgba(3,7,18,0.98); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .game-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--neon-cyan); color: var(--text-main); padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; margin: 10px; width: 80%; max-width: 200px; font-family: 'Outfit'; transition: 0.2s;}
+        .game-btn:hover { background: rgba(6, 182, 212, 0.2); }
+        .close-game { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; z-index: 50; transition: 0.2s;}
+        .close-game:hover { color: var(--neon-red); transform: scale(1.1);}
         #ttt-board { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; margin-top: 20px; }
-        .ttt-cell { width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white; }
+        .ttt-cell { width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white; transition: 0.2s;}
+        .ttt-cell:hover { background: rgba(255,255,255,0.1); }
         
         .admin-stat { font-size: 1.1rem; color: white; margin: 10px 0; font-family: 'Space Grotesk', sans-serif; font-weight: 600;}
         .admin-stat span { color: var(--neon-cyan); font-weight: bold; }
@@ -178,7 +196,7 @@
             
             <div id="admin-login-wrapper" style="margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
                 <button id="admin-login-btn" style="background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 5px 15px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: 0.2s;">Admin Login</button>
-                <input type="password" id="admin-pass-input" placeholder="Enter Code" style="display:none; background: rgba(0,0,0,0.4); border: 1px solid var(--neon-cyan); color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; text-align: center; outline: none; width: 120px;">
+                <input type="password" id="admin-pass-input" placeholder="Enter Code" style="display:none; background: rgba(0,0,0,0.6); border: 1px solid var(--neon-cyan); color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; text-align: center; outline: none; width: 120px;">
             </div>
         </div>
     </div>
@@ -241,19 +259,19 @@
 
     <div class="game-modal" id="admin-ui" style="justify-content: flex-start; padding-top: 40px;">
         <button class="close-game" onclick="document.getElementById('admin-ui').style.display='none'">✖</button>
-        <h2 style="font-family:'Cinzel'; color:var(--neon-red); margin-bottom: 15px; font-size: 1.8rem;">SYSTEM ADMIN</h2>
+        <h2 style="font-family:'Cinzel'; color:var(--neon-red); margin-bottom: 15px; font-size: 1.8rem; text-shadow: 0 0 15px rgba(239, 68, 68, 0.5);">SYSTEM ADMIN</h2>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 92%; max-width: 600px;">
-            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Online: <span id="ad-total">0</span></div>
-            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Wait: <span id="ad-wait">0</span></div>
-            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Rooms: <span id="ad-rooms">0</span></div>
-            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Vanish: <span id="ad-vanish">0</span></div>
+            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border);">Online: <span id="ad-total">0</span></div>
+            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border);">Wait: <span id="ad-wait">0</span></div>
+            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border);">Rooms: <span id="ad-rooms">0</span></div>
+            <div class="admin-stat" style="font-size: 0.85rem; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border);">Vanish: <span id="ad-vanish">0</span></div>
         </div>
 
         <div style="display: flex; gap: 10px; width: 92%; max-width: 600px; height: 350px; margin-top: 15px;">
-            <div style="width: 35%; background: rgba(0,0,0,0.5); border-radius: 15px; border: 1px solid var(--glass-border); padding: 10px; display: flex; flex-direction: column;">
+            <div style="width: 35%; background: rgba(0,0,0,0.7); border-radius: 15px; border: 1px solid var(--glass-border); padding: 10px; display: flex; flex-direction: column;">
                 <h3 style="font-size: 0.75rem; color: var(--neon-cyan); margin-bottom: 10px; text-transform: uppercase;">Active Rooms</h3>
-                <button id="view-global-btn" style="background: var(--neon-gold); color: #000; border: none; padding: 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-bottom: 10px;">Global Feed</button>
+                <button id="view-global-btn" style="background: var(--neon-gold); color: #000; border: none; padding: 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-bottom: 10px; transition: 0.2s;">Global Feed</button>
                 <div id="admin-room-list" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; scrollbar-width: none;"></div>
             </div>
 
@@ -261,7 +279,7 @@
                 <h3 id="spy-header-text" style="font-size: 0.75rem; color: var(--neon-gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
                     <div class="dot" style="width:6px; height:6px;"></div> Global Feed
                 </h3>
-                <div id="spy-container" style="flex: 1; background: rgba(0,0,0,0.5); border-radius: 15px; border: 1px solid var(--glass-border); padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: none;"></div>
+                <div id="spy-container" style="flex: 1; background: rgba(0,0,0,0.7); border-radius: 15px; border: 1px solid var(--glass-border); padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: none;"></div>
             </div>
         </div>
     </div>
@@ -294,6 +312,9 @@
 
     <script>
         const socket = io("https://the-void-server.onrender.com"); 
+        
+        const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+        notificationSound.volume = 0.5;
 
         const findBtn = document.getElementById('find-btn');
         const lobbyScreen = document.getElementById('lobby-screen');
@@ -322,9 +343,12 @@
         let currentMax = 1500; let usedChars = 0; let isCountdownRunning = false; let countdownTimer = null;
         let myCurrentRoom = null; 
 
-        // === Message Memory for Replies (Cleared on disconnect/shatter) ===
+        // Message Memory for Replies
         const messageStore = {};
         let currentReplyTo = null;
+
+        // Admin History Storage (Frontend 1-Hour Logic)
+        let allAdminMessages = []; 
 
         const adminBtn = document.getElementById('admin-login-btn');
         const adminInput = document.getElementById('admin-pass-input');
@@ -366,6 +390,7 @@
             knownRooms.clear();
             adminRoomList.innerHTML = '';
             spyContainer.innerHTML = '';
+            allAdminMessages = []; 
             
             document.getElementById('admin-ui').style.display = 'flex';
         });
@@ -374,40 +399,60 @@
             lockedRoomId = null;
             spyHeaderText.innerHTML = '<div class="dot" style="width:6px; height:6px; background: var(--neon-gold); box-shadow: 0 0 8px var(--neon-gold);"></div> Global Feed';
             spyHeaderText.style.color = 'var(--neon-gold)';
-            spyContainer.innerHTML = ''; 
+            renderAdminFeed(); 
         });
 
         socket.on('spy_feed', (data) => {
+            // Give message a frontend timestamp
+            data.timestamp = Date.now();
+            allAdminMessages.push(data);
+
             if (!knownRooms.has(data.roomId)) {
                 knownRooms.add(data.roomId);
                 const roomBtn = document.createElement('button');
                 roomBtn.innerText = "Room " + knownRooms.size; 
-                roomBtn.style.cssText = "background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; text-align: left; font-family: 'Outfit';";
+                roomBtn.style.cssText = "background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; text-align: left; font-family: 'Outfit'; transition: 0.2s;";
                 
+                roomBtn.addEventListener('mouseover', () => roomBtn.style.background = 'rgba(6, 182, 212, 0.2)');
+                roomBtn.addEventListener('mouseout', () => roomBtn.style.background = 'rgba(255,255,255,0.05)');
+
                 roomBtn.addEventListener('click', () => {
                     lockedRoomId = data.roomId;
                     spyHeaderText.innerHTML = `<div class="dot" style="width:6px; height:6px; background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red);"></div> ${roomBtn.innerText}`;
                     spyHeaderText.style.color = 'var(--neon-red)';
-                    spyContainer.innerHTML = ''; 
+                    renderAdminFeed(); 
                 });
                 
                 adminRoomList.appendChild(roomBtn);
             }
 
-            if (lockedRoomId && lockedRoomId !== data.roomId) return;
+            if (!lockedRoomId || lockedRoomId === data.roomId) {
+                appendAdminMessage(data);
+            }
+        });
 
+        // Background Garbage Collector: Deletes frontend history over 1 hour old
+        setInterval(() => {
+            const oneHourAgo = Date.now() - 3600000;
+            allAdminMessages = allAdminMessages.filter(m => m.timestamp > oneHourAgo);
+        }, 60000);
+
+        function renderAdminFeed() {
+            spyContainer.innerHTML = '';
+            const filteredMsgs = lockedRoomId ? allAdminMessages.filter(m => m.roomId === lockedRoomId) : allAdminMessages;
+            filteredMsgs.forEach(m => appendAdminMessage(m));
+        }
+
+        function appendAdminMessage(data) {
             const entry = document.createElement('div');
             entry.style.cssText = "font-size: 0.85rem; color: #e2e8f0; background: rgba(255,255,255,0.04); padding: 10px; border-radius: 8px; border-left: 3px solid var(--neon-cyan); line-height: 1.4; animation: slideUp 0.2s ease;";
             
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             entry.textContent = `[${time}] 💬 ` + data.text;
             
             spyContainer.prepend(entry); 
-
-            if (spyContainer.childNodes.length > 500) {
-                spyContainer.removeChild(spyContainer.lastChild);
-            }
-        });
+            if (spyContainer.childNodes.length > 1000) spyContainer.removeChild(spyContainer.lastChild);
+        }
 
         themeBtn.addEventListener('click', () => { document.body.classList.toggle('light-theme'); });
         gameBtn.addEventListener('click', () => { document.getElementById('game-menu').style.display = 'flex'; });
@@ -512,7 +557,10 @@
         }
 
         socket.on('receive_message', (msgObj) => {
-            typingIndicator.style.display = 'none'; appendMessageUI(msgObj, 'stranger-msg');
+            typingIndicator.style.display = 'none'; 
+            appendMessageUI(msgObj, 'stranger-msg');
+            
+            notificationSound.play().catch(err => console.log('Browser blocked autoplay'));
         });
 
         let typingTimeout;
@@ -521,7 +569,6 @@
             clearTimeout(typingTimeout); typingTimeout = setTimeout(() => typingIndicator.style.display = 'none', 1500);
         });
 
-        // === BUG-FREE & SAFE UI RENDERING ===
         function appendMessageUI(msgData, type) {
             const isObj = typeof msgData === 'object';
             const text = isObj ? msgData.text : msgData;
@@ -530,15 +577,15 @@
 
             messageStore[msgId] = { text: text, sender: type === 'my-msg' ? 'You' : 'Stranger' };
 
-            const msgDiv = document.createElement('div'); 
-            msgDiv.className = `message ${type}`;
-            msgDiv.id = msgId;
+            const wrapperDiv = document.createElement('div'); 
+            wrapperDiv.className = `message-wrapper ${type === 'my-msg' ? 'my-wrapper' : 'stranger-wrapper'}`;
+            wrapperDiv.id = msgId;
 
             const timeString = `${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}`;
             const metaHtml = type === 'my-msg' ? `${timeString} ✓` : timeString;
 
             const actionMenu = `
-                <div class="msg-actions">
+                <div class="msg-actions" id="actions-${msgId}">
                     <button class="action-btn" onclick="sendReaction('${msgId}', '❤️', event)">❤️</button>
                     <button class="action-btn" onclick="sendReaction('${msgId}', '😂', event)">😂</button>
                     <button class="action-btn" onclick="sendReaction('${msgId}', '😲', event)">😲</button>
@@ -546,50 +593,55 @@
                     <div class="action-divider"></div>
                     <button class="action-btn" onclick="setReply('${msgId}', event)">↩️</button>
                 </div>
-                <div class="reaction-badge" id="react-${msgId}"></div>
             `;
 
-            msgDiv.innerHTML = `
-                <div class="bubble" onclick="toggleMsgActions('${msgId}', event)">
-                    <div class="reply-container"></div>
-                    <span class="msg-text-content"></span>
+            wrapperDiv.innerHTML = `
+                <div class="bubble-container">
                     ${actionMenu}
+                    <div class="bubble" onclick="toggleMsgActions('${msgId}', event)">
+                        <div class="reply-container"></div>
+                        <span class="msg-text-content"></span>
+                    </div>
+                    <div class="reaction-badge" id="react-${msgId}"></div>
                 </div>
                 <div class="msg-meta">${metaHtml}</div>
             `;
             
-            // XSS Safe Text Insertion
-            msgDiv.querySelector('.msg-text-content').textContent = text;
+            wrapperDiv.querySelector('.msg-text-content').textContent = text;
             
-            // XSS Safe Quote Insertion
             if (replyInfo) {
                 const replyDiv = document.createElement('div');
                 replyDiv.className = 'reply-quote';
                 replyDiv.innerHTML = `<strong>${replyInfo.sender}</strong>: <span class="quote-text"></span>`;
                 replyDiv.querySelector('.quote-text').textContent = replyInfo.text;
-                msgDiv.querySelector('.reply-container').appendChild(replyDiv);
+                wrapperDiv.querySelector('.reply-container').appendChild(replyDiv);
             }
             
-            chatBox.insertBefore(msgDiv, typingIndicator); 
+            chatBox.insertBefore(wrapperDiv, typingIndicator); 
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // === MESSENGER STYLE TAP INTERACTIONS ===
         window.toggleMsgActions = (id, e) => {
-            e.stopPropagation();
-            const el = document.getElementById(id);
-            const isActive = el && el.classList.contains('active');
+            e.stopPropagation(); 
+            const wrapper = document.getElementById(id);
+            const isActive = wrapper && wrapper.classList.contains('active');
             
-            // Close all open menus first
-            document.querySelectorAll('.message').forEach(m => m.classList.remove('active'));
+            document.querySelectorAll('.message-wrapper').forEach(m => {
+                m.classList.remove('active');
+                m.querySelector('.msg-actions').style.display = 'none';
+            });
             
-            // If the tapped one wasn't active, open it
-            if (!isActive && el) el.classList.add('active');
+            if (!isActive && wrapper) {
+                wrapper.classList.add('active');
+                wrapper.querySelector('.msg-actions').style.display = 'flex';
+            }
         };
 
-        // Tap anywhere outside to close the popups
         document.addEventListener('click', () => {
-            document.querySelectorAll('.message').forEach(m => m.classList.remove('active'));
+            document.querySelectorAll('.message-wrapper').forEach(m => {
+                m.classList.remove('active');
+                m.querySelector('.msg-actions').style.display = 'none';
+            });
         });
 
         window.setReply = (id, e) => {
@@ -600,7 +652,11 @@
             currentReplyTo = { id, text: msgInfo.text, sender: msgInfo.sender };
             document.getElementById('reply-text').innerText = msgInfo.text.length > 30 ? msgInfo.text.substring(0,30) + '...' : msgInfo.text;
             document.getElementById('reply-banner').style.display = 'flex';
-            document.querySelectorAll('.message').forEach(m => m.classList.remove('active'));
+            
+            document.querySelectorAll('.message-wrapper').forEach(m => {
+                m.classList.remove('active');
+                m.querySelector('.msg-actions').style.display = 'none';
+            });
             chatInput.focus();
         };
 
@@ -614,7 +670,11 @@
             e.stopPropagation();
             showReaction(msgId, emoji);
             socket.emit('react_message', { msgId, emoji });
-            document.querySelectorAll('.message').forEach(m => m.classList.remove('active'));
+            
+            document.querySelectorAll('.message-wrapper').forEach(m => {
+                m.classList.remove('active');
+                m.querySelector('.msg-actions').style.display = 'none';
+            });
         };
 
         socket.on('receive_reaction', (data) => {
@@ -626,10 +686,9 @@
             if(badge) {
                 badge.innerText = emoji;
                 badge.style.display = 'block';
-                // Trigger animation reflow to make it pulse every single tap
                 badge.style.animation = 'none';
                 badge.offsetHeight; 
-                badge.style.animation = 'pulsePortal 0.5s ease';
+                badge.style.animation = 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
             }
         }
 
@@ -672,7 +731,6 @@
             countdownText.innerText = "Shattered."; 
             chatBox.classList.add('shattered-element'); 
             
-            // Clean up memory
             for (let key in messageStore) delete messageStore[key];
             
             socket.emit('chat_shattered'); 
@@ -774,4 +832,4 @@
 
     </script>
 </body>
-                                                                 </html>
+</html>
