@@ -330,7 +330,7 @@
 
             <div class="btn-group">
                 <button class="enter-btn" id="find-btn">Enter Void (1v1)</button>
-                <button class="enter-btn global-btn" id="global-btn">Join Global Abyss</button>
+                <button class="enter-btn global-btn" id="global-btn">Enter The Nexus (Global Chat)</button>
             </div>
 
             <p class="disclaimer">100% Anonymous. No logs kept.</p>
@@ -445,7 +445,7 @@
     </div>
 
     <div class="game-modal" id="admin-ui" style="justify-content: flex-start; padding-top: 40px;">
-        <button class="close-game" onclick="document.getElementById('admin-ui').style.display='none'">✖</button>
+        <button class="close-game" id="close-admin-btn">✖</button>
         <h2 style="font-family:'Cinzel'; color:var(--neon-red); margin-bottom: 15px; font-size: 1.8rem;">SYSTEM ADMIN</h2>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 92%; max-width: 600px;">
@@ -472,7 +472,7 @@
     </div>
 
     <div class="game-modal" id="game-menu">
-        <button class="close-game" onclick="document.getElementById('game-menu').style.display='none'">✖</button>
+        <button class="close-game" id="close-game-menu-btn">✖</button>
         <h2 style="font-family:'Cinzel'; color:var(--neon-cyan); margin-bottom: 20px;">VOID GAMES</h2>
         <button class="game-btn" onclick="window.inviteGame('rps')">Rock Paper Scissors</button>
         <button class="game-btn" onclick="window.inviteGame('ttt')">Tic Tac Toe</button>
@@ -488,7 +488,7 @@
     </div>
 
     <div class="game-modal" id="ttt-ui">
-        <button class="close-game" onclick="document.getElementById('ttt-ui').style.display='none'">✖</button>
+        <button class="close-game" id="close-ttt-btn">✖</button>
         <h2 style="color:var(--neon-cyan); margin-bottom: 10px;">Tic Tac Toe</h2>
         <p id="ttt-status" style="color:var(--neon-gold);">Your turn (X)</p>
         <div id="ttt-board">
@@ -499,13 +499,13 @@
     </div>
 
     <div class="game-modal" id="c4-ui">
-        <button class="close-game" onclick="document.getElementById('c4-ui').style.display='none'">✖</button>
+        <button class="close-game" id="close-c4-btn">✖</button>
         <h2 style="color:var(--neon-cyan); margin-bottom: 10px;">Void Connect</h2>
         <p id="c4-status" style="color:var(--neon-gold);">Your turn (Cyan)</p>
         <div id="c4-board"></div>
     </div>
 
-    <div id="sheet-overlay" onclick="window.closeSheet()"></div>
+    <div id="sheet-overlay"></div>
     <div id="bottom-sheet">
         <div class="sheet-emojis">
             <button class="sheet-emoji-btn" onclick="window.sheetReact('❤️')">❤️</button>
@@ -515,20 +515,92 @@
         </div>
         <button class="sheet-action-btn" onclick="window.sheetReply()">↩️ Reply to Message</button>
         <button class="sheet-action-btn" onclick="window.sheetCopy()">📋 Copy Text</button>
-        <button class="sheet-action-btn sheet-cancel" onclick="window.closeSheet()">Cancel</button>
+        <button class="sheet-action-btn sheet-cancel" id="close-sheet-btn">Cancel</button>
     </div>
 
     <script>
         'use strict';
 
-        // === SYSTEM GLOBALS ===
+        // 1. GLOBALS
         const IMGBB_API_KEY = "e4920da45c283d4ae48a5ca34df75005"; 
         const socket = io("https://the-void-server.onrender.com"); 
         const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
         let globalAudio = new Audio();
         let currentPlayingBtn = null;
 
-        // === STATE MACHINE ===
+        // 2. DOM ELEMENT DECLARATIONS
+        const lobbyScreen = document.getElementById('lobby-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        
+        const activeUsersCount = document.getElementById('active-users-count');
+        const vanishedCount = document.getElementById('vanished-count');
+        
+        const adminLoginBtn = document.getElementById('admin-login-btn');
+        const adminAuthGroup = document.getElementById('admin-auth-group');
+        const adminPassInput = document.getElementById('admin-pass-input');
+        const adminSubmit = document.getElementById('admin-submit');
+        
+        const noctyxTriggerBtn = document.getElementById('noctyx-trigger-btn');
+        const noctyxAuthGroup = document.getElementById('noctyx-auth-group');
+        const nxUser = document.getElementById('nx-user');
+        const nxPass = document.getElementById('nx-pass');
+        const nxSubmit = document.getElementById('nx-submit');
+        
+        const findBtn = document.getElementById('find-btn');
+        const globalBtn = document.getElementById('global-btn');
+        
+        const roomTitle = document.getElementById('room-title');
+        const statusDot = document.getElementById('status-dot');
+        const themeBtn = document.getElementById('theme-btn');
+        const exitBtn = document.getElementById('exit-btn');
+        
+        const progressWrapper = document.getElementById('progress-wrapper');
+        const charBar = document.getElementById('char-bar');
+        const chatBox = document.getElementById('chat-box');
+        const typingIndicator = document.getElementById('typing-indicator');
+        
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const gameBtn = document.getElementById('game-btn');
+        const photoBtn = document.getElementById('photo-btn');
+        const imageInput = document.getElementById('image-input');
+        const musicBtn = document.getElementById('music-btn');
+        
+        const musicSearchContainer = document.getElementById('music-search-container');
+        const musicSearchInput = document.getElementById('music-search-input');
+        const musicResults = document.getElementById('music-results');
+        
+        const actionToast = document.getElementById('action-toast');
+        const extendBtn = document.getElementById('extend-btn');
+        const countdownText = document.getElementById('countdown-text');
+        const shatterOverlay = document.getElementById('shatter-overlay');
+        const returnLobbyBtn = document.getElementById('return-lobby-btn');
+        const newStrangerBtn = document.getElementById('new-stranger-btn');
+        
+        const replyBanner = document.getElementById('reply-banner');
+        const replyText = document.getElementById('reply-text');
+        const closeReplyBtn = document.getElementById('close-reply');
+        
+        const privateInviteOverlay = document.getElementById('private-invite-overlay');
+        const privateInviteText = document.getElementById('private-invite-text');
+        const acceptPrivateBtn = document.getElementById('accept-private-btn');
+        const declinePrivateBtn = document.getElementById('decline-private-btn');
+
+        const sheetOverlay = document.getElementById('sheet-overlay');
+        const bottomSheet = document.getElementById('bottom-sheet');
+        const closeSheetBtn = document.getElementById('close-sheet-btn');
+
+        const adminUi = document.getElementById('admin-ui');
+        const closeAdminBtn = document.getElementById('close-admin-btn');
+        
+        const gameMenu = document.getElementById('game-menu');
+        const closeGameMenuBtn = document.getElementById('close-game-menu-btn');
+        const tttUi = document.getElementById('ttt-ui');
+        const closeTttBtn = document.getElementById('close-ttt-btn');
+        const c4Ui = document.getElementById('c4-ui');
+        const closeC4Btn = document.getElementById('close-c4-btn');
+
+        // 3. APP STATE
         let currentMode = 'lobby'; 
         let isNoctyx = false;
         let myGlobalAlias = '';
@@ -539,114 +611,136 @@
         let isCountdownRunning = false; 
         let countdownTimer = null; 
         
-        let globalCharCount = 0;
-        let lastGlobalSend = 0;
+        // Anti-F5 Spam Protection
+        let globalCharCount = parseInt(sessionStorage.getItem('void_global_chars')) || 0;
+        let lastGlobalSend = parseInt(sessionStorage.getItem('void_global_time')) || 0;
         
         const messageStore = {}; 
         let currentReplyTo = null; 
         let allAdminMessages = [];
         let privateInviteData = null;
 
-        // === DOM ELEMENTS ===
-        const lobbyScreen = document.getElementById('lobby-screen');
-        const chatScreen = document.getElementById('chat-screen');
-        const chatInput = document.getElementById('chat-input');
-        const sendBtn = document.getElementById('send-btn');
-        const chatBox = document.getElementById('chat-box');
-        const typingIndicator = document.getElementById('typing-indicator');
-        
-        const roomTitle = document.getElementById('room-title');
-        const progressWrapper = document.getElementById('progress-wrapper');
-        const charBar = document.getElementById('char-bar');
-        
-        const actionToast = document.getElementById('action-toast');
-        const extendBtn = document.getElementById('extend-btn');
-        const countdownText = document.getElementById('countdown-text');
-        const shatterOverlay = document.getElementById('shatter-overlay');
-
-        const imageInput = document.getElementById('image-input');
-        const musicSearchContainer = document.getElementById('music-search-container');
-        const musicSearchInput = document.getElementById('music-search-input');
-        const musicResults = document.getElementById('music-results');
-
-        // === PWA ===
+        // 4. PWA SETUP
         if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
         let deferredPrompt;
         const installBtn = document.getElementById('install-btn');
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
-        installBtn.addEventListener('click', async () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; installBtn.style.display = 'none'; } });
+        window.addEventListener('beforeinstallprompt', (e) => { 
+            e.preventDefault(); 
+            deferredPrompt = e; 
+            if(installBtn) installBtn.style.display = 'block'; 
+        });
+        if(installBtn) {
+            installBtn.addEventListener('click', async () => { 
+                if (deferredPrompt) { 
+                    deferredPrompt.prompt(); 
+                    deferredPrompt = null; 
+                    installBtn.style.display = 'none'; 
+                } 
+            });
+        }
 
-        // === AUTH & LOBBY LOGIC ===
-        document.getElementById('admin-login-btn').addEventListener('click', () => {
-            const group = document.getElementById('admin-auth-group');
-            document.getElementById('noctyx-auth-group').style.display = 'none';
-            group.style.display = group.style.display === 'flex' ? 'none' : 'flex';
+        // 5. EVENT LISTENERS: AUTH & LOBBY
+        adminLoginBtn.addEventListener('click', () => {
+            noctyxAuthGroup.style.display = 'none';
+            adminAuthGroup.style.display = adminAuthGroup.style.display === 'flex' ? 'none' : 'flex';
         });
 
-        document.getElementById('admin-submit').addEventListener('click', () => {
-            const pass = document.getElementById('admin-pass-input').value;
+        adminSubmit.addEventListener('click', () => {
+            const pass = adminPassInput.value;
             if(pass) socket.emit('get_admin_data', pass);
-            document.getElementById('admin-auth-group').style.display = 'none';
-            document.getElementById('admin-pass-input').value = '';
+            adminAuthGroup.style.display = 'none';
+            adminPassInput.value = '';
         });
 
-        document.getElementById('noctyx-trigger-btn').addEventListener('click', () => {
-            const group = document.getElementById('noctyx-auth-group');
-            document.getElementById('admin-auth-group').style.display = 'none';
-            group.style.display = group.style.display === 'flex' ? 'none' : 'flex';
+        noctyxTriggerBtn.addEventListener('click', () => {
+            adminAuthGroup.style.display = 'none';
+            noctyxAuthGroup.style.display = noctyxAuthGroup.style.display === 'flex' ? 'none' : 'flex';
         });
 
-        document.getElementById('nx-submit').addEventListener('click', () => {
-            const user = document.getElementById('nx-user').value;
-            const pass = document.getElementById('nx-pass').value;
+        nxSubmit.addEventListener('click', () => {
+            const user = nxUser.value;
+            const pass = nxPass.value;
             socket.emit('auth_noctyx', { user, pass });
-            document.getElementById('noctyx-auth-group').style.display = 'none';
+            noctyxAuthGroup.style.display = 'none';
+        });
+
+        findBtn.addEventListener('click', () => {
+            findBtn.innerText = "Drifting..."; 
+            findBtn.disabled = true;
+            currentMode = '1v1';
+            socket.emit('find_match', { localKarma: localStorage.getItem('void_karma') || "5.0" });
+        });
+
+        globalBtn.addEventListener('click', () => {
+            currentMode = 'global';
+            globalBtn.innerText = "Connecting...";
+            socket.emit('join_global');
+            
+            lobbyScreen.style.display = 'none'; 
+            chatScreen.style.display = 'flex';
+            roomTitle.innerHTML = 'The Nexus (Global) <span style="color:var(--neon-purple); font-size:0.8rem;">(7000 limit)</span>';
+            progressWrapper.style.display = 'none'; 
+            chatInput.disabled = false;
+            
+            chatBox.innerHTML = '';
+            chatBox.appendChild(typingIndicator);
+            sysMsg("You have entered The Nexus (Global Chat).<br>Messages fade after 2 hours. Signal dies at 7000 chars.");
+        });
+
+        themeBtn.addEventListener('click', () => document.body.classList.toggle('light-theme'));
+        
+        exitBtn.addEventListener('click', () => { 
+            socket.emit('leave_chat'); 
+            location.reload(); 
+        });
+        
+        returnLobbyBtn.addEventListener('click', () => { 
+            socket.emit('leave_chat'); 
+            location.reload(); 
+        });
+        
+        newStrangerBtn.addEventListener('click', () => { 
+            socket.emit('leave_chat'); 
+            sessionStorage.setItem('void_auto_search', 'true'); 
+            location.reload(); 
+        });
+
+        // 6. SOCKET EVENTS: CORE & STATS
+        socket.on('connect', () => { 
+            if (statusDot && chatScreen.style.display === 'flex') { 
+                statusDot.style.backgroundColor = '#22c55e'; 
+                statusDot.style.boxShadow = '0 0 8px #22c55e'; 
+                if (myCurrentRoom) {
+                    socket.emit('reclaim_session', myCurrentRoom); 
+                } else {
+                    socket.emit('user_status', 'online'); 
+                }
+            }
+        });
+
+        socket.on('stats_update', (data) => { 
+            if(activeUsersCount) activeUsersCount.innerText = data.activeUsers; 
+            if(vanishedCount) vanishedCount.innerText = data.vanishedChats; 
         });
 
         socket.on('noctyx_verified', (data) => {
             isNoctyx = true;
             myGlobalAlias = data.alias;
-            document.getElementById('noctyx-trigger-btn').style.color = "var(--neon-red)";
-            document.getElementById('noctyx-trigger-btn').style.textShadow = "0 0 10px var(--neon-red)";
+            noctyxTriggerBtn.style.color = "var(--neon-red)";
+            noctyxTriggerBtn.style.textShadow = "0 0 10px var(--neon-red)";
             alert("Protocol Override: Noctyx Active.");
         });
         
         socket.on('auth_failed', () => { alert("Authorization Denied."); });
         socket.on('admin_error', () => { alert("Admin Access Denied."); });
 
-        // === MODE SWITCHING LOGIC ===
-        document.getElementById('find-btn').addEventListener('click', () => {
-            document.getElementById('find-btn').innerText = "Drifting..."; 
-            document.getElementById('find-btn').disabled = true;
-            currentMode = '1v1';
-            socket.emit('find_match', { localKarma: localStorage.getItem('void_karma') || "5.0" });
-        });
+        socket.on('global_joined', (data) => { myGlobalAlias = data.alias; });
 
-        document.getElementById('global-btn').addEventListener('click', () => {
-            currentMode = 'global';
-            document.getElementById('global-btn').innerText = "Connecting...";
-            socket.emit('join_global');
-            
-            lobbyScreen.style.display = 'none'; 
-            chatScreen.style.display = 'flex';
-            roomTitle.innerHTML = 'Global Abyss <span style="color:var(--neon-purple); font-size:0.8rem;">(7000 limits)</span>';
-            progressWrapper.style.display = 'none'; 
-            chatInput.disabled = false;
-            
-            chatBox.innerHTML = '';
-            chatBox.appendChild(typingIndicator);
-            sysMsg("You have entered the Global Abyss.<br>Messages fade after 2 hours. Signal dies at 7000 chars.");
-        });
-
-        socket.on('global_joined', (data) => {
-            myGlobalAlias = data.alias;
-        });
-
-        // === 1V1 & PRIVATE CONNECTION ===
         socket.on('match_found', (data) => { 
             lobbyScreen.style.display = 'none'; 
             chatScreen.style.display = 'flex';
-            chatBox.innerHTML = ''; chatBox.appendChild(typingIndicator);
+            chatBox.innerHTML = ''; 
+            chatBox.appendChild(typingIndicator);
             
             myCurrentRoom = data.roomId;
             currentMode = data.isPrivateSide ? 'private' : '1v1';
@@ -656,7 +750,11 @@
                 currentMax = data.isInfinite ? 9999999 : 500;
                 sysMsg("You slipped into a Private Void. 500 chars.");
             } else {
-                roomTitle.innerHTML = data.strangerNoctyx ? '<span style="color:var(--neon-red); text-shadow:0 0 8px red; font-family: Cinzel;">NOCTYX</span>' : 'Stranger <span id="stranger-flag">🇧🇩</span>';
+                if (data.strangerNoctyx) {
+                    roomTitle.innerHTML = '<span style="color:var(--neon-red); text-shadow:0 0 8px red; font-family: Cinzel;">NOCTYX</span>';
+                } else {
+                    roomTitle.innerHTML = `Stranger <span id="stranger-flag">${data.flag || '🇧🇩'}</span>`;
+                }
                 currentMax = data.isInfinite ? 9999999 : 1500;
                 sysMsg(data.isInfinite ? "<span style='color:var(--neon-red)'>God Mode Activated. Limits removed.</span>" : "A stranger appeared. 1500 chars.");
             }
@@ -674,25 +772,35 @@
             });
         });
 
-        // === IMAGE UPLOAD LOGIC ===
-        let localPhotoCount = parseInt(localStorage.getItem('void_daily_photos')) || 0;
-        const lastPhotoDate = localStorage.getItem('void_photo_date');
+        // 7. IMAGE UPLOAD LOGIC
+        let localPhotoCount2 = parseInt(localStorage.getItem('void_daily_photos')) || 0;
+        const lastPhotoDate2 = localStorage.getItem('void_photo_date');
         const today = new Date().toDateString();
         
-        if (lastPhotoDate !== today) { 
-            localPhotoCount = 0; 
+        if (lastPhotoDate2 !== today) { 
+            localPhotoCount2 = 0; 
             localStorage.setItem('void_photo_date', today); 
             localStorage.setItem('void_daily_photos', 0); 
         }
 
+        photoBtn.addEventListener('click', () => { window.clickPhotoBtn(); });
+        
         window.clickPhotoBtn = function() {
-            if (localPhotoCount >= 20 && !isNoctyx) { sysMsg("⚠️ VOID ERROR: Daily photo limit (20) reached."); return; }
+            if (localPhotoCount2 >= 20 && !isNoctyx) { sysMsg("⚠️ VOID ERROR: Daily photo limit (20) reached."); return; }
             imageInput.click();
         }
 
         imageInput.addEventListener('change', async (e) => {
             const file = e.target.files[0]; if(!file) return;
             
+            if (currentMode === 'global' && !isNoctyx) {
+                if (Date.now() - lastGlobalSend < 10000) {
+                    sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait 10 seconds before sending media.</span>');
+                    imageInput.value = '';
+                    return;
+                }
+            }
+
             const originalPlaceholder = chatInput.placeholder; 
             chatInput.placeholder = "Uploading to the void..."; 
             chatInput.disabled = true;
@@ -705,13 +813,15 @@
                 const data = await res.json();
                 
                 if(data.success) {
-                    if(!isNoctyx){ localPhotoCount++; localStorage.setItem('void_daily_photos', localPhotoCount); }
+                    if(!isNoctyx){ localPhotoCount2++; localStorage.setItem('void_daily_photos', localPhotoCount2); }
                     const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
                     sessionStorage.setItem('pending_media_' + msgId, 'true');
                     const msgObj = { id: msgId, text: "📷 Photo", type: 'image', url: data.data.url };
                     if (currentReplyTo) msgObj.replyTo = currentReplyTo;
                     
                     if (currentMode === 'global') {
+                        lastGlobalSend = Date.now();
+                        sessionStorage.setItem('void_global_time', lastGlobalSend);
                         appendMessageUI({ ...msgObj, sender: myGlobalAlias, isNoctyx: isNoctyx }, 'my-msg', true);
                         socket.emit('send_global', msgObj);
                     } else {
@@ -724,7 +834,9 @@
             chatInput.placeholder = originalPlaceholder; chatInput.disabled = false; sendBtn.style.pointerEvents = 'auto'; sendBtn.style.opacity = '1'; imageInput.value = ''; 
         });
 
-        // === ITUNES MUSIC SEARCH LOGIC ===
+        // 8. MUSIC SEARCH LOGIC
+        musicBtn.addEventListener('click', () => { window.toggleMusicSearch(); });
+        
         window.toggleMusicSearch = function() {
             if(musicSearchContainer.style.display === 'block') { musicSearchContainer.style.display = 'none'; } 
             else { musicSearchContainer.style.display = 'block'; musicSearchInput.focus(); }
@@ -750,7 +862,9 @@
                     if(!track.previewUrl) return; 
                     const item = document.createElement('div');
                     item.className = 'music-result-item';
-                    item.innerHTML = `<img src="${track.artworkUrl100}" alt="cover"><div class="music-result-info"><div class="music-result-title">${track.trackName}</div><div class="music-result-artist">${track.artistName}</div></div>`;
+                    item.innerHTML = `<img src="${track.artworkUrl100 || ''}" alt="cover"><div class="music-result-info"><div class="music-result-title"></div><div class="music-result-artist"></div></div>`;
+                    item.querySelector('.music-result-title').textContent = track.trackName;
+                    item.querySelector('.music-result-artist').textContent = track.artistName;
                     item.onclick = () => sendMusic(track);
                     musicResults.appendChild(item);
                 });
@@ -758,6 +872,13 @@
         }
 
         function sendMusic(track) {
+            if (currentMode === 'global' && !isNoctyx) {
+                if (Date.now() - lastGlobalSend < 10000) {
+                    sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait 10 seconds before sending media.</span>');
+                    return;
+                }
+            }
+
             musicSearchContainer.style.display = 'none';
             musicSearchInput.value = ''; musicResults.innerHTML = '';
             
@@ -768,6 +889,8 @@
             if (currentReplyTo) msgObj.replyTo = currentReplyTo;
             
             if (currentMode === 'global') {
+                lastGlobalSend = Date.now();
+                sessionStorage.setItem('void_global_time', lastGlobalSend);
                 appendMessageUI({ ...msgObj, sender: myGlobalAlias, isNoctyx: isNoctyx }, 'my-msg', true);
                 socket.emit('send_global', msgObj);
             } else {
@@ -776,7 +899,7 @@
             window.cancelReply();
         }
 
-        // === MESSAGE SENDING ===
+        // 9. MESSAGE SENDING
         sendBtn.addEventListener('click', sendLocalMessage);
         chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !chatInput.disabled) sendLocalMessage(); });
 
@@ -798,6 +921,8 @@
                     }
                     lastGlobalSend = Date.now();
                     globalCharCount += textToDisplay.length;
+                    sessionStorage.setItem('void_global_time', lastGlobalSend);
+                    sessionStorage.setItem('void_global_chars', globalCharCount);
                 }
                 
                 const msgId = 'gmsg_' + Date.now();
@@ -822,7 +947,7 @@
             window.cancelReply();
         }
 
-        // === INCOMING MESSAGES ===
+        // 10. INCOMING MESSAGES
         socket.on('receive_message', (msgObj) => { 
             if (msgObj.system) { sysMsg(msgObj.text); return; }
             typingIndicator.style.display = 'none'; 
@@ -844,7 +969,7 @@
             }
         });
 
-        // === UI RENDERER ===
+        // 11. UI RENDERER
         function appendMessageUI(msgData, type, isGlobal = false) {
             const msgId = msgData.id || 'msg_' + Date.now() + Math.floor(Math.random()*1000);
             if (messageStore[msgId] && (msgData.type === 'image' || msgData.type === 'music')) return;
@@ -893,16 +1018,19 @@
             } else if (msgData.type === 'music') {
                 contentContainer.innerHTML = `
                     <div class="music-bubble">
-                        <img src="${msgData.cover}" class="music-cover">
+                        <img src="" class="music-cover">
                         <div class="music-info">
-                            <div class="music-title">${msgData.title}</div>
-                            <div class="music-artist">${msgData.artist}</div>
+                            <div class="music-title"></div>
+                            <div class="music-artist"></div>
                         </div>
                         <div class="music-controls">
                             <button class="music-loop-btn" id="loop-${msgId}" onclick="event.stopPropagation(); window.toggleLoop('${msgId}')">∞</button>
                             <button class="music-play-btn" id="play-${msgId}" onclick="event.stopPropagation(); window.playVoidMusic('${msgData.url}', '${msgId}')">▶</button>
                         </div>
                     </div>`;
+                contentContainer.querySelector('.music-cover').src = msgData.cover || '';
+                contentContainer.querySelector('.music-title').textContent = msgData.title || 'Unknown Frequency';
+                contentContainer.querySelector('.music-artist').textContent = msgData.artist || 'Unknown Node';
             } else { 
                 contentContainer.textContent = msgData.text; 
             }
@@ -910,7 +1038,8 @@
             if (msgData.replyTo) {
                 const replyDiv = document.createElement('div'); 
                 replyDiv.className = 'reply-quote';
-                replyDiv.innerHTML = `<strong>${msgData.replyTo.sender}</strong>: <span class="quote-text"></span>`;
+                replyDiv.innerHTML = `<strong></strong>: <span class="quote-text"></span>`;
+                replyDiv.querySelector('strong').textContent = msgData.replyTo.sender;
                 replyDiv.querySelector('.quote-text').textContent = msgData.replyTo.text;
                 msgDiv.querySelector('.reply-container').appendChild(replyDiv);
             }
@@ -933,7 +1062,7 @@
             });
         }
 
-        // === PRIVATE ROOM LOGIC ===
+        // 12. PRIVATE ROOM LOGIC
         window.sendPrivateInvite = function(targetAlias) {
             sysMsg(`Sent private request to ${targetAlias}.`);
             socket.emit('invite_private', targetAlias);
@@ -942,24 +1071,24 @@
         socket.on('private_request', (data) => {
             if (data.to === myGlobalAlias) {
                 privateInviteData = data;
-                document.getElementById('private-invite-text').innerText = `${data.from} wants to pull you into a Private Void.`;
-                document.getElementById('private-invite-overlay').style.display = 'flex';
+                privateInviteText.innerText = `${data.from} wants to pull you into a Private Void.`;
+                privateInviteOverlay.style.display = 'flex';
             }
         });
 
-        document.getElementById('accept-private-btn').addEventListener('click', () => {
+        acceptPrivateBtn.addEventListener('click', () => {
             if(privateInviteData) {
                 socket.emit('accept_private', privateInviteData);
-                document.getElementById('private-invite-overlay').style.display = 'none';
+                privateInviteOverlay.style.display = 'none';
             }
         });
         
-        document.getElementById('decline-private-btn').addEventListener('click', () => {
+        declinePrivateBtn.addEventListener('click', () => {
             privateInviteData = null;
-            document.getElementById('private-invite-overlay').style.display = 'none';
+            privateInviteOverlay.style.display = 'none';
         });
 
-        // === MEDIA LOGIC ===
+        // 13. MEDIA PLAYBACK
         window.playVoidMusic = function(url, btnId) {
             const btn = document.getElementById('play-' + btnId);
             const loopBtn = document.getElementById('loop-' + btnId);
@@ -976,7 +1105,7 @@
             if (currentPlayingBtn && currentPlayingBtn.id === 'play-' + btnId) { globalAudio.loop = btn.classList.contains('active'); }
         };
 
-        // === CORE HELPERS ===
+        // 14. CORE HELPERS
         function updateVisualBar(total) {
             if(currentMax > 10000) return; 
             let remaining = currentMax - total; 
@@ -990,20 +1119,16 @@
         }
 
         socket.on('sync_chars', (data) => { 
-            if(currentMode !== 'global') {
-                currentMax = data.max; usedChars = data.used; updateVisualBar(usedChars); 
-            }
+            if(currentMode !== 'global') { currentMax = data.max; usedChars = data.used; updateVisualBar(usedChars); }
         });
 
-        // FLAW FIXED: Typing indicator hidden in global
+        let typingTimeoutGlobal;
         socket.on('typing', () => { 
             if (currentMode === 'global') return;
-            typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; clearTimeout(typingTimeout); typingTimeout = setTimeout(() => typingIndicator.style.display = 'none', 1500); 
+            typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; clearTimeout(typingTimeoutGlobal); typingTimeoutGlobal = setTimeout(() => typingIndicator.style.display = 'none', 1500); 
         });
-        
-        let typingTimeout;
 
-        // SHATTER
+        // 15. SHATTER
         socket.on('force_shatter', () => { if(!isCountdownRunning && currentMode !== 'global') window.startCountdown(); });
         
         window.startCountdown = function() { 
@@ -1021,32 +1146,35 @@
         
         socket.on('stranger_disconnected', () => { if(!isCountdownRunning && currentMode !== 'global') window.startCountdown(); });
 
-        // === BOTTOM SHEET ===
-        let activeSheetMsgId = null;
-        window.openSheet = function(id) { activeSheetMsgId = id; document.getElementById('sheet-overlay').style.display = 'block'; setTimeout(() => { document.getElementById('sheet-overlay').style.opacity = '1'; document.getElementById('bottom-sheet').style.bottom = '0'; }, 10); }
-        window.closeSheet = function() { document.getElementById('bottom-sheet').style.bottom = '-100%'; document.getElementById('sheet-overlay').style.opacity = '0'; setTimeout(() => { document.getElementById('sheet-overlay').style.display = 'none'; activeSheetMsgId = null; }, 300); }
+        // 16. BOTTOM SHEET
+        window.openSheet = function(id) { activeSheetMsgId = id; sheetOverlay.style.display = 'block'; setTimeout(() => { sheetOverlay.style.opacity = '1'; bottomSheet.style.bottom = '0'; }, 10); }
+        window.closeSheet = function() { bottomSheet.style.bottom = '-100%'; sheetOverlay.style.opacity = '0'; setTimeout(() => { sheetOverlay.style.display = 'none'; activeSheetMsgId = null; }, 300); }
+        
+        sheetOverlay.addEventListener('click', window.closeSheet);
+        closeSheetBtn.addEventListener('click', window.closeSheet);
+        closeReplyBtn.addEventListener('click', () => window.cancelReply());
+        
         window.sheetReact = function(emoji) { if(!activeSheetMsgId) return; window.showReaction(activeSheetMsgId, emoji); socket.emit('react_message', { msgId: activeSheetMsgId, emoji }); window.closeSheet(); }
         window.sheetReply = function() { if(!activeSheetMsgId) return; window.setReply(activeSheetMsgId); window.closeSheet(); }
         window.sheetCopy = function() { if(!activeSheetMsgId) return; navigator.clipboard.writeText(messageStore[activeSheetMsgId].text).then(() => { countdownText.style.display = 'none'; extendBtn.innerText = "Copied!"; extendBtn.style.display = 'inline-block'; actionToast.style.display = 'block'; setTimeout(() => { actionToast.style.display = 'none'; extendBtn.innerText = "Request +500 Chars"; }, 2000); }); window.closeSheet(); }
-        window.setReply = function(id) { const msgInfo = messageStore[id]; if(!msgInfo) return; currentReplyTo = { id, text: msgInfo.text, sender: msgInfo.sender }; document.getElementById('reply-text').innerText = msgInfo.text.length > 30 ? msgInfo.text.substring(0,30) + '...' : msgInfo.text; document.getElementById('reply-banner').style.display = 'flex'; chatInput.focus(); }
-        window.cancelReply = function() { currentReplyTo = null; const banner = document.getElementById('reply-banner'); if (banner) banner.style.display = 'none'; document.getElementById('reply-text').innerText = '...'; }
+        window.setReply = function(id) { const msgInfo = messageStore[id]; if(!msgInfo) return; currentReplyTo = { id, text: msgInfo.text, sender: msgInfo.sender }; replyText.innerText = msgInfo.text.length > 30 ? msgInfo.text.substring(0,30) + '...' : msgInfo.text; replyBanner.style.display = 'flex'; chatInput.focus(); }
+        window.cancelReply = function() { currentReplyTo = null; replyBanner.style.display = 'none'; replyText.innerText = '...'; }
         
         socket.on('receive_reaction', (data) => { window.showReaction(data.msgId, data.emoji); });
         window.showReaction = function(msgId, emoji) { const badge = document.getElementById(`react-${msgId}`); if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulse 1s ease'; } }
 
-        // === GAMES & BUTTONS ===
-        themeBtn.addEventListener('click', () => document.body.classList.toggle('light-theme'));
-        
+        // 17. GAMES
         gameBtn.addEventListener('click', () => {
             if(currentMode === 'global') { sysMsg("<span style='color:var(--neon-gold)'>Retreat to a private void to play games.</span>"); return; }
-            document.getElementById('game-menu').style.display = 'flex';
+            gameMenu.style.display = 'flex';
         });
 
-        returnLobbyBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
-        exitBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
-        newStrangerBtn.addEventListener('click', () => { socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
+        closeGameMenuBtn.addEventListener('click', () => gameMenu.style.display = 'none');
+        closeTttBtn.addEventListener('click', () => tttUi.style.display = 'none');
+        closeC4Btn.addEventListener('click', () => c4Ui.style.display = 'none');
 
-        window.inviteGame = function(gameType) { document.getElementById('game-menu').style.display = 'none'; sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); socket.emit('game_action', { type: 'invite', game: gameType }); };
+        window.inviteGame = function(gameType) { gameMenu.style.display = 'none'; sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); socket.emit('game_action', { type: 'invite', game: gameType }); };
+        
         socket.on('game_action', (data) => {
             if(currentMode === 'global') return;
             if (data.type === 'invite') { const inviteId = 'inv-' + Date.now(); sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <span id="${inviteId}"><button onclick="window.acceptGame('${data.game}', this)" style="background:var(--neon-cyan); border:none; border-radius:5px; padding:3px 8px; cursor:pointer; color:#000; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(inviteId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); } 
@@ -1055,6 +1183,7 @@
             else if (data.type === 'ttt_move') { window.receiveTTT(data.index); }
             else if (data.type === 'c4_move') { window.receiveC4(data.col); }
         });
+        
         window.acceptGame = function(gameType, btn) { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); font-size:0.8rem; margin-left:5px;'>(Accepted)</span>"; socket.emit('game_action', { type: 'accept', game: gameType }); window.startGame(gameType, false); };
 
         window.startGame = function(gameType, isPlayer1) {
@@ -1068,19 +1197,19 @@
         window.checkRPSWin = function() { document.getElementById('rps-ui').style.display = 'none'; let res = "You Tied!"; if ((myRPS==='Rock' && strangerRPS==='Scissors') || (myRPS==='Paper' && strangerRPS==='Rock') || (myRPS==='Scissors' && strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>"; else if (myRPS !== strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>"; sysMsg(`RPS: You (${myRPS}) vs Stranger (${strangerRPS}). <b>${res}</b>`); }
 
         let tttBoard = [], mySymbol = '', myTurn = false;
-        window.initTTT = function(isPlayer1) { tttBoard = Array(9).fill(''); mySymbol = isPlayer1 ? 'X' : 'O'; myTurn = isPlayer1; document.getElementById('ttt-status').innerText = myTurn ? "Your Turn (" + mySymbol + ")" : "Stranger's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); document.getElementById('ttt-ui').style.display = 'flex'; }
+        window.initTTT = function(isPlayer1) { tttBoard = Array(9).fill(''); mySymbol = isPlayer1 ? 'X' : 'O'; myTurn = isPlayer1; document.getElementById('ttt-status').innerText = myTurn ? "Your Turn (" + mySymbol + ")" : "Stranger's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); tttUi.style.display = 'flex'; }
         window.playTTT = function(index) { if (!myTurn || tttBoard[index] !== '') return; window.makeTTTMove(index, mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); myTurn = false; document.getElementById('ttt-status').innerText = "Stranger's Turn"; };
         window.receiveTTT = function(index) { window.makeTTTMove(index, mySymbol === 'X' ? 'O' : 'X'); myTurn = true; document.getElementById('ttt-status').innerText = "Your Turn (" + mySymbol + ")"; }
         window.makeTTTMove = function(index, symbol) { tttBoard[index] = symbol; const cells = document.querySelectorAll('.ttt-cell'); cells[index].innerText = symbol; cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)'; window.checkTTTWin(); }
-        window.checkTTTWin = function() { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null; wins.forEach(w => { if(tttBoard[w[0]] && tttBoard[w[0]]===tttBoard[w[1]] && tttBoard[w[0]]===tttBoard[w[2]]) winner = tttBoard[w[0]]; }); if (winner) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`Tic Tac Toe: <b>${winner === mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); } else if (!tttBoard.includes('')) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); } }
+        window.checkTTTWin = function() { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null; wins.forEach(w => { if(tttBoard[w[0]] && tttBoard[w[0]]===tttBoard[w[1]] && tttBoard[w[0]]===tttBoard[w[2]]) winner = tttBoard[w[0]]; }); if (winner) { tttUi.style.display = 'none'; sysMsg(`Tic Tac Toe: <b>${winner === mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); } else if (!tttBoard.includes('')) { tttUi.style.display = 'none'; sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); } }
 
         let c4Board = [], myC4Symbol = '', myC4Turn = false;
-        window.initC4 = function(isPlayer1) { c4Board = Array(6).fill().map(()=>Array(7).fill('')); myC4Symbol = isPlayer1 ? 'p1' : 'p2'; myC4Turn = isPlayer1; const boardEl = document.getElementById('c4-board'); boardEl.innerHTML = ''; for(let r=0; r<6; r++) { for(let c=0; c<7; c++) { const cell = document.createElement('div'); cell.className = 'c4-cell'; cell.id = `c4-${r}-${c}`; cell.onclick = () => window.playC4(c); boardEl.appendChild(cell); } } document.getElementById('c4-status').innerText = myC4Turn ? "Your Turn (" + (myC4Symbol==='p1'?'Cyan':'Gold') + ")" : "Stranger's Turn"; document.getElementById('c4-ui').style.display = 'flex'; }
+        window.initC4 = function(isPlayer1) { c4Board = Array(6).fill().map(()=>Array(7).fill('')); myC4Symbol = isPlayer1 ? 'p1' : 'p2'; myC4Turn = isPlayer1; const boardEl = document.getElementById('c4-board'); boardEl.innerHTML = ''; for(let r=0; r<6; r++) { for(let c=0; c<7; c++) { const cell = document.createElement('div'); cell.className = 'c4-cell'; cell.id = `c4-${r}-${c}`; cell.onclick = () => window.playC4(c); boardEl.appendChild(cell); } } document.getElementById('c4-status').innerText = myC4Turn ? "Your Turn (" + (myC4Symbol==='p1'?'Cyan':'Gold') + ")" : "Stranger's Turn"; c4Ui.style.display = 'flex'; }
         window.playC4 = function(col) { if (!myC4Turn) return; let row = window.getLowestEmptyRow(col); if (row === -1) return; window.makeC4Move(row, col, myC4Symbol); socket.emit('game_action', { type: 'c4_move', col: col }); myC4Turn = false; document.getElementById('c4-status').innerText = "Stranger's Turn"; };
         window.receiveC4 = function(col) { let row = window.getLowestEmptyRow(col); if(row === -1) return; window.makeC4Move(row, col, myC4Symbol === 'p1' ? 'p2' : 'p1'); myC4Turn = true; document.getElementById('c4-status').innerText = "Your Turn (" + (myC4Symbol==='p1'?'Cyan':'Gold') + ")"; }
         window.getLowestEmptyRow = function(col) { for(let r=5; r>=0; r--) { if(c4Board[r][col] === '') return r; } return -1; }
         window.makeC4Move = function(row, col, player) { c4Board[row][col] = player; document.getElementById(`c4-${row}-${col}`).classList.add(player); window.checkC4Win(row, col, player); }
-        window.checkC4Win = function(r, c, player) { const dirs = [[0,1], [1,0], [1,1], [1,-1]]; for (let [dr, dc] of dirs) { let count = 1; for(let i=1; i<=3; i++) { let nr = r + dr*i, nc = c + dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } for(let i=1; i<=3; i++) { let nr = r - dr*i, nc = c - dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } if(count >= 4) { document.getElementById('c4-ui').style.display = 'none'; sysMsg(`Void Connect: <b>${player === myC4Symbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); return; } } if(c4Board[0].every(cell => cell !== '')) { document.getElementById('c4-ui').style.display = 'none'; sysMsg(`Void Connect: <b>It's a Draw!</b>`); } }
+        window.checkC4Win = function(r, c, player) { const dirs = [[0,1], [1,0], [1,1], [1,-1]]; for (let [dr, dc] of dirs) { let count = 1; for(let i=1; i<=3; i++) { let nr = r + dr*i, nc = c + dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } for(let i=1; i<=3; i++) { let nr = r - dr*i, nc = c - dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } if(count >= 4) { c4Ui.style.display = 'none'; sysMsg(`Void Connect: <b>${player === myC4Symbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); return; } } if(c4Board[0].every(cell => cell !== '')) { c4Ui.style.display = 'none'; sysMsg(`Void Connect: <b>It's a Draw!</b>`); } }
 
         socket.on('submit_rating', (rating) => {
             starBtns.forEach(s => { 
@@ -1091,9 +1220,11 @@
             ratingThanks.style.display = 'block';
         });
 
+        // 18. VISIBILITY & ADMIN FIXES
         document.addEventListener("visibilitychange", () => { if (socket.connected) { const status = document.hidden ? 'offline' : 'online'; socket.emit('user_status', status); } });
-        socket.on('stranger_status', (status) => { const dot = document.querySelector('.user-info .dot'); if (!dot) return; if (status === 'offline') { dot.style.backgroundColor = '#64748b'; dot.style.boxShadow = 'none'; } else { dot.style.backgroundColor = '#22c55e'; dot.style.boxShadow = '0 0 8px #22c55e'; } });
+        socket.on('stranger_status', (status) => { if (!statusDot) return; if (status === 'offline') { statusDot.style.backgroundColor = '#64748b'; statusDot.style.boxShadow = 'none'; } else { statusDot.style.backgroundColor = '#22c55e'; statusDot.style.boxShadow = '0 0 8px #22c55e'; } });
         
+        closeAdminBtn.addEventListener('click', () => { adminUi.style.display = 'none'; });
     </script>
 </body>
-    </html>
+</html>
