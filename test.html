@@ -12,10 +12,11 @@
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
     <style>
-        /* === CORE RESET & FIXES === */
+        /* === CORE RESET & VARIABLES === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        button, a, .bubble, .icon-btn { -webkit-tap-highlight-color: transparent; outline: none; }
+        /* FLAW FIXED: Removes the blue tap flash on mobile */
+        button, a, .bubble { -webkit-tap-highlight-color: transparent; outline: none; }
         
         :root {
             --bg-dark: #030712; 
@@ -31,6 +32,7 @@
             --stranger-bubble: rgba(255, 255, 255, 0.05);
         }
 
+        /* === LIGHT THEME === */
         body.light-theme {
             --bg-dark: #f8fafc; 
             --glass-bg: rgba(0, 0, 0, 0.03); 
@@ -48,6 +50,7 @@
         body.light-theme .icon-btn, body.light-theme #chat-input, body.light-theme .system-message { background: rgba(0,0,0,0.05); }
         body.light-theme .bubble { border-color: rgba(0,0,0,0.1); }
 
+        /* === GLOBAL LAYOUT === */
         body { 
             background-color: var(--bg-dark); 
             background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%); 
@@ -61,11 +64,12 @@
             transition: background 0.3s ease, color 0.3s ease; 
         }
 
-        /* === LOBBY UI === */
-        #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; animation: fadeIn 1s ease-in; padding: 20px; overflow-y: auto;}
+        /* === LOBBY SCREEN === */
+        #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; animation: fadeIn 1s ease-in; padding: 20px; overflow-y: auto; }
         .lobby-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); margin: auto; transition: 0.3s; }
 
         .void-portal { width: 90px; height: 90px; margin: 0 auto 20px auto; border-radius: 50%; background: radial-gradient(circle, #000 30%, var(--neon-cyan) 100%); box-shadow: 0 0 25px rgba(6, 182, 212, 0.3), inset 0 0 15px #000; animation: spinPortal 10s linear infinite, pulsePortal 3s ease-in-out infinite alternate; border: 1px solid rgba(6, 182, 212, 0.2); }
+        
         @keyframes spinPortal { 100% { transform: rotate(360deg); } } 
         @keyframes pulsePortal { 100% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.6), inset 0 0 20px #000; transform: scale(1.02); } }
 
@@ -90,7 +94,7 @@
 
         .disclaimer { margin-top: 20px; font-size: 0.7rem; font-weight: 300; color: #475569; }
 
-        /* AUTH UI */
+        /* FLAW FIXED: Auth UI Position Relative to push layout properly */
         .auth-wrapper { margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .auth-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 5px 15px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: 0.2s; }
         .noctyx-trigger { background: none; border: none; color: #3b82f6; font-size: 0.8rem; cursor: pointer; opacity: 0.5; transition: 0.2s;}
@@ -135,6 +139,7 @@
         .stranger-msg .bubble { background: var(--stranger-bubble); border-top-left-radius: 4px; }
         .my-msg .bubble { background: var(--my-bubble); border-top-right-radius: 4px; border-color: rgba(6, 182, 212, 0.2); }
         
+        /* Global & Noctyx Specific Styling */
         .sender-alias { font-size: 0.7rem; font-weight: 600; color: var(--neon-purple); margin-bottom: 4px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;}
         .sender-alias.noctyx { color: var(--neon-red); text-shadow: 0 0 8px rgba(239, 68, 68, 0.6); letter-spacing: 1px; font-family: 'Cinzel', serif;}
         .invite-private-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 4px; font-size: 0.6rem; padding: 2px 6px; cursor: pointer; color: white; transition: 0.2s;}
@@ -160,8 +165,35 @@
         /* === NOTIFICATIONS & OVERLAYS === */
         #action-toast { padding: 10px 20px; text-align: center; display: none; margin-bottom: 5px;}
         #extend-btn { background: transparent; color: var(--neon-gold); border: 1px solid var(--neon-gold); padding: 8px 16px; border-radius: 20px; font-family: 'Outfit', sans-serif; font-size: 0.85rem; cursor: pointer; transition: 0.3s; box-shadow: inset 0 0 8px rgba(251, 191, 36, 0.2); }
+        
         #countdown-text { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--neon-red); font-weight: bold; animation: pulseRed 1s infinite; display: none; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
         @keyframes pulseRed { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.6; transform: scale(0.98); } }
+
+        #shatter-overlay { position: absolute; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 20; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
+        #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
+        #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
+        
+        #rating-box { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 25px; margin-bottom: 25px; width: 100%; max-width: 250px; z-index: 25;}
+        .rating-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .star-container { display: flex; justify-content: center; gap: 8px; direction: row; }
+        .star-btn { background: none; border: none; font-size: 1.8rem; color: rgba(255,255,255,0.1); cursor: pointer; transition: color 0.2s, transform 0.2s; padding: 0; line-height: 1; }
+        .star-btn.active, .star-btn:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); transform: scale(1.1); }
+        #rating-thanks { display: none; color: var(--neon-gold); font-size: 0.85rem; margin-top: 10px; font-weight: 500; }
+
+        .overlay-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 250px; }
+        .secondary-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .secondary-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+
+        /* Private Invite Modal */
+        #private-invite-overlay { display:none; position:absolute; inset:0; background:rgba(0,0,0,0.8); z-index:30; justify-content:center; align-items:center; backdrop-filter:blur(5px); }
+        .invite-box { background:var(--bg-dark); border:1px solid var(--neon-purple); padding:20px; border-radius:15px; text-align:center; width:80%; max-width:300px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
+        .invite-box h3 { color:var(--neon-purple); margin-bottom:10px; font-family: 'Outfit'; }
+        .invite-box p { font-size:0.9rem; margin-bottom:20px; color:var(--text-muted); }
+        .invite-btns { display:flex; gap:10px; }
+        .invite-btns button { flex:1; padding:10px; border-radius:8px; cursor: pointer; font-family: 'Outfit'; font-weight: bold; transition: 0.2s;}
+        #accept-private-btn { background:var(--neon-purple); color:white; border:none; }
+        #accept-private-btn:hover { background: #9333ea; }
+        #decline-private-btn { background:transparent; color:white; border:1px solid var(--glass-border); }
 
         /* === MUSIC SEARCH UI === */
         #music-search-container { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background: rgba(3, 7, 18, 0.95); backdrop-filter: blur(15px); padding: 15px 20px; z-index: 15; border-top: 1px solid var(--glass-border); border-bottom: 1px solid rgba(6, 182, 212, 0.2); box-shadow: 0 -10px 20px rgba(0,0,0,0.5);}
@@ -172,6 +204,7 @@
         .music-result-item { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.03); cursor: pointer; transition: 0.2s; border: 1px solid transparent;}
         .music-result-item:active { background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.3); }
         .music-result-item img { width: 40px; height: 40px; border-radius: 6px; box-shadow: 0 0 5px rgba(0,0,0,0.5);}
+        
         .music-result-info { display: flex; flex-direction: column; overflow: hidden; }
         .music-result-title { font-size: 0.85rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;}
         .music-result-artist { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -188,45 +221,63 @@
         .music-loop-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); font-size: 1.2rem;}
         .music-loop-btn.active { color: var(--neon-gold); border-color: var(--neon-gold); box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); text-shadow: 0 0 5px var(--neon-gold);}
 
-        /* === FOOTER === */
-        .chat-footer { display: flex; align-items: center; gap: 6px; padding: 12px 15px; background: var(--glass-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); position: relative; z-index: 10; }
+        /* === FLAWLESS MOBILE FOOTER CSS === */
+        .chat-footer { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 12px 15px; 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(10px); 
+            border-top: 1px solid var(--glass-border); 
+            position: relative; 
+            z-index: 10;
+        }
+        
         .action-group { display: flex; gap: 4px; flex-shrink: 0; }
         .chat-footer .icon-btn { width: 38px; height: 38px; padding: 0; flex-shrink: 0; }
-        #chat-input { flex: 1; min-width: 0; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 10px 15px; border-radius: 12px; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 0.95rem; outline: none; transition: 0.3s; height: 40px; }
+
+        #chat-input { 
+            flex: 1; 
+            min-width: 0; 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--glass-border); 
+            padding: 10px 15px; 
+            border-radius: 12px; 
+            color: var(--text-main); 
+            font-family: 'Outfit', sans-serif; 
+            font-size: 0.95rem; 
+            outline: none; 
+            transition: 0.3s; 
+            height: 40px;
+        }
         #chat-input:focus { border-color: rgba(6, 182, 212, 0.5); }
-        .send-btn { background: var(--neon-cyan); color: #000; border: none; padding: 0 16px; height: 40px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
+
+        .send-btn { 
+            background: var(--neon-cyan); 
+            color: #000; 
+            border: none; 
+            padding: 0 16px; 
+            height: 40px; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: 0.2s; 
+            flex-shrink: 0; 
+        }
         .send-btn:hover { background: #0891b2; }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
         #reply-banner { display: none; background: rgba(6, 182, 212, 0.1); border-left: 3px solid var(--neon-cyan); padding: 10px 15px; font-size: 0.85rem; color: var(--text-main); position: absolute; bottom: 100%; left: 0; width: 100%; backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); justify-content: space-between; align-items: center; }
 
-        /* === ROOT LEVEL MODALS === */
-        #shatter-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
-        #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
-        #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
-        #rating-box { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 25px; margin-bottom: 25px; width: 100%; max-width: 250px; z-index: 25;}
-        .rating-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .star-container { display: flex; justify-content: center; gap: 8px; direction: row; }
-        .star-btn { background: none; border: none; font-size: 1.8rem; color: rgba(255,255,255,0.1); cursor: pointer; transition: color 0.2s, transform 0.2s; padding: 0; line-height: 1; }
-        .star-btn.active, .star-btn:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); transform: scale(1.1); }
-        #rating-thanks { display: none; color: var(--neon-gold); font-size: 0.85rem; margin-top: 10px; font-weight: 500; }
-        .overlay-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 250px; }
-        .secondary-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
-        .secondary-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-
-        #private-invite-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:999999; justify-content:center; align-items:center; backdrop-filter:blur(5px); }
-        .invite-box { background:var(--bg-dark); border:1px solid var(--neon-purple); padding:20px; border-radius:15px; text-align:center; width:80%; max-width:300px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
-        .invite-box h3 { color:var(--neon-purple); margin-bottom:10px; font-family: 'Outfit'; }
-        .invite-box p { font-size:0.9rem; margin-bottom:20px; color:var(--text-muted); }
-        .invite-btns { display:flex; gap:10px; }
-        .invite-btns button { flex:1; padding:10px; border-radius:8px; cursor: pointer; font-family: 'Outfit'; font-weight: bold; transition: 0.2s;}
-        #accept-private-btn { background:var(--neon-purple); color:white; border:none; }
-        #accept-private-btn:hover { background: #9333ea; }
-        #decline-private-btn { background:transparent; color:white; border:1px solid var(--glass-border); }
-
-        .game-modal { position: fixed; inset: 0; background: rgba(3,7,18,0.95); z-index: 1000000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        /* === GAME MODALS === */
+        .game-modal { position: fixed; inset: 0; background: rgba(3,7,18,0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .game-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--neon-cyan); color: var(--text-main); padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; margin: 10px; width: 80%; max-width: 250px; font-family: 'Outfit'; transition: 0.2s;}
         .game-btn:hover { background: rgba(6, 182, 212, 0.1); }
-        .close-game { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; z-index: 1000001;}
+        .close-game { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; z-index: 50;}
         
         #ttt-board { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; margin-top: 20px; }
         .ttt-cell { width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white; }
@@ -236,11 +287,13 @@
         .c4-cell.p1 { background: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan); border-color: #fff; }
         .c4-cell.p2 { background: var(--neon-gold); box-shadow: 0 0 15px var(--neon-gold); border-color: #fff; }
 
+        /* === ADMIN UI === */
         .admin-stat { font-size: 1.2rem; color: white; margin: 10px 0; font-family: 'Outfit'; }
         .admin-stat span { color: var(--neon-cyan); font-weight: bold; }
 
-        #sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999998; display: none; opacity: 0; transition: opacity 0.3s; }
-        #bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--bg-dark); border-top: 1px solid var(--neon-cyan); border-radius: 20px 20px 0 0; padding: 25px 20px; z-index: 999999; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 40px rgba(0,0,0,0.9); font-family: 'Outfit', sans-serif;}
+        /* === BOTTOM SHEET === */
+        #sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99998; display: none; opacity: 0; transition: opacity 0.3s; }
+        #bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--bg-dark); border-top: 1px solid var(--neon-cyan); border-radius: 20px 20px 0 0; padding: 25px 20px; z-index: 99999; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 40px rgba(0,0,0,0.9); font-family: 'Outfit', sans-serif;}
         .sheet-emojis { display: flex; justify-content: space-between; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border);}
         .sheet-emoji-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 50%; width: 55px; height: 55px; font-size: 1.8rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
         .sheet-emoji-btn:active { transform: scale(1.1); background: rgba(6, 182, 212, 0.2); }
@@ -259,12 +312,18 @@
             
             <div class="stats-container">
                 <div class="stat-box">
-                    <span class="stat-number"><div class="dot"></div> <span id="active-users-count">...</span></span>
+                    <span class="stat-number">
+                        <div class="dot"></div> <span id="active-users-count">...</span>
+                    </span>
                     <span class="stat-label">Active Now</span>
                 </div>
                 <div class="stat-box">
                     <span class="stat-number">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> 
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg> 
                         <span id="vanished-count">...</span>
                     </span>
                     <span class="stat-label">Vanished</span>
@@ -273,7 +332,7 @@
 
             <div class="btn-group">
                 <button class="enter-btn" id="find-btn">Enter Void (1v1)</button>
-                <button class="enter-btn global-btn" id="global-btn">Enter The Nexus</button>
+                <button class="enter-btn global-btn" id="global-btn">Enter The Nexus (Global Chat)</button>
             </div>
 
             <p class="disclaimer">100% Anonymous. No logs kept.</p>
@@ -291,7 +350,7 @@
             <div class="auth-input-group" id="noctyx-auth-group">
                 <input type="text" class="auth-input" id="nx-user" placeholder="Entity ID" autocomplete="off">
                 <input type="password" class="auth-input" id="nx-pass" placeholder="Passcode" autocomplete="off">
-                <button class="auth-submit" id="nx-submit" style="background:var(--neon-red); color:white;">Log In</button>
+                <button class="auth-submit" id="nx-submit" style="background:var(--neon-red); color:white;">Override / Log In</button>
             </div>
         </div>
     </div>
@@ -331,7 +390,41 @@
             <div id="countdown-text">Shattering in 5...</div>
         </div>
 
+        <div id="shatter-overlay">
+            <h2>Shattered</h2>
+            <p>The void has consumed this connection.</p>
+            
+            <div id="rating-box">
+                <div class="rating-title">Rate the Vibe</div>
+                <div class="star-container">
+                    <button class="star-btn" data-val="1">★</button>
+                    <button class="star-btn" data-val="2">★</button>
+                    <button class="star-btn" data-val="3">★</button>
+                    <button class="star-btn" data-val="4">★</button>
+                    <button class="star-btn" data-val="5">★</button>
+                </div>
+                <div id="rating-thanks">Rating Sent to Stranger!</div>
+            </div>
+
+            <div class="overlay-buttons">
+                <button class="enter-btn" id="new-stranger-btn">Find New Stranger</button>
+                <button class="secondary-btn" id="return-lobby-btn">Return to Lobby</button>
+            </div>
+        </div>
+
+        <div id="private-invite-overlay">
+            <div class="invite-box">
+                <h3>Private Void Request</h3>
+                <p id="private-invite-text"></p>
+                <div class="invite-btns">
+                    <button id="accept-private-btn">Accept</button>
+                    <button id="decline-private-btn">Decline</button>
+                </div>
+            </div>
+        </div>
+
         <footer class="chat-footer">
+            
             <div id="music-search-container">
                 <input type="text" id="music-search-input" placeholder="Search frequency (Artist, Song)..." autocomplete="off">
                 <div id="music-results"></div>
@@ -343,67 +436,46 @@
             </div>
             
             <div class="action-group">
-                <button class="icon-btn" id="game-btn" title="Games">
+                <button class="icon-btn" id="game-btn" title="Games" onclick="window.openGameMenu()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>
                 </button>
-                <button class="icon-btn" id="music-btn" title="Share Music">
+                
+                <button class="icon-btn" id="music-btn" title="Share Music" onclick="window.toggleMusicSearch()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
                 </button>
+
                 <input type="file" id="image-input" accept="image/*" style="display:none">
-                <button class="icon-btn" id="photo-btn" title="Send Photo">
+                <button class="icon-btn" id="photo-btn" title="Send Photo" onclick="window.clickPhotoBtn()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                 </button>
             </div>
 
             <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
+            
             <button class="send-btn" id="send-btn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </button>
         </footer>
     </div>
 
-    <div id="shatter-overlay">
-        <h2>Shattered</h2>
-        <p>The void has consumed this connection.</p>
-        <div id="rating-box">
-            <div class="rating-title">Rate the Vibe</div>
-            <div class="star-container">
-                <button class="star-btn" data-val="1">★</button><button class="star-btn" data-val="2">★</button><button class="star-btn" data-val="3">★</button><button class="star-btn" data-val="4">★</button><button class="star-btn" data-val="5">★</button>
-            </div>
-            <div id="rating-thanks">Rating Sent!</div>
-        </div>
-        <div class="overlay-buttons">
-            <button class="enter-btn" id="new-stranger-btn">Find New Stranger</button>
-            <button class="secondary-btn" id="return-lobby-btn">Return to Lobby</button>
-        </div>
-    </div>
-
-    <div id="private-invite-overlay">
-        <div class="invite-box">
-            <h3>Private Void Request</h3>
-            <p id="private-invite-text"></p>
-            <div class="invite-btns">
-                <button id="accept-private-btn">Accept</button>
-                <button id="decline-private-btn">Decline</button>
-            </div>
-        </div>
-    </div>
-
     <div class="game-modal" id="admin-ui" style="justify-content: flex-start; padding-top: 40px !important;">
         <button class="close-game" id="close-admin-btn">✖</button>
         <h2 style="font-family:'Cinzel'; color:var(--neon-red); margin-bottom: 15px; font-size: 1.8rem;">SYSTEM ADMIN</h2>
+        
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 92%; max-width: 600px;">
             <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Online: <span id="ad-total">0</span></div>
             <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Wait: <span id="ad-wait">0</span></div>
             <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Rooms: <span id="ad-rooms">0</span></div>
             <div class="admin-stat" style="font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">Vanish: <span id="ad-vanish">0</span></div>
         </div>
+
         <div style="display: flex; gap: 10px; width: 92%; max-width: 600px; height: 350px; margin-top: 15px;">
             <div style="width: 35%; background: rgba(0,0,0,0.5); border-radius: 15px; border: 1px solid var(--glass-border); padding: 10px; display: flex; flex-direction: column;">
                 <h3 style="font-size: 0.75rem; color: var(--neon-cyan); margin-bottom: 10px; text-transform: uppercase;">Active Rooms</h3>
                 <button id="view-global-btn" style="background: var(--neon-gold); color: #000; border: none; padding: 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-bottom: 10px;">Global Feed</button>
                 <div id="admin-room-list" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; scrollbar-width: none;"></div>
             </div>
+
             <div style="width: 65%; display: flex; flex-direction: column;">
                 <h3 id="spy-header-text" style="font-size: 0.75rem; color: var(--neon-gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
                     <div class="dot" style="width:6px; height:6px;"></div> Global Feed
@@ -416,16 +488,16 @@
     <div class="game-modal" id="game-menu">
         <button class="close-game" id="close-game-menu-btn">✖</button>
         <h2 style="font-family:'Cinzel'; color:var(--neon-cyan); margin-bottom: 20px;">VOID GAMES</h2>
-        <button class="game-btn" id="launch-rps">Rock Paper Scissors</button>
-        <button class="game-btn" id="launch-ttt">Tic Tac Toe</button>
-        <button class="game-btn" id="launch-c4">Void Connect 4</button>
+        <button class="game-btn" onclick="window.inviteGame('rps')">Rock Paper Scissors</button>
+        <button class="game-btn" onclick="window.inviteGame('ttt')">Tic Tac Toe</button>
+        <button class="game-btn" onclick="window.inviteGame('c4')">Void Connect 4</button>
     </div>
 
     <div class="game-modal" id="rps-ui">
         <h2 style="color:var(--neon-cyan); margin-bottom: 20px;">Choose Weapon</h2>
-        <button class="game-btn" id="rps-rock">✊ Rock</button>
-        <button class="game-btn" id="rps-paper">✋ Paper</button>
-        <button class="game-btn" id="rps-scissors">✌️ Scissors</button>
+        <button class="game-btn" onclick="window.playRPS('Rock')">✊ Rock</button>
+        <button class="game-btn" onclick="window.playRPS('Paper')">✋ Paper</button>
+        <button class="game-btn" onclick="window.playRPS('Scissors')">✌️ Scissors</button>
         <p id="rps-status" style="margin-top:20px; color:var(--text-muted);"></p>
     </div>
 
@@ -434,16 +506,15 @@
         <h2 style="color:var(--neon-cyan); margin-bottom: 10px;">Tic Tac Toe</h2>
         <p id="ttt-status" style="color:var(--neon-gold);">Your turn (X)</p>
         <div id="ttt-board">
-            <div class="ttt-cell" data-idx="0"></div><div class="ttt-cell" data-idx="1"></div><div class="ttt-cell" data-idx="2"></div>
-            <div class="ttt-cell" data-idx="3"></div><div class="ttt-cell" data-idx="4"></div><div class="ttt-cell" data-idx="5"></div>
-            <div class="ttt-cell" data-idx="6"></div><div class="ttt-cell" data-idx="7"></div><div class="ttt-cell" data-idx="8"></div>
+            <div class="ttt-cell" onclick="window.playTTT(0)"></div><div class="ttt-cell" onclick="window.playTTT(1)"></div><div class="ttt-cell" onclick="window.playTTT(2)"></div>
+            <div class="ttt-cell" onclick="window.playTTT(3)"></div><div class="ttt-cell" onclick="window.playTTT(4)"></div><div class="ttt-cell" onclick="window.playTTT(5)"></div>
+            <div class="ttt-cell" onclick="window.playTTT(6)"></div><div class="ttt-cell" onclick="window.playTTT(7)"></div><div class="ttt-cell" onclick="window.playTTT(8)"></div>
         </div>
     </div>
 
     <div class="game-modal" id="c4-ui">
         <button class="close-game" id="close-c4-btn">✖</button>
         <h2 style="color:var(--neon-cyan); margin-bottom: 10px;">Void Connect</h2>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px; text-align:center; max-width:280px;">Drop orbs to connect 4 in a row horizontally, vertically, or diagonally. First to do so wins.</p>
         <p id="c4-status" style="color:var(--neon-gold);">Your turn (Cyan)</p>
         <div id="c4-board"></div>
     </div>
@@ -451,99 +522,116 @@
     <div id="sheet-overlay"></div>
     <div id="bottom-sheet">
         <div class="sheet-emojis">
-            <button class="sheet-emoji-btn" data-emoji="❤️">❤️</button>
-            <button class="sheet-emoji-btn" data-emoji="😂">😂</button>
-            <button class="sheet-emoji-btn" data-emoji="👍">👍</button>
-            <button class="sheet-emoji-btn" data-emoji="😲">😲</button>
+            <button class="sheet-emoji-btn" onclick="window.sheetReact('❤️')">❤️</button>
+            <button class="sheet-emoji-btn" onclick="window.sheetReact('😂')">😂</button>
+            <button class="sheet-emoji-btn" onclick="window.sheetReact('👍')">👍</button>
+            <button class="sheet-emoji-btn" onclick="window.sheetReact('😲')">😲</button>
         </div>
-        <button class="sheet-action-btn" id="sheet-reply-btn">↩️ Reply to Message</button>
-        <button class="sheet-action-btn" id="sheet-copy-btn">📋 Copy Text</button>
+        <button class="sheet-action-btn" onclick="window.sheetReply()">↩️ Reply to Message</button>
+        <button class="sheet-action-btn" onclick="window.sheetCopy()">📋 Copy Text</button>
         <button class="sheet-action-btn sheet-cancel" id="close-sheet-btn">Cancel</button>
     </div>
 
     <script>
+        // 1. GLOBALS
+        const IMGBB_API_KEY = "e4920da45c283d4ae48a5ca34df75005"; 
+        const socket = io("https://the-void-server.onrender.com"); 
+        const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+        
+        window.globalAudio = new Audio();
+        window.currentPlayingBtn = null;
+
+        // 3. APP STATE
+        window.currentMode = 'lobby'; 
+        window.isNoctyx = false;
+        window.myGlobalAlias = '';
+        
+        window.currentMax = 1500; 
+        window.usedChars = 0; 
+        window.myCurrentRoom = null; 
+        window.isCountdownRunning = false; 
+        window.countdownTimer = null; 
+        
+        window.globalCharCount = parseInt(sessionStorage.getItem('void_global_chars')) || 0;
+        window.lastGlobalSend = parseInt(sessionStorage.getItem('void_global_time')) || 0;
+        
+        window.messageStore = {}; 
+        window.currentReplyTo = null; 
+        window.allAdminMessages = [];
+        window.privateInviteData = null;
+        window.typingTimeoutGlobal = null;
+        window.activeSheetMsgId = null;
+
+        // EXECUTE ONLY WHEN DOM IS READY
         document.addEventListener('DOMContentLoaded', () => {
 
-            // 1. GLOBALS
-            const IMGBB_API_KEY = "e4920da45c283d4ae48a5ca34df75005"; 
-            const socket = io("https://the-void-server.onrender.com"); 
-            const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
-            
-            let globalAudio = new Audio();
-            let currentPlayingBtn = null;
-            let currentMode = 'lobby'; 
-            let isNoctyx = false;
-            let myGlobalAlias = '';
-            let currentMax = 1500; 
-            let usedChars = 0; 
-            let myCurrentRoom = null; 
-            let isCountdownRunning = false; 
-            let countdownTimer = null; 
-            let globalCharCount = parseInt(sessionStorage.getItem('void_global_chars')) || 0;
-            let lastGlobalSend = parseInt(sessionStorage.getItem('void_global_time')) || 0;
-            let messageStore = {}; 
-            let currentReplyTo = null; 
-            let allAdminMessages = [];
-            let privateInviteData = null;
-            let typingTimeoutGlobal = null;
-            let activeSheetMsgId = null;
-
-            // 2. DOM BINDINGS 
+            // DOM ELEMENT DECLARATIONS
             const lobbyScreen = document.getElementById('lobby-screen');
             const chatScreen = document.getElementById('chat-screen');
+            
             const activeUsersCount = document.getElementById('active-users-count');
             const vanishedCount = document.getElementById('vanished-count');
+            
             const adminLoginBtn = document.getElementById('admin-login-btn');
             const adminAuthGroup = document.getElementById('admin-auth-group');
             const adminPassInput = document.getElementById('admin-pass-input');
             const adminSubmit = document.getElementById('admin-submit');
+            
             const noctyxTriggerBtn = document.getElementById('noctyx-trigger-btn');
             const noctyxAuthGroup = document.getElementById('noctyx-auth-group');
             const nxUser = document.getElementById('nx-user');
             const nxPass = document.getElementById('nx-pass');
             const nxSubmit = document.getElementById('nx-submit');
+            
             const findBtn = document.getElementById('find-btn');
             const globalBtn = document.getElementById('global-btn');
+            
             const roomTitle = document.getElementById('room-title');
             const statusDot = document.getElementById('status-dot');
             const themeBtn = document.getElementById('theme-btn');
             const exitBtn = document.getElementById('exit-btn');
+            
             const progressWrapper = document.getElementById('progress-wrapper');
             const charBar = document.getElementById('char-bar');
             const chatBox = document.getElementById('chat-box');
             const typingIndicator = document.getElementById('typing-indicator');
+            
             const chatInput = document.getElementById('chat-input');
             const sendBtn = document.getElementById('send-btn');
             const gameBtn = document.getElementById('game-btn');
             const photoBtn = document.getElementById('photo-btn');
             const imageInput = document.getElementById('image-input');
             const musicBtn = document.getElementById('music-btn');
+            
             const musicSearchContainer = document.getElementById('music-search-container');
             const musicSearchInput = document.getElementById('music-search-input');
             const musicResults = document.getElementById('music-results');
+            
             const actionToast = document.getElementById('action-toast');
             const extendBtn = document.getElementById('extend-btn');
             const countdownText = document.getElementById('countdown-text');
             const shatterOverlay = document.getElementById('shatter-overlay');
             const returnLobbyBtn = document.getElementById('return-lobby-btn');
             const newStrangerBtn = document.getElementById('new-stranger-btn');
+            
             const replyBanner = document.getElementById('reply-banner');
             const replyText = document.getElementById('reply-text');
             const closeReplyBtn = document.getElementById('close-reply');
+            
             const privateInviteOverlay = document.getElementById('private-invite-overlay');
             const privateInviteText = document.getElementById('private-invite-text');
             const acceptPrivateBtn = document.getElementById('accept-private-btn');
             const declinePrivateBtn = document.getElementById('decline-private-btn');
+
             const sheetOverlay = document.getElementById('sheet-overlay');
             const bottomSheet = document.getElementById('bottom-sheet');
             const closeSheetBtn = document.getElementById('close-sheet-btn');
+
             const adminUi = document.getElementById('admin-ui');
             const closeAdminBtn = document.getElementById('close-admin-btn');
+            
             const gameMenu = document.getElementById('game-menu');
             const closeGameMenuBtn = document.getElementById('close-game-menu-btn');
-            const launchRps = document.getElementById('launch-rps');
-            const launchTtt = document.getElementById('launch-ttt');
-            const launchC4 = document.getElementById('launch-c4');
             const tttUi = document.getElementById('ttt-ui');
             const closeTttBtn = document.getElementById('close-ttt-btn');
             const c4Ui = document.getElementById('c4-ui');
@@ -551,35 +639,51 @@
             const starBtns = document.querySelectorAll('.star-btn');
             const ratingThanks = document.getElementById('rating-thanks');
 
-            // 3. PWA
-            if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(e => console.log(e));
+            // 4. PWA SETUP
+            if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
+            let deferredPrompt;
+            const installBtn = document.getElementById('install-btn');
+            window.addEventListener('beforeinstallprompt', (e) => { 
+                e.preventDefault(); deferredPrompt = e; if(installBtn) installBtn.style.display = 'block'; 
+            });
+            if(installBtn) {
+                installBtn.addEventListener('click', async () => { 
+                    if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; installBtn.style.display = 'none'; } 
+                });
+            }
 
-            // 4. LOBBY LISTENERS
+            // 5. LOBBY & AUTH
             adminLoginBtn.addEventListener('click', () => {
                 noctyxAuthGroup.style.display = 'none';
                 adminAuthGroup.style.display = adminAuthGroup.style.display === 'flex' ? 'none' : 'flex';
             });
+
             adminSubmit.addEventListener('click', () => {
-                if(adminPassInput.value) socket.emit('get_admin_data', adminPassInput.value);
-                adminAuthGroup.style.display = 'none'; adminPassInput.value = '';
+                const pass = adminPassInput.value;
+                if(pass) socket.emit('get_admin_data', pass);
+                adminAuthGroup.style.display = 'none';
+                adminPassInput.value = '';
             });
+
             noctyxTriggerBtn.addEventListener('click', () => {
                 adminAuthGroup.style.display = 'none';
                 noctyxAuthGroup.style.display = noctyxAuthGroup.style.display === 'flex' ? 'none' : 'flex';
             });
+
             nxSubmit.addEventListener('click', () => {
-                socket.emit('auth_noctyx', { user: nxUser.value, pass: nxPass.value });
+                const user = nxUser.value; const pass = nxPass.value;
+                socket.emit('auth_noctyx', { user, pass });
                 noctyxAuthGroup.style.display = 'none';
             });
 
             findBtn.addEventListener('click', () => {
                 findBtn.innerText = "Drifting..."; findBtn.disabled = true;
-                currentMode = '1v1';
+                window.currentMode = '1v1';
                 socket.emit('find_match', { localKarma: localStorage.getItem('void_karma') || "5.0" });
             });
 
             globalBtn.addEventListener('click', () => {
-                currentMode = 'global';
+                window.currentMode = 'global';
                 globalBtn.innerText = "Connecting...";
                 socket.emit('join_global');
                 
@@ -588,7 +692,7 @@
                 progressWrapper.style.display = 'none'; chatInput.disabled = false;
                 chatBox.innerHTML = ''; chatBox.appendChild(typingIndicator);
                 
-                sysMsg("<b style='color:var(--neon-purple)'>THE NEXUS RULES</b><br><span style='font-size:0.75rem; color:var(--text-muted);'>• 7000 character limit.<br>• 10s ping cooldown.<br>• Data burns after 2 hours.</span>");
+                window.sysMsg("<b style='color:var(--neon-purple)'>THE NEXUS RULES</b><br><span style='font-size:0.75rem; color:var(--text-muted);'>• 7000 character limit.<br>• 10s ping cooldown.<br>• Data burns after 2 hours.</span>");
             });
 
             themeBtn.addEventListener('click', () => document.body.classList.toggle('light-theme'));
@@ -596,12 +700,15 @@
             returnLobbyBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
             newStrangerBtn.addEventListener('click', () => { socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
 
-            // 5. SOCKET CONNECTION
+            // 6. SOCKET CORE EVENTS
             socket.on('connect', () => { 
                 if (statusDot && chatScreen.style.display === 'flex') { 
-                    statusDot.style.backgroundColor = '#22c55e'; statusDot.style.boxShadow = '0 0 8px #22c55e'; 
-                    if (myCurrentRoom) socket.emit('reclaim_session', myCurrentRoom); 
-                    else socket.emit('user_status', 'online'); 
+                    statusDot.style.backgroundColor = '#22c55e'; dot.style.boxShadow = '0 0 8px #22c55e'; 
+                    if (window.myCurrentRoom) {
+                        socket.emit('reclaim_session', window.myCurrentRoom); 
+                    } else {
+                        socket.emit('user_status', 'online'); 
+                    }
                 }
             });
 
@@ -611,7 +718,7 @@
             });
 
             socket.on('noctyx_verified', (data) => {
-                isNoctyx = true; myGlobalAlias = data.alias;
+                window.isNoctyx = true; window.myGlobalAlias = data.alias;
                 noctyxTriggerBtn.style.color = "var(--neon-red)"; noctyxTriggerBtn.style.textShadow = "0 0 10px var(--neon-red)";
                 alert("Protocol Override: Noctyx Active.");
             });
@@ -624,53 +731,55 @@
                 document.getElementById('ad-wait').innerText = data.waitingUsers; 
                 document.getElementById('ad-rooms').innerText = data.activeRooms; 
                 document.getElementById('ad-vanish').innerText = data.totalVanished;
+                
+                window.knownRooms = new Set(); 
                 document.getElementById('admin-room-list').innerHTML = ''; 
                 document.getElementById('spy-container').innerHTML = ''; 
-                allAdminMessages = []; 
+                window.allAdminMessages = []; 
                 adminUi.style.setProperty('display', 'flex', 'important'); 
             });
 
             let lockedRoomId = null;
-            let knownRooms = new Set();
             document.getElementById('view-global-btn').addEventListener('click', () => { 
                 lockedRoomId = null; 
                 document.getElementById('spy-header-text').innerHTML = '<div class="dot" style="width:6px; height:6px;"></div> Global Feed'; 
                 document.getElementById('spy-header-text').style.color = 'var(--neon-gold)'; 
-                renderAdminFeed(); 
+                window.renderAdminFeed(); 
             });
 
             socket.on('spy_feed', (data) => {
-                data.timestamp = Date.now(); allAdminMessages.push(data);
-                if (!knownRooms.has(data.roomId)) {
-                    knownRooms.add(data.roomId);
+                data.timestamp = Date.now(); window.allAdminMessages.push(data);
+                if (!window.knownRooms) window.knownRooms = new Set();
+                if (!window.knownRooms.has(data.roomId)) {
+                    window.knownRooms.add(data.roomId);
                     const roomBtn = document.createElement('button'); 
-                    roomBtn.innerText = data.roomId === 'The Nexus' ? 'The Nexus' : "Room " + knownRooms.size; 
+                    roomBtn.innerText = data.roomId === 'The Nexus' ? 'The Nexus' : "Room " + window.knownRooms.size; 
                     roomBtn.style.cssText = "background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; text-align: left; font-family: 'Outfit'; margin-bottom: 5px;";
                     roomBtn.addEventListener('click', () => { 
                         lockedRoomId = data.roomId; 
                         document.getElementById('spy-header-text').innerHTML = `<div class="dot" style="width:6px; height:6px; background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red);"></div> ${roomBtn.innerText}`; 
-                        document.getElementById('spy-header-text').style.color = 'var(--neon-red)'; 
-                        renderAdminFeed(); 
+                        document.getElementById('spy-header-text').style.color = 'var(--neon-red)'; window.renderAdminFeed(); 
                     });
                     document.getElementById('admin-room-list').appendChild(roomBtn);
                 }
-                if (!lockedRoomId || lockedRoomId === data.roomId) appendAdminMessage(data);
+                if (!lockedRoomId || lockedRoomId === data.roomId) window.appendAdminMessage(data);
             });
 
-            function renderAdminFeed() { 
+            window.renderAdminFeed = function() { 
                 document.getElementById('spy-container').innerHTML = ''; 
-                const filteredMsgs = lockedRoomId ? allAdminMessages.filter(m => m.roomId === lockedRoomId) : allAdminMessages; 
-                filteredMsgs.forEach(m => appendAdminMessage(m)); 
+                const filteredMsgs = lockedRoomId ? window.allAdminMessages.filter(m => m.roomId === lockedRoomId) : window.allAdminMessages; 
+                filteredMsgs.forEach(m => window.appendAdminMessage(m)); 
             }
 
-            function appendAdminMessage(data) {
+            window.appendAdminMessage = function(data) {
                 const entry = document.createElement('div');
                 entry.style.cssText = "font-size: 0.85rem; color: #e2e8f0; background: rgba(255,255,255,0.04); padding: 10px; border-radius: 8px; border-left: 3px solid var(--neon-cyan); line-height: 1.4; animation: slideUp 0.2s ease;";
                 const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
                 entry.innerHTML = `[${time}] 💬 ` + data.text;
+                
                 if (data.type === 'image' && data.url) {
-                    entry.innerHTML += `<br>`;
-                    const img = document.createElement('img'); img.src = data.url;
+                    entry.innerHTML += `<br>`; const img = document.createElement('img'); img.src = data.url;
                     img.style.cssText = "max-width: 150px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--glass-border);";
                     img.onload = () => { const spyCont = document.getElementById('spy-container'); spyCont.scrollTop = spyCont.scrollHeight; };
                     entry.appendChild(img);
@@ -678,22 +787,22 @@
                     entry.innerHTML += `<br><div style="display:flex; align-items:center; gap:10px; margin-top:8px; background:rgba(0,0,0,0.5); padding:8px; border-radius:8px; border:1px solid var(--glass-border);"><img src="${data.cover}" style="width:35px; height:35px; border-radius:4px;"><div style="flex:1; overflow:hidden;"><div style="font-size:0.75rem; color:var(--neon-cyan); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.title}</div><div style="font-size:0.65rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.artist}</div></div><audio controls src="${data.url}" style="height:25px; width:130px; border-radius:4px; outline:none;"></audio></div>`;
                 }
                 document.getElementById('spy-container').prepend(entry); 
-                if (document.getElementById('spy-container').childNodes.length > 1000) document.getElementById('spy-container').removeChild(document.getElementById('spy-container').lastChild);
+                if (document.getElementById('spy-container').childNodes.length > 1000) { document.getElementById('spy-container').removeChild(document.getElementById('spy-container').lastChild); }
             }
 
-            socket.on('global_joined', (data) => { myGlobalAlias = data.alias; });
+            socket.on('global_joined', (data) => { window.myGlobalAlias = data.alias; });
 
             socket.on('match_found', (data) => { 
                 lobbyScreen.style.display = 'none'; chatScreen.style.display = 'flex';
                 chatBox.innerHTML = ''; chatBox.appendChild(typingIndicator);
                 
-                myCurrentRoom = data.roomId;
-                currentMode = data.isPrivateSide ? 'private' : '1v1';
+                window.myCurrentRoom = data.roomId;
+                window.currentMode = data.isPrivateSide ? 'private' : '1v1';
                 
-                if (currentMode === 'private') {
+                if (window.currentMode === 'private') {
                     roomTitle.innerHTML = 'Private Void';
-                    currentMax = data.isInfinite ? 9999999 : 500;
-                    sysMsg("You slipped into a Private Void. 500 chars.");
+                    window.currentMax = data.isInfinite ? 9999999 : 500;
+                    window.sysMsg("You slipped into a Private Void. 500 chars.");
                 } else {
                     if (data.strangerNoctyx) {
                         roomTitle.innerHTML = '<span style="color:var(--neon-red); text-shadow:0 0 8px red; font-family: Cinzel;">NOCTYX</span>';
@@ -701,38 +810,40 @@
                         let karmaHtml = data.karma ? `<span style="margin-left:10px; font-size:0.7rem; color:var(--neon-gold); background:rgba(0,0,0,0.5); padding:3px 6px; border-radius:6px; font-family:Outfit;">★ ${data.karma}</span>` : '';
                         roomTitle.innerHTML = `Stranger <span id="stranger-flag">${data.flag || '🇧🇩'}</span> ${karmaHtml}`;
                     }
-                    currentMax = data.isInfinite ? 9999999 : 1500;
-                    sysMsg(data.isInfinite ? "<span style='color:var(--neon-red)'>God Mode Activated. Limits removed.</span>" : "A stranger appeared. 1500 chars.");
+                    window.currentMax = data.isInfinite ? 9999999 : 1500;
+                    window.sysMsg(data.isInfinite ? "<span style='color:var(--neon-red)'>God Mode Activated. Limits removed.</span>" : "A stranger appeared. 1500 chars.");
                 }
-                usedChars = 0;
+
+                window.usedChars = 0;
                 progressWrapper.style.display = data.isInfinite ? 'none' : 'block';
-                chatInput.maxLength = currentMax;
-                updateVisualBar(0);
+                chatInput.maxLength = window.currentMax;
+                window.updateVisualBar(0);
             });
 
             socket.on('global_history', (history) => {
                 history.forEach(msg => {
-                    const isMe = msg.sender === myGlobalAlias; 
-                    appendMessageUI(msg, isMe ? 'my-msg' : 'stranger-msg', true); 
+                    const isMe = msg.sender === window.myGlobalAlias; 
+                    window.appendMessageUI(msg, isMe ? 'my-msg' : 'stranger-msg', true); 
                 });
             });
 
-            // 6. MEDIA UPLOADS
+            // 7. IMAGE UPLOAD LOGIC
             let localPhotoCount2 = parseInt(localStorage.getItem('void_daily_photos')) || 0;
             if (localStorage.getItem('void_photo_date') !== new Date().toDateString()) { 
                 localPhotoCount2 = 0; localStorage.setItem('void_photo_date', new Date().toDateString()); localStorage.setItem('void_daily_photos', 0); 
             }
 
-            photoBtn.addEventListener('click', () => {
-                if (localPhotoCount2 >= 20 && !isNoctyx) { sysMsg("⚠️ VOID ERROR: Daily photo limit (20) reached."); return; }
+            window.clickPhotoBtn = function() {
+                if (localPhotoCount2 >= 20 && !window.isNoctyx) { window.sysMsg("⚠️ VOID ERROR: Daily photo limit (20) reached."); return; }
                 imageInput.click();
-            });
+            }
 
             imageInput.addEventListener('change', async (e) => {
                 const file = e.target.files[0]; if(!file) return;
-                if (currentMode === 'global' && !isNoctyx) {
-                    if (Date.now() - lastGlobalSend < 10000) {
-                        sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait for cooldown.</span>');
+                
+                if (window.currentMode === 'global' && !window.isNoctyx) {
+                    if (Date.now() - window.lastGlobalSend < 10000) {
+                        window.sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait for cooldown.</span>');
                         imageInput.value = ''; return;
                     }
                 }
@@ -742,33 +853,36 @@
                 sendBtn.style.pointerEvents = 'none'; sendBtn.style.opacity = '0.5';
 
                 const formData = new FormData(); formData.append('image', file);
+                
                 try {
                     const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
                     const data = await res.json();
+                    
                     if(data.success) {
-                        if(!isNoctyx){ localPhotoCount2++; localStorage.setItem('void_daily_photos', localPhotoCount2); }
+                        if(!window.isNoctyx){ localPhotoCount2++; localStorage.setItem('void_daily_photos', localPhotoCount2); }
                         const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
                         sessionStorage.setItem('pending_media_' + msgId, 'true');
                         const msgObj = { id: msgId, text: "📷 Photo", type: 'image', url: data.data.url };
-                        if (currentReplyTo) msgObj.replyTo = currentReplyTo;
+                        if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
                         
-                        if (currentMode === 'global') {
-                            lastGlobalSend = Date.now(); sessionStorage.setItem('void_global_time', lastGlobalSend);
-                            startGlobalCooldown();
-                            appendMessageUI({ ...msgObj, sender: myGlobalAlias, isNoctyx: isNoctyx }, 'my-msg', true);
+                        if (window.currentMode === 'global') {
+                            window.lastGlobalSend = Date.now(); sessionStorage.setItem('void_global_time', window.lastGlobalSend);
+                            window.startGlobalCooldown();
+                            window.appendMessageUI({ ...msgObj, sender: window.myGlobalAlias, isNoctyx: window.isNoctyx }, 'my-msg', true);
                             socket.emit('send_global', msgObj);
                         } else { socket.emit('send_message', msgObj); }
-                        cancelReply();
-                    } else { sysMsg("Upload failed."); }
-                } catch(err) { sysMsg("Upload error occurred."); }
+                        window.cancelReply();
+                    } else { window.sysMsg("Upload failed."); }
+                } catch(err) { window.sysMsg("Upload error occurred."); }
+                
                 chatInput.placeholder = originalPlaceholder; chatInput.disabled = false; sendBtn.style.pointerEvents = 'auto'; sendBtn.style.opacity = '1'; imageInput.value = ''; 
             });
 
-            // 7. MUSIC SEARCH
-            musicBtn.addEventListener('click', () => {
+            // 8. MUSIC SEARCH LOGIC
+            window.toggleMusicSearch = function() {
                 if(musicSearchContainer.style.display === 'block') { musicSearchContainer.style.display = 'none'; } 
                 else { musicSearchContainer.style.display = 'block'; musicSearchInput.focus(); }
-            });
+            }
 
             let searchTimeout;
             musicSearchInput.addEventListener('input', (e) => {
@@ -790,37 +904,39 @@
                         item.innerHTML = `<img src="${track.artworkUrl100 || ''}" alt="cover"><div class="music-result-info"><div class="music-result-title"></div><div class="music-result-artist"></div></div>`;
                         item.querySelector('.music-result-title').textContent = track.trackName;
                         item.querySelector('.music-result-artist').textContent = track.artistName;
-                        item.onclick = () => sendMusic(track);
+                        item.onclick = () => window.sendMusic(track);
                         musicResults.appendChild(item);
                     });
                 } catch (err) { musicResults.innerHTML = '<div style="text-align:center; color:var(--neon-red); font-size:0.8rem; padding:10px;">Error finding signal.</div>'; }
             }
 
-            function sendMusic(track) {
-                if (currentMode === 'global' && !isNoctyx) {
-                    if (Date.now() - lastGlobalSend < 10000) { sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait for cooldown.</span>'); return; }
+            window.sendMusic = function(track) {
+                if (window.currentMode === 'global' && !window.isNoctyx) {
+                    if (Date.now() - window.lastGlobalSend < 10000) { window.sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait for cooldown.</span>'); return; }
                 }
+
                 musicSearchContainer.style.display = 'none'; musicSearchInput.value = ''; musicResults.innerHTML = '';
+                
                 const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
                 sessionStorage.setItem('pending_media_' + msgId, 'true');
                 
                 const msgObj = { id: msgId, type: 'music', text: "🎵 Shared a frequency", url: track.previewUrl, cover: track.artworkUrl100, title: track.trackName, artist: track.artistName };
-                if (currentReplyTo) msgObj.replyTo = currentReplyTo;
+                if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
                 
-                if (currentMode === 'global') {
-                    lastGlobalSend = Date.now(); sessionStorage.setItem('void_global_time', lastGlobalSend);
-                    startGlobalCooldown();
-                    appendMessageUI({ ...msgObj, sender: myGlobalAlias, isNoctyx: isNoctyx }, 'my-msg', true);
+                if (window.currentMode === 'global') {
+                    window.lastGlobalSend = Date.now(); sessionStorage.setItem('void_global_time', window.lastGlobalSend);
+                    window.startGlobalCooldown();
+                    window.appendMessageUI({ ...msgObj, sender: window.myGlobalAlias, isNoctyx: window.isNoctyx }, 'my-msg', true);
                     socket.emit('send_global', msgObj);
                 } else { socket.emit('send_message', msgObj); }
-                cancelReply();
+                window.cancelReply();
             }
 
-            // 8. CHAT SENDING & EVENT DELEGATION
+            // 9. MESSAGE SENDING & COOLDOWN
             sendBtn.addEventListener('click', sendLocalMessage);
             chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !chatInput.disabled) sendLocalMessage(); });
 
-            function startGlobalCooldown() {
+            window.startGlobalCooldown = function() {
                 let timeLeft = 10;
                 chatInput.disabled = true; sendBtn.disabled = true;
                 chatInput.placeholder = `Cooldown: ${timeLeft}s...`; chatInput.style.opacity = '0.5';
@@ -832,128 +948,58 @@
                         chatInput.placeholder = "Type a message..."; chatInput.style.opacity = '1'; chatInput.focus();
                     } else { chatInput.placeholder = `Cooldown: ${timeLeft}s...`; }
                 }, 1000);
-            }
+            };
 
             function sendLocalMessage() {
                 const rawText = chatInput.value; const textToDisplay = rawText.trim();
                 if (textToDisplay === '') return;
                 
-                if (currentMode === 'global') {
-                    if (!isNoctyx) {
-                        if (Date.now() - lastGlobalSend < 10000) return;
-                        if (globalCharCount + textToDisplay.length > 7000) { sysMsg('<span style="color:var(--neon-red)">Your signal faded. 7000 chars reached.</span>'); chatInput.disabled = true; return; }
-                        lastGlobalSend = Date.now(); globalCharCount += textToDisplay.length;
-                        sessionStorage.setItem('void_global_time', lastGlobalSend); sessionStorage.setItem('void_global_chars', globalCharCount);
-                        startGlobalCooldown();
+                if (window.currentMode === 'global') {
+                    if (!window.isNoctyx) {
+                        if (Date.now() - window.lastGlobalSend < 10000) return;
+                        if (window.globalCharCount + textToDisplay.length > 7000) { window.sysMsg('<span style="color:var(--neon-red)">Your signal faded. 7000 chars reached.</span>'); chatInput.disabled = true; return; }
+                        window.lastGlobalSend = Date.now(); window.globalCharCount += textToDisplay.length;
+                        sessionStorage.setItem('void_global_time', window.lastGlobalSend); sessionStorage.setItem('void_global_chars', window.globalCharCount);
+                        window.startGlobalCooldown();
                     }
                     const msgId = 'gmsg_' + Date.now();
                     const msgObj = { id: msgId, text: textToDisplay, type: 'text' };
-                    if (currentReplyTo) msgObj.replyTo = currentReplyTo;
-                    appendMessageUI({ ...msgObj, sender: myGlobalAlias, isNoctyx: isNoctyx }, 'my-msg', true);
+                    if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
+                    window.appendMessageUI({ ...msgObj, sender: window.myGlobalAlias, isNoctyx: window.isNoctyx }, 'my-msg', true);
                     socket.emit('send_global', msgObj);
                 } 
                 else {
-                    usedChars += rawText.length;
+                    window.usedChars += rawText.length;
                     const msgId = 'msg_' + Date.now();
                     const msgObj = { id: msgId, text: textToDisplay };
-                    if (currentReplyTo) msgObj.replyTo = currentReplyTo;
-                    appendMessageUI(msgObj, 'my-msg'); socket.emit('send_message', msgObj); updateVisualBar(usedChars);
+                    if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
+                    window.appendMessageUI(msgObj, 'my-msg'); socket.emit('send_message', msgObj); window.updateVisualBar(window.usedChars);
                 }
-                chatInput.value = ''; cancelReply();
+                chatInput.value = ''; window.cancelReply();
             }
 
             socket.on('receive_message', (msgObj) => { 
-                if (msgObj.system) { sysMsg(msgObj.text); return; }
+                if (msgObj.system) { window.sysMsg(msgObj.text); return; }
                 typingIndicator.style.display = 'none'; 
                 let isMe = false;
                 if (msgObj.id && sessionStorage.getItem('pending_media_' + msgObj.id)) { isMe = true; sessionStorage.removeItem('pending_media_' + msgObj.id); }
-                appendMessageUI(msgObj, isMe ? 'my-msg' : 'stranger-msg'); 
+                window.appendMessageUI(msgObj, isMe ? 'my-msg' : 'stranger-msg'); 
                 if (!isMe && msgObj.type !== 'music') notificationSound.play().catch(()=>{}); 
             });
 
             socket.on('receive_global', (msgObj) => {
-                if (msgObj.sender !== myGlobalAlias) {
-                    appendMessageUI(msgObj, 'stranger-msg', true);
+                if (msgObj.sender !== window.myGlobalAlias) {
+                    window.appendMessageUI(msgObj, 'stranger-msg', true);
                     if (msgObj.type !== 'music') notificationSound.play().catch(()=>{}); 
                 }
             });
 
-            // THE MASTER EVENT DELEGATOR (CATCHES ALL BUTTON CLICKS SECURELY)
-            chatBox.addEventListener('click', (e) => {
-                const target = e.target;
-                
-                // Music Buttons
-                if (target.classList.contains('music-play-btn')) {
-                    const url = target.getAttribute('data-url');
-                    const id = target.getAttribute('data-id');
-                    const loopBtn = chatBox.querySelector(`.music-loop-btn[data-id="${id}"]`);
-                    if (globalAudio.src === url && !globalAudio.paused) { globalAudio.pause(); target.innerHTML = '▶'; return; }
-                    if (currentPlayingBtn) currentPlayingBtn.innerHTML = '▶';
-                    globalAudio.src = url; globalAudio.loop = loopBtn ? loopBtn.classList.contains('active') : false;
-                    globalAudio.play().catch(err => sysMsg("Audio blocked."));
-                    target.innerHTML = '⏸'; currentPlayingBtn = target;
-                    globalAudio.onended = () => { if(!globalAudio.loop) target.innerHTML = '▶'; };
-                    return;
-                }
-                
-                if (target.classList.contains('music-loop-btn')) {
-                    target.classList.toggle('active');
-                    const id = target.getAttribute('data-id');
-                    if (currentPlayingBtn && currentPlayingBtn.getAttribute('data-id') === id) { globalAudio.loop = target.classList.contains('active'); }
-                    return;
-                }
-
-                // Global Game Accept
-                if (target.classList.contains('accept-global-btn')) {
-                    socket.emit('accept_global_game', { 
-                        inviteId: target.getAttribute('data-invite'), 
-                        game: target.getAttribute('data-game'), 
-                        fromId: target.getAttribute('data-from') 
-                    });
-                    target.innerText = "Accepted!"; target.disabled = true; target.style.opacity = '0.5';
-                    return;
-                }
-
-                // 1v1 Game Accept
-                if (target.classList.contains('accept-1v1-btn')) {
-                    target.parentElement.innerHTML = "<span style='color:var(--neon-cyan); font-size:0.8rem; margin-left:5px;'>(Accepted)</span>"; 
-                    const game = target.getAttribute('data-game');
-                    socket.emit('game_action', { type: 'accept', game: game }); 
-                    startGame(game, false);
-                    return;
-                }
-
-                // Extend Char Limit
-                if (target.classList.contains('accept-extend-btn')) {
-                    target.parentElement.innerHTML = "<span style='color:var(--neon-cyan); margin-left:10px; font-size:0.8rem;'>(Accepted)</span>"; 
-                    socket.emit('accept_extend');
-                    return;
-                }
-
-                // Private Room Invite
-                if (target.classList.contains('invite-private-btn')) {
-                    const tgt = target.getAttribute('data-target');
-                    sysMsg(`Sent private request to ${tgt}.`);
-                    socket.emit('invite_private', tgt);
-                    return;
-                }
-
-                // Open Bottom Sheet (dots or bubble)
-                if (target.classList.contains('dots-btn')) {
-                    openSheet(target.getAttribute('data-id')); return;
-                }
-                const bubble = target.closest('.bubble');
-                if (bubble && !target.closest('button')) {
-                    openSheet(bubble.getAttribute('data-id')); return;
-                }
-            });
-
-            // 9. UI RENDERER
-            function appendMessageUI(msgData, type, isGlobal = false) {
+            // 11. UI RENDERER
+            window.appendMessageUI = function(msgData, type, isGlobal = false) {
                 const msgId = msgData.id || 'msg_' + Date.now() + Math.floor(Math.random()*1000);
-                if (messageStore[msgId] && (msgData.type === 'image' || msgData.type === 'music')) return;
+                if (window.messageStore[msgId] && (msgData.type === 'image' || msgData.type === 'music')) return;
 
-                messageStore[msgId] = { text: msgData.text, sender: type === 'my-msg' ? 'You' : (msgData.senderAlias || msgData.sender || 'Stranger') };
+                window.messageStore[msgId] = { text: msgData.text, sender: type === 'my-msg' ? 'You' : (msgData.senderAlias || msgData.sender || 'Stranger') };
 
                 const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; msgDiv.id = msgId;
                 const timeString = `${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}`;
@@ -962,7 +1008,7 @@
                 let aliasHtml = '';
                 if (isGlobal && type === 'stranger-msg') {
                     const nxClass = msgData.isNoctyx ? 'noctyx' : '';
-                    const inviteBtn = (!isNoctyx && msgData.isNoctyx) ? '' : `<button class="invite-private-btn" data-target="${msgData.sender}">✉️</button>`;
+                    const inviteBtn = (!window.isNoctyx && msgData.isNoctyx) ? '' : `<button class="invite-private-btn" onclick="window.sendPrivateInvite('${msgData.sender}')">✉️</button>`;
                     aliasHtml = `<div class="sender-alias ${nxClass}">${msgData.sender} ${inviteBtn}</div>`;
                 } else if (msgData.senderAlias === "Noctyx" && type === 'stranger-msg') {
                     aliasHtml = `<div class="sender-alias noctyx">Noctyx</div>`;
@@ -971,7 +1017,7 @@
                 msgDiv.innerHTML = `
                     ${aliasHtml}
                     <div class="bubble-container" style="position:relative; width:100%;">
-                        <div class="bubble" data-id="${msgId}">
+                        <div class="bubble" onclick="window.openSheet('${msgId}')">
                             <div class="reply-container"></div>
                             <span class="msg-text-content"></span>
                         </div>
@@ -979,11 +1025,12 @@
                     </div>
                     <div class="msg-meta" style="display:flex; justify-content:${type === 'my-msg' ? 'flex-end' : 'flex-start'}; align-items:center;">
                         ${metaHtml}
-                        <span class="dots-btn" data-id="${msgId}" style="margin: 0 8px; cursor: pointer; color: var(--neon-cyan); padding: 2px 6px; font-weight: bold; background: rgba(255,255,255,0.05); border-radius: 4px;">⋮</span>
+                        <span onclick="window.openSheet('${msgId}')" style="margin: 0 8px; cursor: pointer; color: var(--neon-cyan); padding: 2px 6px; font-weight: bold; background: rgba(255,255,255,0.05); border-radius: 4px;">⋮</span>
                     </div>
                 `;
                 
                 const contentContainer = msgDiv.querySelector('.msg-text-content');
+                
                 if (msgData.type === 'image') {
                     const img = document.createElement('img'); img.src = msgData.url;
                     img.style.cssText = "max-width: 100%; border-radius: 10px; margin-top: 5px; display: block; border: 1px solid var(--glass-border);";
@@ -992,13 +1039,16 @@
                 } else if (msgData.type === 'music') {
                     contentContainer.innerHTML = `
                         <div class="music-bubble">
-                            <img src="${msgData.cover || ''}" class="music-cover">
-                            <div class="music-info"><div class="music-title">${msgData.title || 'Unknown'}</div><div class="music-artist">${msgData.artist || 'Unknown'}</div></div>
+                            <img src="" class="music-cover">
+                            <div class="music-info"><div class="music-title"></div><div class="music-artist"></div></div>
                             <div class="music-controls">
-                                <button class="music-loop-btn" data-id="${msgId}">∞</button>
-                                <button class="music-play-btn" data-url="${msgData.url}" data-id="${msgId}">▶</button>
+                                <button class="music-loop-btn" onclick="event.stopPropagation(); window.toggleLoop('${msgId}')" id="loop-${msgId}">∞</button>
+                                <button class="music-play-btn" onclick="event.stopPropagation(); window.playVoidMusic('${msgData.url}', '${msgId}')" id="play-${msgId}">▶</button>
                             </div>
                         </div>`;
+                    contentContainer.querySelector('.music-cover').src = msgData.cover || '';
+                    contentContainer.querySelector('.music-title').textContent = msgData.title || 'Unknown Frequency';
+                    contentContainer.querySelector('.music-artist').textContent = msgData.artist || 'Unknown Node';
                 } else { contentContainer.textContent = msgData.text; }
                 
                 if (msgData.replyTo) {
@@ -1012,7 +1062,6 @@
                 chatBox.insertBefore(msgDiv, typingIndicator); 
                 if (msgData.type !== 'image') chatBox.scrollTop = chatBox.scrollHeight; 
 
-                // FLAW FIXED: Swiping ignores buttons entirely
                 const bubbleEl = msgDiv.querySelector(`.bubble`);
                 let startX = 0; let currentDiff = 0;
                 bubbleEl.addEventListener('touchstart', (e) => { 
@@ -1028,169 +1077,172 @@
                 bubbleEl.addEventListener('touchend', (e) => {
                     if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
                     bubbleEl.style.transition = 'transform 0.2s ease'; bubbleEl.style.transform = 'translateX(0px)';
-                    if (type === 'stranger-msg' && currentDiff > 40) openReply(msgId); 
-                    else if (type === 'my-msg' && currentDiff < -40) openReply(msgId); 
+                    if (type === 'stranger-msg' && currentDiff > 40) window.setReply(msgId); 
+                    else if (type === 'my-msg' && currentDiff < -40) window.setReply(msgId); 
                 });
             }
 
-            // 10. PRIVATE ROOM LOGIC
+            // 12. PRIVATE ROOM LOGIC
+            window.sendPrivateInvite = function(targetAlias) {
+                window.sysMsg(`Sent private request to ${targetAlias}.`);
+                socket.emit('invite_private', targetAlias);
+            }
+
             socket.on('private_request', (data) => {
-                if (data.to === myGlobalAlias) {
-                    privateInviteData = data;
+                if (data.to === window.myGlobalAlias) {
+                    window.privateInviteData = data;
                     privateInviteText.innerText = `${data.from} wants to pull you into a Private Void.`;
                     privateInviteOverlay.style.display = 'flex';
                 }
             });
 
             acceptPrivateBtn.addEventListener('click', () => {
-                if(privateInviteData) {
-                    socket.emit('accept_private', privateInviteData);
+                if(window.privateInviteData) {
+                    socket.emit('accept_private', window.privateInviteData);
                     privateInviteOverlay.style.display = 'none';
                 }
             });
-            declinePrivateBtn.addEventListener('click', () => { privateInviteData = null; privateInviteOverlay.style.display = 'none'; });
+            declinePrivateBtn.addEventListener('click', () => {
+                window.privateInviteData = null; privateInviteOverlay.style.display = 'none';
+            });
 
-            // 11. CORE HELPERS
-            function updateVisualBar(total) {
-                if(currentMax > 10000) return; 
-                let remaining = currentMax - total; let percentage = (remaining / currentMax) * 100; if (percentage < 0) percentage = 0; 
+            // 13. MEDIA PLAYBACK
+            window.playVoidMusic = function(url, btnId) {
+                const btn = document.getElementById('play-' + btnId);
+                const loopBtn = document.getElementById('loop-' + btnId);
+                if (window.globalAudio.src === url && !window.globalAudio.paused) { window.globalAudio.pause(); btn.innerHTML = '▶'; return; }
+                if (window.currentPlayingBtn) window.currentPlayingBtn.innerHTML = '▶';
+                window.globalAudio.src = url; window.globalAudio.loop = loopBtn ? loopBtn.classList.contains('active') : false;
+                window.globalAudio.play().catch(e => window.sysMsg("Audio blocked."));
+                btn.innerHTML = '⏸'; window.currentPlayingBtn = btn;
+                window.globalAudio.onended = () => { if(!window.globalAudio.loop) btn.innerHTML = '▶'; };
+            };
+
+            window.toggleLoop = function(btnId) {
+                const btn = document.getElementById('loop-' + btnId); btn.classList.toggle('active');
+                if (window.currentPlayingBtn && window.currentPlayingBtn.id === 'play-' + btnId) { window.globalAudio.loop = btn.classList.contains('active'); }
+            };
+
+            // 14. CORE HELPERS
+            window.updateVisualBar = function(total) {
+                if(window.currentMax > 10000) return; 
+                let remaining = window.currentMax - total; let percentage = (remaining / window.currentMax) * 100; if (percentage < 0) percentage = 0; 
                 charBar.style.width = `${percentage}%`;
                 if (remaining <= 0) { chatInput.disabled = true; chatInput.maxLength = remaining; }
-                if (remaining <= 300 && currentMax === 1500 && !isCountdownRunning && total > 0) { actionToast.style.display = 'block'; extendBtn.style.display = 'inline-block'; countdownText.style.display = 'none'; }
+                if (remaining <= 300 && window.currentMax === 1500 && !window.isCountdownRunning && total > 0) { actionToast.style.display = 'block'; extendBtn.style.display = 'inline-block'; countdownText.style.display = 'none'; }
                 if (percentage < 20) { charBar.style.backgroundColor = 'var(--neon-red)'; charBar.style.boxShadow = '0 0 10px var(--neon-red)'; } 
                 else { charBar.style.backgroundColor = 'var(--neon-cyan)'; charBar.style.boxShadow = '0 0 10px var(--neon-cyan)'; }
             }
 
-            socket.on('sync_chars', (data) => { if(currentMode !== 'global') { currentMax = data.max; usedChars = data.used; updateVisualBar(usedChars); } });
+            socket.on('sync_chars', (data) => { if(window.currentMode !== 'global') { window.currentMax = data.max; window.usedChars = data.used; window.updateVisualBar(window.usedChars); } });
 
             socket.on('typing', () => { 
-                if (currentMode === 'global') return;
-                typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; clearTimeout(typingTimeoutGlobal); typingTimeoutGlobal = setTimeout(() => typingIndicator.style.display = 'none', 1500); 
+                if (window.currentMode === 'global') return;
+                typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; clearTimeout(window.typingTimeoutGlobal); window.typingTimeoutGlobal = setTimeout(() => typingIndicator.style.display = 'none', 1500); 
             });
 
-            // 12. SHATTER
-            socket.on('force_shatter', () => { if(!isCountdownRunning && currentMode !== 'global') startCountdown(); });
+            // 15. SHATTER
+            socket.on('force_shatter', () => { if(!window.isCountdownRunning && window.currentMode !== 'global') window.startCountdown(); });
             
-            function startCountdown() { 
-                isCountdownRunning = true; chatInput.disabled = true; chatInput.placeholder = "Time is up..."; actionToast.style.display = 'block'; extendBtn.style.display = 'none'; countdownText.style.display = 'block'; 
+            window.startCountdown = function() { 
+                window.isCountdownRunning = true; chatInput.disabled = true; chatInput.placeholder = "Time is up..."; actionToast.style.display = 'block'; extendBtn.style.display = 'none'; countdownText.style.display = 'block'; 
                 let secondsLeft = 5; countdownText.innerText = `Shattering in ${secondsLeft}...`; 
-                countdownTimer = setInterval(() => { secondsLeft--; if (secondsLeft <= 0) { clearInterval(countdownTimer); triggerVanish(); } else { countdownText.innerText = `Shattering in ${secondsLeft}...`; } }, 1000); 
+                window.countdownTimer = setInterval(() => { secondsLeft--; if (secondsLeft <= 0) { clearInterval(window.countdownTimer); window.triggerVanish(); } else { countdownText.innerText = `Shattering in ${secondsLeft}...`; } }, 1000); 
             }
             
-            function triggerVanish() { 
+            window.triggerVanish = function() { 
                 countdownText.innerText = "Shattered."; chatBox.style.opacity = '0.1'; chatBox.style.filter = 'blur(4px)'; 
-                if(!globalAudio.paused) globalAudio.pause(); 
-                for (let key in messageStore) delete messageStore[key]; 
+                if(!window.globalAudio.paused) window.globalAudio.pause(); 
+                for (let key in window.messageStore) delete window.messageStore[key]; 
                 socket.emit('chat_shattered'); setTimeout(() => { actionToast.style.display = 'none'; shatterOverlay.style.display = 'flex'; }, 800); 
             }
             
-            socket.on('stranger_disconnected', () => { if(!isCountdownRunning && currentMode !== 'global') startCountdown(); });
+            socket.on('stranger_disconnected', () => { if(!window.isCountdownRunning && window.currentMode !== 'global') window.startCountdown(); });
 
             extendBtn.addEventListener('click', () => { if(extendBtn.innerText.includes("Copied")) return; extendBtn.innerText = "Waiting..."; extendBtn.disabled = true; extendBtn.style.opacity = '0.6'; socket.emit('request_extend'); });
-            socket.on('extend_requested', () => { const reqId = 'ext-' + Date.now(); sysMsg(`Stranger requested +500 chars. <span id="${reqId}"><button class="accept-extend-btn" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(reqId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); });
-            socket.on('extend_accepted', (data) => { currentMax = data.max; usedChars = data.used; actionToast.style.display = 'none'; extendBtn.style.display = 'none'; chatInput.maxLength = currentMax - usedChars; updateVisualBar(usedChars); sysMsg('Extension Granted! <span>+500 characters</span> added.'); });
+            socket.on('extend_requested', () => { const reqId = 'ext-' + Date.now(); window.sysMsg(`Stranger requested +500 chars. <span id="${reqId}"><button onclick="window.acceptExtend(this)" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(reqId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); });
+            window.acceptExtend = function(btn) { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); margin-left:10px; font-size:0.8rem;'>(Accepted)</span>"; socket.emit('accept_extend'); }
+            socket.on('extend_accepted', (data) => { window.currentMax = data.max; window.usedChars = data.used; actionToast.style.display = 'none'; extendBtn.style.display = 'none'; chatInput.maxLength = window.currentMax - window.usedChars; window.updateVisualBar(window.usedChars); window.sysMsg('Extension Granted! <span>+500 characters</span> added.'); });
 
-            // 13. BOTTOM SHEET
-            function openSheet(id) { activeSheetMsgId = id; sheetOverlay.style.display = 'block'; setTimeout(() => { sheetOverlay.style.opacity = '1'; bottomSheet.style.bottom = '0'; }, 10); }
-            function closeSheet() { bottomSheet.style.bottom = '-100%'; sheetOverlay.style.opacity = '0'; setTimeout(() => { sheetOverlay.style.display = 'none'; activeSheetMsgId = null; }, 300); }
+            // 16. BOTTOM SHEET
+            window.openSheet = function(id) { window.activeSheetMsgId = id; sheetOverlay.style.display = 'block'; setTimeout(() => { sheetOverlay.style.opacity = '1'; bottomSheet.style.bottom = '0'; }, 10); }
+            window.closeSheet = function() { bottomSheet.style.bottom = '-100%'; sheetOverlay.style.opacity = '0'; setTimeout(() => { sheetOverlay.style.display = 'none'; window.activeSheetMsgId = null; }, 300); }
             
-            sheetOverlay.addEventListener('click', closeSheet);
-            closeSheetBtn.addEventListener('click', closeSheet);
+            sheetOverlay.addEventListener('click', window.closeSheet);
+            closeSheetBtn.addEventListener('click', window.closeSheet);
+            closeReplyBtn.addEventListener('click', () => window.cancelReply());
             
-            document.querySelectorAll('.sheet-emoji-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    if(!activeSheetMsgId) return;
-                    const emoji = e.target.getAttribute('data-emoji');
-                    showReaction(activeSheetMsgId, emoji); socket.emit('react_message', { msgId: activeSheetMsgId, emoji }); closeSheet();
-                });
-            });
-
-            document.getElementById('sheet-reply-btn').addEventListener('click', () => { if(!activeSheetMsgId) return; openReply(activeSheetMsgId); closeSheet(); });
-            document.getElementById('sheet-copy-btn').addEventListener('click', () => { if(!activeSheetMsgId) return; navigator.clipboard.writeText(messageStore[activeSheetMsgId].text).then(() => { countdownText.style.display = 'none'; extendBtn.innerText = "Copied!"; extendBtn.style.display = 'inline-block'; actionToast.style.display = 'block'; setTimeout(() => { actionToast.style.display = 'none'; extendBtn.innerText = "Request +500 Chars"; }, 2000); }); closeSheet(); });
-
-            function openReply(id) { const msgInfo = messageStore[id]; if(!msgInfo) return; currentReplyTo = { id, text: msgInfo.text, sender: msgInfo.sender }; replyText.innerText = msgInfo.text.length > 30 ? msgInfo.text.substring(0,30) + '...' : msgInfo.text; replyBanner.style.display = 'flex'; chatInput.focus(); }
-            function cancelReply() { currentReplyTo = null; replyBanner.style.display = 'none'; replyText.innerText = '...'; }
-            closeReplyBtn.addEventListener('click', cancelReply);
+            window.sheetReact = function(emoji) { if(!window.activeSheetMsgId) return; window.showReaction(window.activeSheetMsgId, emoji); socket.emit('react_message', { msgId: window.activeSheetMsgId, emoji }); window.closeSheet(); }
+            window.sheetReply = function() { if(!window.activeSheetMsgId) return; window.setReply(window.activeSheetMsgId); window.closeSheet(); }
+            window.sheetCopy = function() { if(!window.activeSheetMsgId) return; navigator.clipboard.writeText(window.messageStore[window.activeSheetMsgId].text).then(() => { countdownText.style.display = 'none'; extendBtn.innerText = "Copied!"; extendBtn.style.display = 'inline-block'; actionToast.style.display = 'block'; setTimeout(() => { actionToast.style.display = 'none'; extendBtn.innerText = "Request +500 Chars"; }, 2000); }); window.closeSheet(); }
+            window.setReply = function(id) { const msgInfo = window.messageStore[id]; if(!msgInfo) return; window.currentReplyTo = { id, text: msgInfo.text, sender: msgInfo.sender }; replyText.innerText = msgInfo.text.length > 30 ? msgInfo.text.substring(0,30) + '...' : msgInfo.text; replyBanner.style.display = 'flex'; chatInput.focus(); }
+            window.cancelReply = function() { window.currentReplyTo = null; replyBanner.style.display = 'none'; replyText.innerText = '...'; }
             
-            socket.on('receive_reaction', (data) => { showReaction(data.msgId, data.emoji); });
-            function showReaction(msgId, emoji) { const badge = document.getElementById(`react-${msgId}`); if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulse 1s ease'; } }
+            socket.on('receive_reaction', (data) => { window.showReaction(data.msgId, data.emoji); });
+            window.showReaction = function(msgId, emoji) { const badge = document.getElementById(`react-${msgId}`); if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulse 1s ease'; } }
 
-            // 14. GAMES
-            gameBtn.addEventListener('click', () => { gameMenu.style.display = 'flex'; });
+            // 17. GAMES (BLOCKED IN GLOBAL AS REQUESTED)
+            window.openGameMenu = function() { 
+                if (window.currentMode === 'global') {
+                    window.sysMsg("<span style='color:var(--neon-gold)'>Enter private chat to play games!!</span>");
+                    return;
+                }
+                gameMenu.style.display = 'flex'; 
+            }
+            
             closeGameMenuBtn.addEventListener('click', () => gameMenu.style.display = 'none');
             closeTttBtn.addEventListener('click', () => tttUi.style.display = 'none');
             closeC4Btn.addEventListener('click', () => c4Ui.style.display = 'none');
 
-            launchRps.addEventListener('click', () => inviteGame('rps'));
-            launchTtt.addEventListener('click', () => inviteGame('ttt'));
-            launchC4.addEventListener('click', () => inviteGame('c4'));
+            launchRps.addEventListener('click', () => window.inviteGame('rps'));
+            launchTtt.addEventListener('click', () => window.inviteGame('ttt'));
+            launchC4.addEventListener('click', () => window.inviteGame('c4'));
 
-            function inviteGame(gameType) { 
+            window.inviteGame = function(gameType) { 
                 gameMenu.style.display = 'none'; 
-                if (currentMode === 'global') {
-                    const inviteId = 'inv-' + Date.now();
-                    socket.emit('game_invite_global', { game: gameType, inviteId: inviteId });
-                    sysMsg(`You challenged The Nexus to ${gameType.toUpperCase()}. Waiting for a node...`);
+                if (window.currentMode === 'global') {
+                    window.sysMsg("<span style='color:var(--neon-gold)'>Enter private chat to play games!!</span>");
+                    return;
                 } else {
-                    sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); 
+                    window.sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); 
                     socket.emit('game_action', { type: 'invite', game: gameType }); 
                 }
             };
             
-            socket.on('global_game_invite', (data) => {
-                if (data.fromId === socket.id) return; 
-                sysMsg(`
-                    <span style="color:var(--neon-cyan)">${data.fromAlias} challenged The Nexus to ${data.game.toUpperCase()}!</span> 
-                    <button class="accept-global-btn" data-invite="${data.inviteId}" data-game="${data.game}" data-from="${data.fromId}" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px; font-family:'Outfit';">Accept</button>
-                `);
-            });
-
-            socket.on('start_game_directly', (data) => { startGame(data.game, data.isPlayer1); });
-            
             socket.on('game_action', (data) => {
-                if(currentMode === 'global') return;
-                if (data.type === 'invite') { const inviteId = 'inv-' + Date.now(); sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <span id="${inviteId}"><button class="accept-1v1-btn" data-game="${data.game}" style="background:var(--neon-cyan); border:none; border-radius:5px; padding:3px 8px; cursor:pointer; color:#000; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(inviteId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); } 
-                else if (data.type === 'accept') { startGame(data.game, true); } 
-                else if (data.type === 'rps_move') { resolveRPS(data.move); } 
-                else if (data.type === 'ttt_move') { receiveTTT(data.index); }
-                else if (data.type === 'c4_move') { receiveC4(data.col); }
+                if(window.currentMode === 'global') return;
+                if (data.type === 'invite') { const inviteId = 'inv-' + Date.now(); window.sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <span id="${inviteId}"><button onclick="window.acceptGame('${data.game}', this)" style="background:var(--neon-cyan); border:none; border-radius:5px; padding:3px 8px; cursor:pointer; color:#000; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(inviteId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); } 
+                else if (data.type === 'accept') { window.startGame(data.game, true); } 
+                else if (data.type === 'rps_move') { window.resolveRPS(data.move); } 
+                else if (data.type === 'ttt_move') { window.receiveTTT(data.index); }
+                else if (data.type === 'c4_move') { window.receiveC4(data.col); }
             });
             
-            function startGame(gameType, isPlayer1) {
-                if (gameType === 'rps') { myRPS = null; strangerRPS = null; document.getElementById('rps-status').innerText = ""; document.getElementById('rps-ui').style.display = 'flex'; } 
-                else if (gameType === 'ttt') { initTTT(isPlayer1); } else if (gameType === 'c4') { initC4(isPlayer1); }
+            window.acceptGame = function(gameType, btn) { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); font-size:0.8rem; margin-left:5px;'>(Accepted)</span>"; socket.emit('game_action', { type: 'accept', game: gameType }); window.startGame(gameType, false); };
+
+            window.startGame = function(gameType, isPlayer1) {
+                if (gameType === 'rps') { window.myRPS = null; window.strangerRPS = null; document.getElementById('rps-status').innerText = ""; document.getElementById('rps-ui').style.display = 'flex'; } 
+                else if (gameType === 'ttt') { window.initTTT(isPlayer1); } else if (gameType === 'c4') { window.initC4(isPlayer1); }
             }
 
-            // RPS
-            let myRPS = null, strangerRPS = null;
-            document.getElementById('rps-rock').addEventListener('click', () => playRPS('Rock'));
-            document.getElementById('rps-paper').addEventListener('click', () => playRPS('Paper'));
-            document.getElementById('rps-scissors').addEventListener('click', () => playRPS('Scissors'));
+            window.playRPS = function(move) { window.myRPS = move; document.getElementById('rps-status').innerText = "Waiting for opponent..."; socket.emit('game_action', { type: 'rps_move', move: move }); if (window.strangerRPS) window.checkRPSWin(); };
+            window.resolveRPS = function(strangerMove) { window.strangerRPS = strangerMove; if (window.myRPS) window.checkRPSWin(); }
+            window.checkRPSWin = function() { document.getElementById('rps-ui').style.display = 'none'; let res = "You Tied!"; if ((window.myRPS==='Rock' && window.strangerRPS==='Scissors') || (window.myRPS==='Paper' && window.strangerRPS==='Rock') || (window.myRPS==='Scissors' && window.strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>"; else if (window.myRPS !== window.strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>"; window.sysMsg(`RPS: You (${window.myRPS}) vs Opponent (${window.strangerRPS}). <b>${res}</b>`); }
 
-            function playRPS(move) { myRPS = move; document.getElementById('rps-status').innerText = "Waiting for opponent..."; socket.emit('game_action', { type: 'rps_move', move: move }); if (strangerRPS) checkRPSWin(); };
-            function resolveRPS(strangerMove) { strangerRPS = strangerMove; if (myRPS) checkRPSWin(); }
-            function checkRPSWin() { document.getElementById('rps-ui').style.display = 'none'; let res = "You Tied!"; if ((myRPS==='Rock' && strangerRPS==='Scissors') || (myRPS==='Paper' && strangerRPS==='Rock') || (myRPS==='Scissors' && strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>"; else if (myRPS !== strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>"; sysMsg(`RPS: You (${myRPS}) vs Opponent (${strangerRPS}). <b>${res}</b>`); }
+            window.initTTT = function(isPlayer1) { window.tttBoard = Array(9).fill(''); window.mySymbol = isPlayer1 ? 'X' : 'O'; window.myTurn = isPlayer1; document.getElementById('ttt-status').innerText = window.myTurn ? "Your Turn (" + window.mySymbol + ")" : "Opponent's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); tttUi.style.display = 'flex'; }
+            window.playTTT = function(index) { if (!window.myTurn || window.tttBoard[index] !== '') return; window.makeTTTMove(index, window.mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); window.myTurn = false; document.getElementById('ttt-status').innerText = "Opponent's Turn"; };
+            window.receiveTTT = function(index) { window.makeTTTMove(index, window.mySymbol === 'X' ? 'O' : 'X'); window.myTurn = true; document.getElementById('ttt-status').innerText = "Your Turn (" + window.mySymbol + ")"; }
+            window.makeTTTMove = function(index, symbol) { window.tttBoard[index] = symbol; const cells = document.querySelectorAll('.ttt-cell'); cells[index].innerText = symbol; cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)'; window.checkTTTWin(); }
+            window.checkTTTWin = function() { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null; wins.forEach(w => { if(window.tttBoard[w[0]] && window.tttBoard[w[0]]===window.tttBoard[w[1]] && window.tttBoard[w[0]]===window.tttBoard[w[2]]) winner = window.tttBoard[w[0]]; }); if (winner) { tttUi.style.display = 'none'; window.sysMsg(`Tic Tac Toe: <b>${winner === window.mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); } else if (!window.tttBoard.includes('')) { tttUi.style.display = 'none'; window.sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); } }
 
-            // TTT
-            let tttBoard = [], mySymbol = '', myTurn = false;
-            document.getElementById('ttt-board').addEventListener('click', (e) => { if(e.target.classList.contains('ttt-cell')) { playTTT(e.target.getAttribute('data-idx')); } });
+            window.initC4 = function(isPlayer1) { window.c4Board = Array(6).fill().map(()=>Array(7).fill('')); window.myC4Symbol = isPlayer1 ? 'p1' : 'p2'; window.myC4Turn = isPlayer1; const boardEl = document.getElementById('c4-board'); boardEl.innerHTML = ''; for(let r=0; r<6; r++) { for(let c=0; c<7; c++) { const cell = document.createElement('div'); cell.className = 'c4-cell'; cell.id = `c4-${r}-${c}`; cell.onclick = () => window.playC4(c); boardEl.appendChild(cell); } } document.getElementById('c4-status').innerText = window.myC4Turn ? "Your Turn (" + (window.myC4Symbol==='p1'?'Cyan':'Gold') + ")" : "Opponent's Turn"; c4Ui.style.display = 'flex'; }
+            window.playC4 = function(col) { if (!window.myC4Turn) return; let row = window.getLowestEmptyRow(col); if (row === -1) return; window.makeC4Move(row, col, window.myC4Symbol); socket.emit('game_action', { type: 'c4_move', col: col }); window.myC4Turn = false; document.getElementById('c4-status').innerText = "Opponent's Turn"; };
+            window.receiveC4 = function(col) { let row = window.getLowestEmptyRow(col); if(row === -1) return; window.makeC4Move(row, col, window.myC4Symbol === 'p1' ? 'p2' : 'p1'); window.myC4Turn = true; document.getElementById('c4-status').innerText = "Your Turn (" + (window.myC4Symbol==='p1'?'Cyan':'Gold') + ")"; }
+            window.getLowestEmptyRow = function(col) { for(let r=5; r>=0; r--) { if(window.c4Board[r][col] === '') return r; } return -1; }
+            window.makeC4Move = function(row, col, player) { window.c4Board[row][col] = player; document.getElementById(`c4-${row}-${col}`).classList.add(player); window.checkC4Win(row, col, player); }
+            window.checkC4Win = function(r, c, player) { const dirs = [[0,1], [1,0], [1,1], [1,-1]]; for (let [dr, dc] of dirs) { let count = 1; for(let i=1; i<=3; i++) { let nr = r + dr*i, nc = c + dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && window.c4Board[nr][nc] === player) count++; else break; } for(let i=1; i<=3; i++) { let nr = r - dr*i, nc = c - dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && window.c4Board[nr][nc] === player) count++; else break; } if(count >= 4) { c4Ui.style.display = 'none'; window.sysMsg(`Void Connect: <b>${player === window.myC4Symbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); return; } } if(window.c4Board[0].every(cell => cell !== '')) { c4Ui.style.display = 'none'; window.sysMsg(`Void Connect: <b>It's a Draw!</b>`); } }
 
-            function initTTT(isPlayer1) { tttBoard = Array(9).fill(''); mySymbol = isPlayer1 ? 'X' : 'O'; myTurn = isPlayer1; document.getElementById('ttt-status').innerText = myTurn ? "Your Turn (" + mySymbol + ")" : "Opponent's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); tttUi.style.display = 'flex'; }
-            function playTTT(index) { if (!myTurn || tttBoard[index] !== '') return; makeTTTMove(index, mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); myTurn = false; document.getElementById('ttt-status').innerText = "Opponent's Turn"; };
-            function receiveTTT(index) { makeTTTMove(index, mySymbol === 'X' ? 'O' : 'X'); myTurn = true; document.getElementById('ttt-status').innerText = "Your Turn (" + mySymbol + ")"; }
-            function makeTTTMove(index, symbol) { tttBoard[index] = symbol; const cells = document.querySelectorAll('.ttt-cell'); cells[index].innerText = symbol; cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)'; checkTTTWin(); }
-            function checkTTTWin() { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null; wins.forEach(w => { if(tttBoard[w[0]] && tttBoard[w[0]]===tttBoard[w[1]] && tttBoard[w[0]]===tttBoard[w[2]]) winner = tttBoard[w[0]]; }); if (winner) { tttUi.style.display = 'none'; sysMsg(`Tic Tac Toe: <b>${winner === mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); } else if (!tttBoard.includes('')) { tttUi.style.display = 'none'; sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); } }
-
-            // C4
-            let c4Board = [], myC4Symbol = '', myC4Turn = false;
-            function initC4(isPlayer1) { c4Board = Array(6).fill().map(()=>Array(7).fill('')); myC4Symbol = isPlayer1 ? 'p1' : 'p2'; myC4Turn = isPlayer1; const boardEl = document.getElementById('c4-board'); boardEl.innerHTML = ''; for(let r=0; r<6; r++) { for(let c=0; c<7; c++) { const cell = document.createElement('div'); cell.className = 'c4-cell'; cell.id = `c4-${r}-${c}`; cell.onclick = () => playC4(c); boardEl.appendChild(cell); } } document.getElementById('c4-status').innerText = myC4Turn ? "Your Turn (" + (myC4Symbol==='p1'?'Cyan':'Gold') + ")" : "Opponent's Turn"; c4Ui.style.display = 'flex'; }
-            function playC4(col) { if (!myC4Turn) return; let row = getLowestEmptyRow(col); if (row === -1) return; makeC4Move(row, col, myC4Symbol); socket.emit('game_action', { type: 'c4_move', col: col }); myC4Turn = false; document.getElementById('c4-status').innerText = "Opponent's Turn"; };
-            function receiveC4(col) { let row = getLowestEmptyRow(col); if(row === -1) return; makeC4Move(row, col, myC4Symbol === 'p1' ? 'p2' : 'p1'); myC4Turn = true; document.getElementById('c4-status').innerText = "Your Turn (" + (myC4Symbol==='p1'?'Cyan':'Gold') + ")"; }
-            function getLowestEmptyRow(col) { for(let r=5; r>=0; r--) { if(c4Board[r][col] === '') return r; } return -1; }
-            function makeC4Move(row, col, player) { c4Board[row][col] = player; document.getElementById(`c4-${row}-${col}`).classList.add(player); checkC4Win(row, col, player); }
-            function checkC4Win(r, c, player) { const dirs = [[0,1], [1,0], [1,1], [1,-1]]; for (let [dr, dc] of dirs) { let count = 1; for(let i=1; i<=3; i++) { let nr = r + dr*i, nc = c + dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } for(let i=1; i<=3; i++) { let nr = r - dr*i, nc = c - dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } if(count >= 4) { c4Ui.style.display = 'none'; sysMsg(`Void Connect: <b>${player === myC4Symbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); return; } } if(c4Board[0].every(cell => cell !== '')) { c4Ui.style.display = 'none'; sysMsg(`Void Connect: <b>It's a Draw!</b>`); } }
-
-            // 15. VISIBILITY & RATINGS
+            // 18. RATING, VISIBILITY & ADMIN CLOSE
             socket.on('submit_rating', (rating) => {
                 starBtns.forEach(s => { 
                     if(parseInt(s.getAttribute('data-val')) <= rating) { s.classList.add('active'); } 
