@@ -15,6 +15,9 @@
         /* === CORE RESET & VARIABLES === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
+        /* FLAW FIXED: Removes the blue tap flash on mobile */
+        button, a, .bubble { -webkit-tap-highlight-color: transparent; outline: none; }
+        
         :root {
             --bg-dark: #030712; 
             --glass-bg: rgba(255, 255, 255, 0.02); 
@@ -62,8 +65,8 @@
         }
 
         /* === LOBBY SCREEN === */
-        #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; animation: fadeIn 1s ease-in; padding: 20px; overflow-y: auto;}
-        .lobby-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); margin: auto; transition: 0.3s;}
+        #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; animation: fadeIn 1s ease-in; padding: 20px; overflow-y: auto; }
+        .lobby-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); margin: auto; transition: 0.3s; }
 
         .void-portal { width: 90px; height: 90px; margin: 0 auto 20px auto; border-radius: 50%; background: radial-gradient(circle, #000 30%, var(--neon-cyan) 100%); box-shadow: 0 0 25px rgba(6, 182, 212, 0.3), inset 0 0 15px #000; animation: spinPortal 10s linear infinite, pulsePortal 3s ease-in-out infinite alternate; border: 1px solid rgba(6, 182, 212, 0.2); }
         
@@ -91,13 +94,12 @@
 
         .disclaimer { margin-top: 20px; font-size: 0.7rem; font-weight: 300; color: #475569; }
 
-        /* === FLAWLESS AUTH UI (DOES NOT PUSH OFF SCREEN) === */
+        /* FLAW FIXED: Auth UI Position Relative to push layout properly */
         .auth-wrapper { margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .auth-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 5px 15px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: 0.2s; }
         .noctyx-trigger { background: none; border: none; color: #3b82f6; font-size: 0.8rem; cursor: pointer; opacity: 0.5; transition: 0.2s;}
         .noctyx-trigger:hover { opacity: 1; text-shadow: 0 0 8px #3b82f6;}
         
-        /* Changed from Absolute to Relative to respect the container boundary */
         .auth-input-group { display: none; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); width: 100%; position: relative; animation: fadeIn 0.3s ease;}
         .auth-input { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: white; padding: 10px; border-radius: 8px; font-size: 0.85rem; text-align: center; outline: none; width: 100%; font-family: 'Outfit';}
         .auth-input:focus { border-color: var(--neon-cyan); }
@@ -166,32 +168,6 @@
         
         #countdown-text { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--neon-red); font-weight: bold; animation: pulseRed 1s infinite; display: none; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
         @keyframes pulseRed { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.6; transform: scale(0.98); } }
-
-        #shatter-overlay { position: absolute; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 20; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
-        #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
-        #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
-        
-        #rating-box { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 25px; margin-bottom: 25px; width: 100%; max-width: 250px; z-index: 25;}
-        .rating-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .star-container { display: flex; justify-content: center; gap: 8px; direction: row; }
-        .star-btn { background: none; border: none; font-size: 1.8rem; color: rgba(255,255,255,0.1); cursor: pointer; transition: color 0.2s, transform 0.2s; padding: 0; line-height: 1; }
-        .star-btn.active, .star-btn:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); transform: scale(1.1); }
-        #rating-thanks { display: none; color: var(--neon-gold); font-size: 0.85rem; margin-top: 10px; font-weight: 500; }
-
-        .overlay-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 250px; }
-        .secondary-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
-        .secondary-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-
-        /* Private Invite Modal */
-        #private-invite-overlay { display:none; position:absolute; inset:0; background:rgba(0,0,0,0.8); z-index:30; justify-content:center; align-items:center; backdrop-filter:blur(5px); }
-        .invite-box { background:var(--bg-dark); border:1px solid var(--neon-purple); padding:20px; border-radius:15px; text-align:center; width:80%; max-width:300px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
-        .invite-box h3 { color:var(--neon-purple); margin-bottom:10px; font-family: 'Outfit'; }
-        .invite-box p { font-size:0.9rem; margin-bottom:20px; color:var(--text-muted); }
-        .invite-btns { display:flex; gap:10px; }
-        .invite-btns button { flex:1; padding:10px; border-radius:8px; cursor: pointer; font-family: 'Outfit'; font-weight: bold; transition: 0.2s;}
-        #accept-private-btn { background:var(--neon-purple); color:white; border:none; }
-        #accept-private-btn:hover { background: #9333ea; }
-        #decline-private-btn { background:transparent; color:white; border:1px solid var(--glass-border); }
 
         /* === MUSIC SEARCH UI === */
         #music-search-container { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background: rgba(3, 7, 18, 0.95); backdrop-filter: blur(15px); padding: 15px 20px; z-index: 15; border-top: 1px solid var(--glass-border); border-bottom: 1px solid rgba(6, 182, 212, 0.2); box-shadow: 0 -10px 20px rgba(0,0,0,0.5);}
@@ -271,11 +247,41 @@
 
         #reply-banner { display: none; background: rgba(6, 182, 212, 0.1); border-left: 3px solid var(--neon-cyan); padding: 10px 15px; font-size: 0.85rem; color: var(--text-main); position: absolute; bottom: 100%; left: 0; width: 100%; backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); justify-content: space-between; align-items: center; }
 
-        /* === ADMIN MODAL CSS FIX (ENSURES VISIBILITY) === */
-        .game-modal { position: fixed; inset: 0; background: rgba(3,7,18,0.95); z-index: 100000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        /* ======================================================== */
+        /* === MODALS MOVED TO ROOT FOR Z-INDEX PROTECTION ===      */
+        /* ======================================================== */
+
+        #shatter-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
+        #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
+        #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
+        
+        #rating-box { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 25px; margin-bottom: 25px; width: 100%; max-width: 250px; z-index: 25;}
+        .rating-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .star-container { display: flex; justify-content: center; gap: 8px; direction: row; }
+        .star-btn { background: none; border: none; font-size: 1.8rem; color: rgba(255,255,255,0.1); cursor: pointer; transition: color 0.2s, transform 0.2s; padding: 0; line-height: 1; }
+        .star-btn.active, .star-btn:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); transform: scale(1.1); }
+        #rating-thanks { display: none; color: var(--neon-gold); font-size: 0.85rem; margin-top: 10px; font-weight: 500; }
+
+        .overlay-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 250px; }
+        .secondary-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .secondary-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+
+        /* FLAW FIXED: Private Invite Modal brought to Root and fixed position */
+        #private-invite-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:999999; justify-content:center; align-items:center; backdrop-filter:blur(5px); }
+        .invite-box { background:var(--bg-dark); border:1px solid var(--neon-purple); padding:20px; border-radius:15px; text-align:center; width:80%; max-width:300px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
+        .invite-box h3 { color:var(--neon-purple); margin-bottom:10px; font-family: 'Outfit'; }
+        .invite-box p { font-size:0.9rem; margin-bottom:20px; color:var(--text-muted); }
+        .invite-btns { display:flex; gap:10px; }
+        .invite-btns button { flex:1; padding:10px; border-radius:8px; cursor: pointer; font-family: 'Outfit'; font-weight: bold; transition: 0.2s;}
+        #accept-private-btn { background:var(--neon-purple); color:white; border:none; }
+        #accept-private-btn:hover { background: #9333ea; }
+        #decline-private-btn { background:transparent; color:white; border:1px solid var(--glass-border); }
+
+        /* FLAW FIXED: Admin Panel z-index pushed to ultimate priority */
+        .game-modal { position: fixed; inset: 0; background: rgba(3,7,18,0.95); z-index: 1000000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .game-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--neon-cyan); color: var(--text-main); padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; margin: 10px; width: 80%; max-width: 250px; font-family: 'Outfit'; transition: 0.2s;}
         .game-btn:hover { background: rgba(6, 182, 212, 0.1); }
-        .close-game { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; z-index: 100001;}
+        .close-game { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; z-index: 1000001;}
         
         #ttt-board { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; margin-top: 20px; }
         .ttt-cell { width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white; }
@@ -288,9 +294,8 @@
         .admin-stat { font-size: 1.2rem; color: white; margin: 10px 0; font-family: 'Outfit'; }
         .admin-stat span { color: var(--neon-cyan); font-weight: bold; }
 
-        /* === BOTTOM SHEET === */
-        #sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99998; display: none; opacity: 0; transition: opacity 0.3s; }
-        #bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--bg-dark); border-top: 1px solid var(--neon-cyan); border-radius: 20px 20px 0 0; padding: 25px 20px; z-index: 99999; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 40px rgba(0,0,0,0.9); font-family: 'Outfit', sans-serif;}
+        #sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999998; display: none; opacity: 0; transition: opacity 0.3s; }
+        #bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--bg-dark); border-top: 1px solid var(--neon-cyan); border-radius: 20px 20px 0 0; padding: 25px 20px; z-index: 999999; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 40px rgba(0,0,0,0.9); font-family: 'Outfit', sans-serif;}
         .sheet-emojis { display: flex; justify-content: space-between; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border);}
         .sheet-emoji-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 50%; width: 55px; height: 55px; font-size: 1.8rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
         .sheet-emoji-btn:active { transform: scale(1.1); background: rgba(6, 182, 212, 0.2); }
@@ -387,39 +392,6 @@
             <div id="countdown-text">Shattering in 5...</div>
         </div>
 
-        <div id="shatter-overlay">
-            <h2>Shattered</h2>
-            <p>The void has consumed this connection.</p>
-            
-            <div id="rating-box">
-                <div class="rating-title">Rate the Vibe</div>
-                <div class="star-container">
-                    <button class="star-btn" data-val="1">★</button>
-                    <button class="star-btn" data-val="2">★</button>
-                    <button class="star-btn" data-val="3">★</button>
-                    <button class="star-btn" data-val="4">★</button>
-                    <button class="star-btn" data-val="5">★</button>
-                </div>
-                <div id="rating-thanks">Rating Sent to Stranger!</div>
-            </div>
-
-            <div class="overlay-buttons">
-                <button class="enter-btn" id="new-stranger-btn">Find New Stranger</button>
-                <button class="secondary-btn" id="return-lobby-btn">Return to Lobby</button>
-            </div>
-        </div>
-
-        <div id="private-invite-overlay">
-            <div class="invite-box">
-                <h3>Private Void Request</h3>
-                <p id="private-invite-text"></p>
-                <div class="invite-btns">
-                    <button id="accept-private-btn">Accept</button>
-                    <button id="decline-private-btn">Decline</button>
-                </div>
-            </div>
-        </div>
-
         <footer class="chat-footer">
             
             <div id="music-search-container">
@@ -433,16 +405,16 @@
             </div>
             
             <div class="action-group">
-                <button class="icon-btn" id="game-btn" title="Games">
+                <button class="icon-btn" id="game-btn" title="Games" onclick="window.openGameMenu()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>
                 </button>
                 
-                <button class="icon-btn" id="music-btn" title="Share Music">
+                <button class="icon-btn" id="music-btn" title="Share Music" onclick="window.toggleMusicSearch()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
                 </button>
 
                 <input type="file" id="image-input" accept="image/*" style="display:none">
-                <button class="icon-btn" id="photo-btn" title="Send Photo">
+                <button class="icon-btn" id="photo-btn" title="Send Photo" onclick="window.clickPhotoBtn()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                 </button>
             </div>
@@ -455,8 +427,8 @@
         </footer>
     </div>
 
-    <div class="game-modal" id="admin-ui" style="justify-content: flex-start; padding-top: 40px !important; z-index: 100000 !important;">
-        <button class="close-game" id="close-admin-btn">✖</button>
+    <div class="game-modal" id="admin-ui" style="justify-content: flex-start; padding-top: 40px !important;">
+        <button class="close-game" onclick="document.getElementById('admin-ui').style.display='none'">✖</button>
         <h2 style="font-family:'Cinzel'; color:var(--neon-red); margin-bottom: 15px; font-size: 1.8rem;">SYSTEM ADMIN</h2>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 92%; max-width: 600px;">
@@ -482,12 +454,45 @@
         </div>
     </div>
 
+    <div id="private-invite-overlay">
+        <div class="invite-box">
+            <h3>Private Void Request</h3>
+            <p id="private-invite-text"></p>
+            <div class="invite-btns">
+                <button id="accept-private-btn">Accept</button>
+                <button id="decline-private-btn">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="shatter-overlay">
+        <h2>Shattered</h2>
+        <p>The void has consumed this connection.</p>
+        
+        <div id="rating-box">
+            <div class="rating-title">Rate the Vibe</div>
+            <div class="star-container">
+                <button class="star-btn" data-val="1">★</button>
+                <button class="star-btn" data-val="2">★</button>
+                <button class="star-btn" data-val="3">★</button>
+                <button class="star-btn" data-val="4">★</button>
+                <button class="star-btn" data-val="5">★</button>
+            </div>
+            <div id="rating-thanks">Rating Sent to Stranger!</div>
+        </div>
+
+        <div class="overlay-buttons">
+            <button class="enter-btn" id="new-stranger-btn">Find New Stranger</button>
+            <button class="secondary-btn" id="return-lobby-btn">Return to Lobby</button>
+        </div>
+    </div>
+
     <div class="game-modal" id="game-menu">
-        <button class="close-game" id="close-game-menu-btn">✖</button>
+        <button class="close-game" onclick="document.getElementById('game-menu').style.display='none'">✖</button>
         <h2 style="font-family:'Cinzel'; color:var(--neon-cyan); margin-bottom: 20px;">VOID GAMES</h2>
-        <button class="game-btn" id="launch-rps">Rock Paper Scissors</button>
-        <button class="game-btn" id="launch-ttt">Tic Tac Toe</button>
-        <button class="game-btn" id="launch-c4">Void Connect 4</button>
+        <button class="game-btn" onclick="window.inviteGame('rps')">Rock Paper Scissors</button>
+        <button class="game-btn" onclick="window.inviteGame('ttt')">Tic Tac Toe</button>
+        <button class="game-btn" onclick="window.inviteGame('c4')">Void Connect 4</button>
     </div>
 
     <div class="game-modal" id="rps-ui">
@@ -499,7 +504,7 @@
     </div>
 
     <div class="game-modal" id="ttt-ui">
-        <button class="close-game" id="close-ttt-btn">✖</button>
+        <button class="close-game" onclick="document.getElementById('ttt-ui').style.display='none'">✖</button>
         <h2 style="color:var(--neon-cyan); margin-bottom: 10px;">Tic Tac Toe</h2>
         <p id="ttt-status" style="color:var(--neon-gold);">Your turn (X)</p>
         <div id="ttt-board">
@@ -510,7 +515,7 @@
     </div>
 
     <div class="game-modal" id="c4-ui">
-        <button class="close-game" id="close-c4-btn">✖</button>
+        <button class="close-game" onclick="document.getElementById('c4-ui').style.display='none'">✖</button>
         <h2 style="color:var(--neon-cyan); margin-bottom: 10px;">Void Connect</h2>
         <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px; text-align:center; max-width:280px;">Connect 4 orbs horizontally, vertically, or diagonally to win.</p>
         <p id="c4-status" style="color:var(--neon-gold);">Your turn (Cyan)</p>
@@ -527,27 +532,32 @@
         </div>
         <button class="sheet-action-btn" onclick="window.sheetReply()">↩️ Reply to Message</button>
         <button class="sheet-action-btn" onclick="window.sheetCopy()">📋 Copy Text</button>
-        <button class="sheet-action-btn sheet-cancel" id="close-sheet-btn">Cancel</button>
+        <button class="sheet-action-btn sheet-cancel" onclick="window.closeSheet()">Cancel</button>
     </div>
 
     <script>
-        // GLOBALS ASSIGNED TO WINDOW FOR INLINE HTML ACCESS
+        // 1. GLOBALS
         const IMGBB_API_KEY = "e4920da45c283d4ae48a5ca34df75005"; 
         const socket = io("https://the-void-server.onrender.com"); 
         const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
         
         window.globalAudio = new Audio();
         window.currentPlayingBtn = null;
+
+        // 2. STATE MACHINE
         window.currentMode = 'lobby'; 
         window.isNoctyx = false;
         window.myGlobalAlias = '';
+        
         window.currentMax = 1500; 
         window.usedChars = 0; 
         window.myCurrentRoom = null; 
         window.isCountdownRunning = false; 
         window.countdownTimer = null; 
+        
         window.globalCharCount = parseInt(sessionStorage.getItem('void_global_chars')) || 0;
         window.lastGlobalSend = parseInt(sessionStorage.getItem('void_global_time')) || 0;
+        
         window.messageStore = {}; 
         window.currentReplyTo = null; 
         window.allAdminMessages = [];
@@ -555,798 +565,669 @@
         window.typingTimeoutGlobal = null;
         window.activeSheetMsgId = null;
 
-        // EXECUTE ONLY AFTER DOM IS FULLY RENDERED
-        document.addEventListener('DOMContentLoaded', () => {
+        // 3. CACHE DOM ELEMENTS
+        const lobbyScreen = document.getElementById('lobby-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const activeUsersCount = document.getElementById('active-users-count');
+        const vanishedCount = document.getElementById('vanished-count');
+        
+        const adminLoginBtn = document.getElementById('admin-login-btn');
+        const adminAuthGroup = document.getElementById('admin-auth-group');
+        const adminPassInput = document.getElementById('admin-pass-input');
+        const adminSubmit = document.getElementById('admin-submit');
+        
+        const noctyxTriggerBtn = document.getElementById('noctyx-trigger-btn');
+        const noctyxAuthGroup = document.getElementById('noctyx-auth-group');
+        const nxUser = document.getElementById('nx-user');
+        const nxPass = document.getElementById('nx-pass');
+        const nxSubmit = document.getElementById('nx-submit');
+        
+        const findBtn = document.getElementById('find-btn');
+        const globalBtn = document.getElementById('global-btn');
+        
+        const roomTitle = document.getElementById('room-title');
+        const statusDot = document.getElementById('status-dot');
+        const themeBtn = document.getElementById('theme-btn');
+        const exitBtn = document.getElementById('exit-btn');
+        
+        const progressWrapper = document.getElementById('progress-wrapper');
+        const charBar = document.getElementById('char-bar');
+        const chatBox = document.getElementById('chat-box');
+        const typingIndicator = document.getElementById('typing-indicator');
+        
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const imageInput = document.getElementById('image-input');
+        
+        const musicSearchContainer = document.getElementById('music-search-container');
+        const musicSearchInput = document.getElementById('music-search-input');
+        const musicResults = document.getElementById('music-results');
+        
+        const actionToast = document.getElementById('action-toast');
+        const extendBtn = document.getElementById('extend-btn');
+        const countdownText = document.getElementById('countdown-text');
+        const shatterOverlay = document.getElementById('shatter-overlay');
+        const returnLobbyBtn = document.getElementById('return-lobby-btn');
+        const newStrangerBtn = document.getElementById('new-stranger-btn');
+        const starBtns = document.querySelectorAll('.star-btn');
+        const ratingThanks = document.getElementById('rating-thanks');
+        
+        const replyBanner = document.getElementById('reply-banner');
+        const replyText = document.getElementById('reply-text');
+        
+        const privateInviteOverlay = document.getElementById('private-invite-overlay');
+        const privateInviteText = document.getElementById('private-invite-text');
+        const acceptPrivateBtn = document.getElementById('accept-private-btn');
+        const declinePrivateBtn = document.getElementById('decline-private-btn');
 
-            // DOM DECLARATIONS
-            const lobbyScreen = document.getElementById('lobby-screen');
-            const chatScreen = document.getElementById('chat-screen');
-            const activeUsersCount = document.getElementById('active-users-count');
-            const vanishedCount = document.getElementById('vanished-count');
-            
-            const adminLoginBtn = document.getElementById('admin-login-btn');
-            const adminAuthGroup = document.getElementById('admin-auth-group');
-            const adminPassInput = document.getElementById('admin-pass-input');
-            const adminSubmit = document.getElementById('admin-submit');
-            
-            const noctyxTriggerBtn = document.getElementById('noctyx-trigger-btn');
-            const noctyxAuthGroup = document.getElementById('noctyx-auth-group');
-            const nxUser = document.getElementById('nx-user');
-            const nxPass = document.getElementById('nx-pass');
-            const nxSubmit = document.getElementById('nx-submit');
-            
-            const findBtn = document.getElementById('find-btn');
-            const globalBtn = document.getElementById('global-btn');
-            
-            const roomTitle = document.getElementById('room-title');
-            const statusDot = document.getElementById('status-dot');
-            const themeBtn = document.getElementById('theme-btn');
-            const exitBtn = document.getElementById('exit-btn');
-            const strangerKarma = document.getElementById('stranger-karma');
-            
-            const progressWrapper = document.getElementById('progress-wrapper');
-            const charBar = document.getElementById('char-bar');
-            const chatBox = document.getElementById('chat-box');
-            const typingIndicator = document.getElementById('typing-indicator');
-            
-            const chatInput = document.getElementById('chat-input');
-            const sendBtn = document.getElementById('send-btn');
-            const gameBtn = document.getElementById('game-btn');
-            const photoBtn = document.getElementById('photo-btn');
-            const imageInput = document.getElementById('image-input');
-            const musicBtn = document.getElementById('music-btn');
-            
-            const musicSearchContainer = document.getElementById('music-search-container');
-            const musicSearchInput = document.getElementById('music-search-input');
-            const musicResults = document.getElementById('music-results');
-            
-            const actionToast = document.getElementById('action-toast');
-            const extendBtn = document.getElementById('extend-btn');
-            const countdownText = document.getElementById('countdown-text');
-            const shatterOverlay = document.getElementById('shatter-overlay');
-            const returnLobbyBtn = document.getElementById('return-lobby-btn');
-            const newStrangerBtn = document.getElementById('new-stranger-btn');
-            const starBtns = document.querySelectorAll('.star-btn');
-            const ratingThanks = document.getElementById('rating-thanks');
-            
-            const replyBanner = document.getElementById('reply-banner');
-            const replyText = document.getElementById('reply-text');
-            const closeReplyBtn = document.getElementById('close-reply');
-            
-            const privateInviteOverlay = document.getElementById('private-invite-overlay');
-            const privateInviteText = document.getElementById('private-invite-text');
-            const acceptPrivateBtn = document.getElementById('accept-private-btn');
-            const declinePrivateBtn = document.getElementById('decline-private-btn');
+        const sheetOverlay = document.getElementById('sheet-overlay');
+        const bottomSheet = document.getElementById('bottom-sheet');
+        const adminUi = document.getElementById('admin-ui');
+        const gameMenu = document.getElementById('game-menu');
 
-            const sheetOverlay = document.getElementById('sheet-overlay');
-            const bottomSheet = document.getElementById('bottom-sheet');
-            const closeSheetBtn = document.getElementById('close-sheet-btn');
-
-            const adminUi = document.getElementById('admin-ui');
-            const closeAdminBtn = document.getElementById('close-admin-btn');
-            
-            const gameMenu = document.getElementById('game-menu');
-            const closeGameMenuBtn = document.getElementById('close-game-menu-btn');
-            const launchRps = document.getElementById('launch-rps');
-            const launchTtt = document.getElementById('launch-ttt');
-            const launchC4 = document.getElementById('launch-c4');
-            
-            const tttUi = document.getElementById('ttt-ui');
-            const closeTttBtn = document.getElementById('close-ttt-btn');
-            const c4Ui = document.getElementById('c4-ui');
-            const closeC4Btn = document.getElementById('close-c4-btn');
-
-            // 1. PWA SETUP
-            if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
-            let deferredPrompt;
-            const installBtn = document.getElementById('install-btn');
-            window.addEventListener('beforeinstallprompt', (e) => { 
-                e.preventDefault(); 
-                deferredPrompt = e; 
-                if(installBtn) installBtn.style.display = 'block'; 
+        // 4. PWA SETUP
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
+        window.addEventListener('beforeinstallprompt', (e) => { 
+            e.preventDefault(); deferredPrompt = e; if(installBtn) installBtn.style.display = 'block'; 
+        });
+        if(installBtn) {
+            installBtn.addEventListener('click', async () => { 
+                if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; installBtn.style.display = 'none'; } 
             });
-            if(installBtn) {
-                installBtn.addEventListener('click', async () => { 
-                    if (deferredPrompt) { 
-                        deferredPrompt.prompt(); 
-                        deferredPrompt = null; 
-                        installBtn.style.display = 'none'; 
-                    } 
+        }
+
+        // 5. LOBBY & AUTH
+        adminLoginBtn.addEventListener('click', () => {
+            noctyxAuthGroup.style.display = 'none';
+            adminAuthGroup.style.display = adminAuthGroup.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        adminSubmit.addEventListener('click', () => {
+            const pass = adminPassInput.value;
+            if(pass) socket.emit('get_admin_data', pass);
+            adminAuthGroup.style.display = 'none';
+            adminPassInput.value = '';
+        });
+
+        noctyxTriggerBtn.addEventListener('click', () => {
+            adminAuthGroup.style.display = 'none';
+            noctyxAuthGroup.style.display = noctyxAuthGroup.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        nxSubmit.addEventListener('click', () => {
+            const user = nxUser.value; const pass = nxPass.value;
+            socket.emit('auth_noctyx', { user, pass });
+            noctyxAuthGroup.style.display = 'none';
+        });
+
+        findBtn.addEventListener('click', () => {
+            findBtn.innerText = "Drifting..."; findBtn.disabled = true;
+            window.currentMode = '1v1';
+            socket.emit('find_match', { localKarma: localStorage.getItem('void_karma') || "5.0" });
+        });
+
+        globalBtn.addEventListener('click', () => {
+            window.currentMode = 'global';
+            globalBtn.innerText = "Connecting...";
+            socket.emit('join_global');
+            
+            lobbyScreen.style.display = 'none'; chatScreen.style.display = 'flex';
+            roomTitle.innerHTML = 'The Nexus';
+            progressWrapper.style.display = 'none'; chatInput.disabled = false;
+            chatBox.innerHTML = ''; chatBox.appendChild(typingIndicator);
+            
+            window.sysMsg("<b style='color:var(--neon-purple)'>Welcome to The Nexus</b><br><span style='font-size:0.75rem; color:var(--text-muted);'>• 7000 character limit.<br>• 10s ping cooldown.<br>• Data burns after 2 hours.</span>");
+        });
+
+        themeBtn.addEventListener('click', () => document.body.classList.toggle('light-theme'));
+        exitBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
+        returnLobbyBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
+        newStrangerBtn.addEventListener('click', () => { socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
+
+        // 6. SOCKET CORE EVENTS
+        socket.on('connect', () => { 
+            if (statusDot && chatScreen.style.display === 'flex') { 
+                statusDot.style.backgroundColor = '#22c55e'; statusDot.style.boxShadow = '0 0 8px #22c55e'; 
+                if (window.myCurrentRoom) { socket.emit('reclaim_session', window.myCurrentRoom); } 
+                else { socket.emit('user_status', 'online'); }
+            }
+        });
+
+        socket.on('stats_update', (data) => { 
+            if(activeUsersCount) activeUsersCount.innerText = data.activeUsers; 
+            if(vanishedCount) vanishedCount.innerText = data.vanishedChats; 
+        });
+
+        socket.on('noctyx_verified', (data) => {
+            window.isNoctyx = true; window.myGlobalAlias = data.alias;
+            noctyxTriggerBtn.style.color = "var(--neon-red)"; noctyxTriggerBtn.style.textShadow = "0 0 10px var(--neon-red)";
+            alert("Protocol Override: Noctyx Active.");
+        });
+        
+        socket.on('auth_failed', () => { alert("Authorization Denied."); });
+        socket.on('admin_error', () => { alert("Admin Access Denied."); });
+
+        socket.on('admin_dashboard', (data) => {
+            document.getElementById('ad-total').innerText = data.totalUsers; 
+            document.getElementById('ad-wait').innerText = data.waitingUsers; 
+            document.getElementById('ad-rooms').innerText = data.activeRooms; 
+            document.getElementById('ad-vanish').innerText = data.totalVanished;
+            
+            window.knownRooms = new Set(); 
+            document.getElementById('admin-room-list').innerHTML = ''; 
+            document.getElementById('spy-container').innerHTML = ''; 
+            window.allAdminMessages = []; 
+            adminUi.style.setProperty('display', 'flex', 'important'); 
+        });
+
+        document.getElementById('view-global-btn').addEventListener('click', () => { 
+            window.lockedRoomId = null; 
+            document.getElementById('spy-header-text').innerHTML = '<div class="dot" style="width:6px; height:6px;"></div> Global Feed'; 
+            document.getElementById('spy-header-text').style.color = 'var(--neon-gold)'; 
+            window.renderAdminFeed(); 
+        });
+
+        socket.on('spy_feed', (data) => {
+            data.timestamp = Date.now(); window.allAdminMessages.push(data);
+            if (!window.knownRooms) window.knownRooms = new Set();
+            if (!window.knownRooms.has(data.roomId)) {
+                window.knownRooms.add(data.roomId);
+                const roomBtn = document.createElement('button'); 
+                roomBtn.innerText = data.roomId === 'The Nexus' ? 'The Nexus' : "Room " + window.knownRooms.size; 
+                roomBtn.style.cssText = "background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; text-align: left; font-family: 'Outfit'; margin-bottom: 5px;";
+                roomBtn.addEventListener('click', () => { 
+                    window.lockedRoomId = data.roomId; 
+                    document.getElementById('spy-header-text').innerHTML = `<div class="dot" style="width:6px; height:6px; background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red);"></div> ${roomBtn.innerText}`; 
+                    document.getElementById('spy-header-text').style.color = 'var(--neon-red)'; window.renderAdminFeed(); 
                 });
+                document.getElementById('admin-room-list').appendChild(roomBtn);
             }
+            if (!window.lockedRoomId || window.lockedRoomId === data.roomId) { window.appendAdminMessage(data); }
+        });
 
-            // 2. LOBBY & AUTH
-            adminLoginBtn.addEventListener('click', () => {
-                noctyxAuthGroup.style.display = 'none';
-                adminAuthGroup.style.display = adminAuthGroup.style.display === 'flex' ? 'none' : 'flex';
-            });
+        window.renderAdminFeed = function() { 
+            document.getElementById('spy-container').innerHTML = ''; 
+            const filteredMsgs = window.lockedRoomId ? window.allAdminMessages.filter(m => m.roomId === window.lockedRoomId) : window.allAdminMessages; 
+            filteredMsgs.forEach(m => window.appendAdminMessage(m)); 
+        }
 
-            adminSubmit.addEventListener('click', () => {
-                const pass = adminPassInput.value;
-                if(pass) socket.emit('get_admin_data', pass);
-                adminAuthGroup.style.display = 'none';
-                adminPassInput.value = '';
-            });
-
-            noctyxTriggerBtn.addEventListener('click', () => {
-                adminAuthGroup.style.display = 'none';
-                noctyxAuthGroup.style.display = noctyxAuthGroup.style.display === 'flex' ? 'none' : 'flex';
-            });
-
-            nxSubmit.addEventListener('click', () => {
-                const user = nxUser.value;
-                const pass = nxPass.value;
-                socket.emit('auth_noctyx', { user, pass });
-                noctyxAuthGroup.style.display = 'none';
-            });
-
-            findBtn.addEventListener('click', () => {
-                findBtn.innerText = "Drifting..."; 
-                findBtn.disabled = true;
-                window.currentMode = '1v1';
-                socket.emit('find_match', { localKarma: localStorage.getItem('void_karma') || "5.0" });
-            });
-
-            globalBtn.addEventListener('click', () => {
-                window.currentMode = 'global';
-                globalBtn.innerText = "Connecting...";
-                socket.emit('join_global');
-                
-                lobbyScreen.style.display = 'none'; 
-                chatScreen.style.display = 'flex';
-                roomTitle.innerHTML = 'The Nexus';
-                progressWrapper.style.display = 'none'; 
-                chatInput.disabled = false;
-                
-                chatBox.innerHTML = '';
-                chatBox.appendChild(typingIndicator);
-                window.sysMsg("<b style='color:var(--neon-purple)'>THE NEXUS RULES</b><br><span style='font-size:0.75rem; color:var(--text-muted);'>• 7000 character limit.<br>• 10s ping cooldown.<br>• Data burns after 2 hours.</span>");
-            });
-
-            themeBtn.addEventListener('click', () => document.body.classList.toggle('light-theme'));
-            exitBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
-            returnLobbyBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
-            newStrangerBtn.addEventListener('click', () => { socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
-
-            // 3. SOCKET CORE EVENTS
-            socket.on('connect', () => { 
-                if (statusDot && chatScreen.style.display === 'flex') { 
-                    statusDot.style.backgroundColor = '#22c55e'; 
-                    statusDot.style.boxShadow = '0 0 8px #22c55e'; 
-                    if (window.myCurrentRoom) {
-                        socket.emit('reclaim_session', window.myCurrentRoom); 
-                    } else {
-                        socket.emit('user_status', 'online'); 
-                    }
-                }
-            });
-
-            socket.on('stats_update', (data) => { 
-                if(activeUsersCount) activeUsersCount.innerText = data.activeUsers; 
-                if(vanishedCount) vanishedCount.innerText = data.vanishedChats; 
-            });
-
-            socket.on('noctyx_verified', (data) => {
-                window.isNoctyx = true;
-                window.myGlobalAlias = data.alias;
-                noctyxTriggerBtn.style.color = "var(--neon-red)";
-                noctyxTriggerBtn.style.textShadow = "0 0 10px var(--neon-red)";
-                alert("Protocol Override: Noctyx Active.");
-            });
+        window.appendAdminMessage = function(data) {
+            const entry = document.createElement('div');
+            entry.style.cssText = "font-size: 0.85rem; color: #e2e8f0; background: rgba(255,255,255,0.04); padding: 10px; border-radius: 8px; border-left: 3px solid var(--neon-cyan); line-height: 1.4; animation: slideUp 0.2s ease;";
+            const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
-            socket.on('auth_failed', () => { alert("Authorization Denied."); });
-            socket.on('admin_error', () => { alert("Admin Access Denied."); });
-
-            // Admin Panel Visibility Logic
-            socket.on('admin_dashboard', (data) => {
-                document.getElementById('ad-total').innerText = data.totalUsers; 
-                document.getElementById('ad-wait').innerText = data.waitingUsers; 
-                document.getElementById('ad-rooms').innerText = data.activeRooms; 
-                document.getElementById('ad-vanish').innerText = data.totalVanished;
-                
-                window.knownRooms = new Set(); 
-                document.getElementById('admin-room-list').innerHTML = ''; 
-                document.getElementById('spy-container').innerHTML = ''; 
-                window.allAdminMessages = []; 
-                adminUi.style.setProperty('display', 'flex', 'important'); 
-            });
-
-            document.getElementById('view-global-btn').addEventListener('click', () => { 
-                window.lockedRoomId = null; 
-                document.getElementById('spy-header-text').innerHTML = '<div class="dot" style="width:6px; height:6px;"></div> Global Feed'; 
-                document.getElementById('spy-header-text').style.color = 'var(--neon-gold)'; 
-                window.renderAdminFeed(); 
-            });
-
-            socket.on('spy_feed', (data) => {
-                data.timestamp = Date.now(); 
-                window.allAdminMessages.push(data);
-                
-                if (!window.knownRooms) window.knownRooms = new Set();
-
-                if (!window.knownRooms.has(data.roomId)) {
-                    window.knownRooms.add(data.roomId);
-                    const roomBtn = document.createElement('button'); 
-                    roomBtn.innerText = data.roomId === 'The Nexus' ? 'The Nexus' : "Room " + window.knownRooms.size; 
-                    roomBtn.style.cssText = "background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; text-align: left; font-family: 'Outfit'; margin-bottom: 5px;";
-                    
-                    roomBtn.addEventListener('click', () => { 
-                        window.lockedRoomId = data.roomId; 
-                        document.getElementById('spy-header-text').innerHTML = `<div class="dot" style="width:6px; height:6px; background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red);"></div> ${roomBtn.innerText}`; 
-                        document.getElementById('spy-header-text').style.color = 'var(--neon-red)'; 
-                        window.renderAdminFeed(); 
-                    });
-                    
-                    document.getElementById('admin-room-list').appendChild(roomBtn);
-                }
-                if (!window.lockedRoomId || window.lockedRoomId === data.roomId) {
-                    window.appendAdminMessage(data);
-                }
-            });
-
-            window.renderAdminFeed = function() { 
-                document.getElementById('spy-container').innerHTML = ''; 
-                const filteredMsgs = window.lockedRoomId ? window.allAdminMessages.filter(m => m.roomId === window.lockedRoomId) : window.allAdminMessages; 
-                filteredMsgs.forEach(m => window.appendAdminMessage(m)); 
+            entry.innerHTML = `[${time}] 💬 ` + data.text;
+            
+            if (data.type === 'image' && data.url) {
+                entry.innerHTML += `<br>`; const img = document.createElement('img'); img.src = data.url;
+                img.style.cssText = "max-width: 150px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--glass-border);";
+                img.onload = () => { const spyCont = document.getElementById('spy-container'); spyCont.scrollTop = spyCont.scrollHeight; };
+                entry.appendChild(img);
+            } else if (data.type === 'music' && data.url) {
+                entry.innerHTML += `<br><div style="display:flex; align-items:center; gap:10px; margin-top:8px; background:rgba(0,0,0,0.5); padding:8px; border-radius:8px; border:1px solid var(--glass-border);"><img src="${data.cover}" style="width:35px; height:35px; border-radius:4px;"><div style="flex:1; overflow:hidden;"><div style="font-size:0.75rem; color:var(--neon-cyan); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.title}</div><div style="font-size:0.65rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.artist}</div></div><audio controls src="${data.url}" style="height:25px; width:130px; border-radius:4px; outline:none;"></audio></div>`;
             }
+            document.getElementById('spy-container').prepend(entry); 
+            if (document.getElementById('spy-container').childNodes.length > 1000) { document.getElementById('spy-container').removeChild(document.getElementById('spy-container').lastChild); }
+        }
 
-            window.appendAdminMessage = function(data) {
-                const entry = document.createElement('div');
-                entry.style.cssText = "font-size: 0.85rem; color: #e2e8f0; background: rgba(255,255,255,0.04); padding: 10px; border-radius: 8px; border-left: 3px solid var(--neon-cyan); line-height: 1.4; animation: slideUp 0.2s ease;";
-                const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
-                entry.innerHTML = `[${time}] 💬 ` + data.text;
-                
-                if (data.type === 'image' && data.url) {
-                    entry.innerHTML += `<br>`;
-                    const img = document.createElement('img'); 
-                    img.src = data.url;
-                    img.style.cssText = "max-width: 150px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--glass-border);";
-                    img.onload = () => { 
-                        const spyCont = document.getElementById('spy-container'); 
-                        spyCont.scrollTop = spyCont.scrollHeight; 
-                    };
-                    entry.appendChild(img);
-                } else if (data.type === 'music' && data.url) {
-                    entry.innerHTML += `
-                        <br>
-                        <div style="display:flex; align-items:center; gap:10px; margin-top:8px; background:rgba(0,0,0,0.5); padding:8px; border-radius:8px; border:1px solid var(--glass-border);">
-                            <img src="${data.cover}" style="width:35px; height:35px; border-radius:4px;">
-                            <div style="flex:1; overflow:hidden;">
-                                <div style="font-size:0.75rem; color:var(--neon-cyan); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.title}</div>
-                                <div style="font-size:0.65rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.artist}</div>
-                            </div>
-                            <audio controls src="${data.url}" style="height:25px; width:130px; border-radius:4px; outline:none;"></audio>
-                        </div>`;
-                }
-                
-                document.getElementById('spy-container').prepend(entry); 
-                if (document.getElementById('spy-container').childNodes.length > 1000) {
-                    document.getElementById('spy-container').removeChild(document.getElementById('spy-container').lastChild);
-                }
-            }
+        socket.on('global_joined', (data) => { window.myGlobalAlias = data.alias; });
 
-            socket.on('global_joined', (data) => { window.myGlobalAlias = data.alias; });
-
-            socket.on('match_found', (data) => { 
-                lobbyScreen.style.display = 'none'; 
-                chatScreen.style.display = 'flex';
-                chatBox.innerHTML = ''; 
-                chatBox.appendChild(typingIndicator);
-                
-                window.myCurrentRoom = data.roomId;
-                window.currentMode = data.isPrivateSide ? 'private' : '1v1';
-                
-                if (window.currentMode === 'private') {
-                    roomTitle.innerHTML = 'Private Void';
-                    window.currentMax = data.isInfinite ? 9999999 : 500;
-                    window.sysMsg("You slipped into a Private Void. 500 chars.");
+        socket.on('match_found', (data) => { 
+            lobbyScreen.style.display = 'none'; chatScreen.style.display = 'flex';
+            chatBox.innerHTML = ''; chatBox.appendChild(typingIndicator);
+            
+            window.myCurrentRoom = data.roomId;
+            window.currentMode = data.isPrivateSide ? 'private' : '1v1';
+            
+            if (window.currentMode === 'private') {
+                roomTitle.innerHTML = 'Private Void';
+                window.currentMax = data.isInfinite ? 9999999 : 500;
+                window.sysMsg("You slipped into a Private Void. 500 chars.");
+            } else {
+                if (data.strangerNoctyx) {
+                    roomTitle.innerHTML = '<span style="color:var(--neon-red); text-shadow:0 0 8px red; font-family: Cinzel;">NOCTYX</span>';
                 } else {
-                    if (data.strangerNoctyx) {
-                        roomTitle.innerHTML = '<span style="color:var(--neon-red); text-shadow:0 0 8px red; font-family: Cinzel;">NOCTYX</span>';
-                    } else {
-                        roomTitle.innerHTML = `Stranger <span id="stranger-flag">${data.flag || '🇧🇩'}</span>`;
-                    }
-                    if (data.karma && strangerKarma) strangerKarma.innerText = data.karma;
-                    window.currentMax = data.isInfinite ? 9999999 : 1500;
-                    window.sysMsg(data.isInfinite ? "<span style='color:var(--neon-red)'>God Mode Activated. Limits removed.</span>" : "A stranger appeared. 1500 chars.");
+                    // FLAW FIXED: Rating Point correctly restored inside match_found
+                    let karmaHtml = data.karma ? `<span style="margin-left:10px; font-size:0.7rem; color:var(--neon-gold); background:rgba(0,0,0,0.5); padding:3px 6px; border-radius:6px; font-family:Outfit;">★ ${data.karma}</span>` : '';
+                    roomTitle.innerHTML = `Stranger <span id="stranger-flag">${data.flag || '🇧🇩'}</span> ${karmaHtml}`;
                 }
-
-                window.usedChars = 0;
-                progressWrapper.style.display = data.isInfinite ? 'none' : 'block';
-                chatInput.maxLength = window.currentMax;
-                window.updateVisualBar(0);
-            });
-
-            socket.on('global_history', (history) => {
-                history.forEach(msg => {
-                    const isMe = msg.sender === window.myGlobalAlias; 
-                    window.appendMessageUI(msg, isMe ? 'my-msg' : 'stranger-msg', true); 
-                });
-            });
-
-            // 4. IMAGE UPLOAD LOGIC
-            let localPhotoCount2 = parseInt(localStorage.getItem('void_daily_photos')) || 0;
-            const lastPhotoDate2 = localStorage.getItem('void_photo_date');
-            if (lastPhotoDate2 !== new Date().toDateString()) { 
-                localPhotoCount2 = 0; 
-                localStorage.setItem('void_photo_date', new Date().toDateString()); 
-                localStorage.setItem('void_daily_photos', 0); 
+                window.currentMax = data.isInfinite ? 9999999 : 1500;
+                window.sysMsg(data.isInfinite ? "<span style='color:var(--neon-red)'>God Mode Activated. Limits removed.</span>" : "A stranger appeared. 1500 chars.");
             }
 
-            photoBtn.addEventListener('click', () => {
-                if (localPhotoCount2 >= 20 && !window.isNoctyx) { window.sysMsg("⚠️ VOID ERROR: Daily photo limit (20) reached."); return; }
-                imageInput.click();
-            });
+            window.usedChars = 0;
+            progressWrapper.style.display = data.isInfinite ? 'none' : 'block';
+            chatInput.maxLength = window.currentMax;
+            window.updateVisualBar(0);
+        });
 
-            imageInput.addEventListener('change', async (e) => {
-                const file = e.target.files[0]; if(!file) return;
+        socket.on('global_history', (history) => {
+            history.forEach(msg => { const isMe = msg.sender === window.myGlobalAlias; window.appendMessageUI(msg, isMe ? 'my-msg' : 'stranger-msg', true); });
+        });
+
+        // 7. IMAGE UPLOAD
+        let localPhotoCount2 = parseInt(localStorage.getItem('void_daily_photos')) || 0;
+        if (localStorage.getItem('void_photo_date') !== new Date().toDateString()) { 
+            localPhotoCount2 = 0; localStorage.setItem('void_photo_date', new Date().toDateString()); localStorage.setItem('void_daily_photos', 0); 
+        }
+
+        window.clickPhotoBtn = function() {
+            if (localPhotoCount2 >= 20 && !window.isNoctyx) { window.sysMsg("⚠️ VOID ERROR: Daily photo limit (20) reached."); return; }
+            imageInput.click();
+        }
+
+        imageInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0]; if(!file) return;
+            if (window.currentMode === 'global' && !window.isNoctyx) {
+                if (Date.now() - window.lastGlobalSend < 10000) { window.sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait for cooldown.</span>'); imageInput.value = ''; return; }
+            }
+
+            const originalPlaceholder = chatInput.placeholder; 
+            chatInput.placeholder = "Uploading to the void..."; chatInput.disabled = true;
+            sendBtn.style.pointerEvents = 'none'; sendBtn.style.opacity = '0.5';
+
+            const formData = new FormData(); formData.append('image', file);
+            
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
+                const data = await res.json();
                 
-                if (window.currentMode === 'global' && !window.isNoctyx) {
-                    if (Date.now() - window.lastGlobalSend < 10000) {
-                        window.sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait for cooldown.</span>');
-                        imageInput.value = '';
-                        return;
-                    }
-                }
-
-                const originalPlaceholder = chatInput.placeholder; 
-                chatInput.placeholder = "Uploading to the void..."; 
-                chatInput.disabled = true;
-                sendBtn.style.pointerEvents = 'none'; sendBtn.style.opacity = '0.5';
-
-                const formData = new FormData(); formData.append('image', file);
-                
-                try {
-                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-                    const data = await res.json();
+                if(data.success) {
+                    if(!window.isNoctyx){ localPhotoCount2++; localStorage.setItem('void_daily_photos', localPhotoCount2); }
+                    const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
+                    sessionStorage.setItem('pending_media_' + msgId, 'true');
+                    const msgObj = { id: msgId, text: "📷 Photo", type: 'image', url: data.data.url };
+                    if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
                     
-                    if(data.success) {
-                        if(!window.isNoctyx){ localPhotoCount2++; localStorage.setItem('void_daily_photos', localPhotoCount2); }
-                        const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
-                        sessionStorage.setItem('pending_media_' + msgId, 'true');
-                        const msgObj = { id: msgId, text: "📷 Photo", type: 'image', url: data.data.url };
-                        if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
-                        
-                        if (window.currentMode === 'global') {
-                            window.lastGlobalSend = Date.now();
-                            sessionStorage.setItem('void_global_time', window.lastGlobalSend);
-                            window.startGlobalCooldown();
-                            window.appendMessageUI({ ...msgObj, sender: window.myGlobalAlias, isNoctyx: window.isNoctyx }, 'my-msg', true);
-                            socket.emit('send_global', msgObj);
-                        } else {
-                            socket.emit('send_message', msgObj); 
-                        }
-                        window.cancelReply();
-                    } else { window.sysMsg("Upload failed."); }
-                } catch(err) { window.sysMsg("Upload error occurred."); }
-                
-                chatInput.placeholder = originalPlaceholder; chatInput.disabled = false; sendBtn.style.pointerEvents = 'auto'; sendBtn.style.opacity = '1'; imageInput.value = ''; 
-            });
-
-            // 5. MUSIC SEARCH LOGIC
-            musicBtn.addEventListener('click', () => {
-                if(musicSearchContainer.style.display === 'block') { musicSearchContainer.style.display = 'none'; } 
-                else { musicSearchContainer.style.display = 'block'; musicSearchInput.focus(); }
-            });
-
-            let searchTimeout;
-            musicSearchInput.addEventListener('input', (e) => {
-                clearTimeout(searchTimeout);
-                const query = e.target.value.trim();
-                if (query.length < 2) { musicResults.innerHTML = ''; return; }
-                searchTimeout = setTimeout(() => searchiTunes(query), 500);
-            });
-
-            async function searchiTunes(query) {
-                musicResults.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:10px;">Searching frequency...</div>';
-                try {
-                    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=5&country=IN`;
-                    const res = await fetch(url);
-                    const data = await res.json();
-                    musicResults.innerHTML = '';
-                    if(data.results.length === 0) { musicResults.innerHTML = '<div style="text-align:center; color:var(--neon-red); font-size:0.8rem; padding:10px;">No signal found.</div>'; return; }
-                    data.results.forEach(track => {
-                        if(!track.previewUrl) return; 
-                        const item = document.createElement('div');
-                        item.className = 'music-result-item';
-                        item.innerHTML = `<img src="${track.artworkUrl100 || ''}" alt="cover"><div class="music-result-info"><div class="music-result-title"></div><div class="music-result-artist"></div></div>`;
-                        item.querySelector('.music-result-title').textContent = track.trackName;
-                        item.querySelector('.music-result-artist').textContent = track.artistName;
-                        item.onclick = () => window.sendMusic(track);
-                        musicResults.appendChild(item);
-                    });
-                } catch (err) { musicResults.innerHTML = '<div style="text-align:center; color:var(--neon-red); font-size:0.8rem; padding:10px;">Error finding signal.</div>'; }
-            }
-
-            window.sendMusic = function(track) {
-                if (window.currentMode === 'global' && !window.isNoctyx) {
-                    if (Date.now() - window.lastGlobalSend < 10000) {
-                        window.sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait for cooldown.</span>');
-                        return;
-                    }
-                }
-
-                musicSearchContainer.style.display = 'none';
-                musicSearchInput.value = ''; musicResults.innerHTML = '';
-                
-                const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
-                sessionStorage.setItem('pending_media_' + msgId, 'true');
-                
-                const msgObj = { id: msgId, type: 'music', text: "🎵 Shared a frequency", url: track.previewUrl, cover: track.artworkUrl100, title: track.trackName, artist: track.artistName };
-                if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
-                
-                if (window.currentMode === 'global') {
-                    window.lastGlobalSend = Date.now();
-                    sessionStorage.setItem('void_global_time', window.lastGlobalSend);
-                    window.startGlobalCooldown();
-                    window.appendMessageUI({ ...msgObj, sender: window.myGlobalAlias, isNoctyx: window.isNoctyx }, 'my-msg', true);
-                    socket.emit('send_global', msgObj);
-                } else {
-                    socket.emit('send_message', msgObj); 
-                }
-                window.cancelReply();
-            }
-
-            // 6. MESSAGE SENDING & VISUAL COOLDOWN
-            sendBtn.addEventListener('click', sendLocalMessage);
-            chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !chatInput.disabled) sendLocalMessage(); });
-
-            window.startGlobalCooldown = function() {
-                let timeLeft = 10;
-                chatInput.disabled = true;
-                sendBtn.disabled = true;
-                chatInput.placeholder = `Cooldown: ${timeLeft}s...`;
-                chatInput.style.opacity = '0.5';
-                
-                const cdTimer = setInterval(() => {
-                    timeLeft--;
-                    if(timeLeft <= 0) {
-                        clearInterval(cdTimer);
-                        chatInput.disabled = false;
-                        sendBtn.disabled = false;
-                        chatInput.placeholder = "Type a message...";
-                        chatInput.style.opacity = '1';
-                        chatInput.focus();
-                    } else {
-                        chatInput.placeholder = `Cooldown: ${timeLeft}s...`;
-                    }
-                }, 1000);
-            };
-
-            function sendLocalMessage() {
-                const rawText = chatInput.value; 
-                const textToDisplay = rawText.trim();
-                if (textToDisplay === '') return;
-                
-                if (window.currentMode === 'global') {
-                    if (!window.isNoctyx) {
-                        if (Date.now() - window.lastGlobalSend < 10000) { return; }
-                        if (window.globalCharCount + textToDisplay.length > 7000) {
-                            window.sysMsg('<span style="color:var(--neon-red)">Your signal faded. 7000 chars reached.</span>');
-                            chatInput.disabled = true;
-                            return;
-                        }
-                        window.lastGlobalSend = Date.now();
-                        window.globalCharCount += textToDisplay.length;
-                        sessionStorage.setItem('void_global_time', window.lastGlobalSend);
-                        sessionStorage.setItem('void_global_chars', window.globalCharCount);
+                    if (window.currentMode === 'global') {
+                        window.lastGlobalSend = Date.now(); sessionStorage.setItem('void_global_time', window.lastGlobalSend);
                         window.startGlobalCooldown();
-                    }
-                    
-                    const msgId = 'gmsg_' + Date.now();
-                    const msgObj = { id: msgId, text: textToDisplay, type: 'text' };
-                    if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
-                    
-                    window.appendMessageUI({ ...msgObj, sender: window.myGlobalAlias, isNoctyx: window.isNoctyx }, 'my-msg', true);
-                    socket.emit('send_global', msgObj);
-                } 
-                else {
-                    window.usedChars += rawText.length;
-                    const msgId = 'msg_' + Date.now();
-                    const msgObj = { id: msgId, text: textToDisplay };
-                    if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
-                    
-                    window.appendMessageUI(msgObj, 'my-msg'); 
-                    socket.emit('send_message', msgObj); 
-                    window.updateVisualBar(window.usedChars);
-                }
-                
-                chatInput.value = ''; 
-                window.cancelReply();
-            }
+                        window.appendMessageUI({ ...msgObj, sender: window.myGlobalAlias, isNoctyx: window.isNoctyx }, 'my-msg', true);
+                        socket.emit('send_global', msgObj);
+                    } else { socket.emit('send_message', msgObj); }
+                    window.cancelReply();
+                } else { window.sysMsg("Upload failed."); }
+            } catch(err) { window.sysMsg("Upload error occurred."); }
+            
+            chatInput.placeholder = originalPlaceholder; chatInput.disabled = false; sendBtn.style.pointerEvents = 'auto'; sendBtn.style.opacity = '1'; imageInput.value = ''; 
+        });
 
-            // 10. INCOMING MESSAGES
-            socket.on('receive_message', (msgObj) => { 
-                if (msgObj.system) { window.sysMsg(msgObj.text); return; }
-                typingIndicator.style.display = 'none'; 
-                
-                let isMe = false;
-                if (msgObj.id && sessionStorage.getItem('pending_media_' + msgObj.id)) {
-                    isMe = true; 
-                    sessionStorage.removeItem('pending_media_' + msgObj.id);
-                }
-                
-                window.appendMessageUI(msgObj, isMe ? 'my-msg' : 'stranger-msg'); 
-                if (!isMe && msgObj.type !== 'music') notificationSound.play().catch(()=>{}); 
-            });
+        // 8. MUSIC SEARCH
+        window.toggleMusicSearch = function() {
+            if(musicSearchContainer.style.display === 'block') { musicSearchContainer.style.display = 'none'; } 
+            else { musicSearchContainer.style.display = 'block'; musicSearchInput.focus(); }
+        }
 
-            socket.on('receive_global', (msgObj) => {
-                if (msgObj.sender !== window.myGlobalAlias) {
-                    window.appendMessageUI(msgObj, 'stranger-msg', true);
-                    if (msgObj.type !== 'music') notificationSound.play().catch(()=>{}); 
-                }
-            });
+        let searchTimeout;
+        musicSearchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout); const query = e.target.value.trim();
+            if (query.length < 2) { musicResults.innerHTML = ''; return; }
+            searchTimeout = setTimeout(() => searchiTunes(query), 500);
+        });
 
-            // 11. UI RENDERER
-            window.appendMessageUI = function(msgData, type, isGlobal = false) {
-                const msgId = msgData.id || 'msg_' + Date.now() + Math.floor(Math.random()*1000);
-                if (window.messageStore[msgId] && (msgData.type === 'image' || msgData.type === 'music')) return;
-
-                window.messageStore[msgId] = { text: msgData.text, sender: type === 'my-msg' ? 'You' : (msgData.senderAlias || msgData.sender || 'Stranger') };
-
-                const msgDiv = document.createElement('div'); 
-                msgDiv.className = `message ${type}`; 
-                msgDiv.id = msgId;
-
-                const timeString = `${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}`;
-                const metaHtml = type === 'my-msg' ? `${timeString} ✓` : timeString;
-
-                let aliasHtml = '';
-                if (isGlobal && type === 'stranger-msg') {
-                    const nxClass = msgData.isNoctyx ? 'noctyx' : '';
-                    const inviteBtn = (!window.isNoctyx && msgData.isNoctyx) ? '' : `<button class="invite-private-btn" onclick="window.sendPrivateInvite('${msgData.sender}')">✉️</button>`;
-                    aliasHtml = `<div class="sender-alias ${nxClass}">${msgData.sender} ${inviteBtn}</div>`;
-                } else if (msgData.senderAlias === "Noctyx" && type === 'stranger-msg') {
-                    aliasHtml = `<div class="sender-alias noctyx">Noctyx</div>`;
-                }
-
-                msgDiv.innerHTML = `
-                    ${aliasHtml}
-                    <div class="bubble-container" style="position:relative; width:100%;">
-                        <div class="bubble" id="bubble-${msgId}" onclick="window.openSheet('${msgId}')">
-                            <div class="reply-container"></div>
-                            <span class="msg-text-content"></span>
-                        </div>
-                        <div class="reaction-badge" id="react-${msgId}"></div>
-                    </div>
-                    <div class="msg-meta" style="display:flex; justify-content:${type === 'my-msg' ? 'flex-end' : 'flex-start'}; align-items:center;">
-                        ${metaHtml}
-                        <span onclick="window.openSheet('${msgId}')" style="margin: 0 8px; cursor: pointer; color: var(--neon-cyan); padding: 2px 6px; font-weight: bold; background: rgba(255,255,255,0.05); border-radius: 4px;">⋮</span>
-                    </div>
-                `;
-                
-                const contentContainer = msgDiv.querySelector('.msg-text-content');
-                
-                if (msgData.type === 'image') {
-                    const img = document.createElement('img'); 
-                    img.src = msgData.url;
-                    img.style.cssText = "max-width: 100%; border-radius: 10px; margin-top: 5px; display: block; border: 1px solid var(--glass-border);";
-                    img.onload = () => { chatBox.scrollTop = chatBox.scrollHeight; };
-                    contentContainer.appendChild(img);
-                } else if (msgData.type === 'music') {
-                    contentContainer.innerHTML = `
-                        <div class="music-bubble">
-                            <img src="" class="music-cover">
-                            <div class="music-info">
-                                <div class="music-title"></div>
-                                <div class="music-artist"></div>
-                            </div>
-                            <div class="music-controls">
-                                <button class="music-loop-btn" id="loop-${msgId}" onclick="event.stopPropagation(); window.toggleLoop('${msgId}')">∞</button>
-                                <button class="music-play-btn" id="play-${msgId}" onclick="event.stopPropagation(); window.playVoidMusic('${msgData.url}', '${msgId}')">▶</button>
-                            </div>
-                        </div>`;
-                    contentContainer.querySelector('.music-cover').src = msgData.cover || '';
-                    contentContainer.querySelector('.music-title').textContent = msgData.title || 'Unknown Frequency';
-                    contentContainer.querySelector('.music-artist').textContent = msgData.artist || 'Unknown Node';
-                } else { 
-                    contentContainer.textContent = msgData.text; 
-                }
-                
-                if (msgData.replyTo) {
-                    const replyDiv = document.createElement('div'); 
-                    replyDiv.className = 'reply-quote';
-                    replyDiv.innerHTML = `<strong></strong>: <span class="quote-text"></span>`;
-                    replyDiv.querySelector('strong').textContent = msgData.replyTo.sender;
-                    replyDiv.querySelector('.quote-text').textContent = msgData.replyTo.text;
-                    msgDiv.querySelector('.reply-container').appendChild(replyDiv);
-                }
-                
-                chatBox.insertBefore(msgDiv, typingIndicator); 
-                if (msgData.type !== 'image') chatBox.scrollTop = chatBox.scrollHeight; 
-
-                const bubbleEl = msgDiv.querySelector(`#bubble-${msgId}`);
-                let startX = 0; let currentDiff = 0;
-                bubbleEl.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; currentDiff = 0; bubbleEl.style.transition = 'none'; }, {passive: true});
-                bubbleEl.addEventListener('touchmove', (e) => {
-                    let currentX = e.touches[0].clientX; currentDiff = currentX - startX;
-                    if (type === 'stranger-msg' && currentDiff > 0) { bubbleEl.style.transform = `translateX(${Math.min(currentDiff, 60)}px)`; } 
-                    else if (type === 'my-msg' && currentDiff < 0) { bubbleEl.style.transform = `translateX(${Math.max(currentDiff, -60)}px)`; }
-                }, {passive: true});
-                bubbleEl.addEventListener('touchend', () => {
-                    bubbleEl.style.transition = 'transform 0.2s ease'; bubbleEl.style.transform = 'translateX(0px)';
-                    if (type === 'stranger-msg' && currentDiff > 40) window.setReply(msgId); 
-                    else if (type === 'my-msg' && currentDiff < -40) window.setReply(msgId); 
+        async function searchiTunes(query) {
+            musicResults.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:10px;">Searching frequency...</div>';
+            try {
+                const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=5&country=IN`;
+                const res = await fetch(url); const data = await res.json();
+                musicResults.innerHTML = '';
+                if(data.results.length === 0) { musicResults.innerHTML = '<div style="text-align:center; color:var(--neon-red); font-size:0.8rem; padding:10px;">No signal found.</div>'; return; }
+                data.results.forEach(track => {
+                    if(!track.previewUrl) return; 
+                    const item = document.createElement('div'); item.className = 'music-result-item';
+                    item.innerHTML = `<img src="${track.artworkUrl100 || ''}" alt="cover"><div class="music-result-info"><div class="music-result-title"></div><div class="music-result-artist"></div></div>`;
+                    item.querySelector('.music-result-title').textContent = track.trackName;
+                    item.querySelector('.music-result-artist').textContent = track.artistName;
+                    item.onclick = () => window.sendMusic(track);
+                    musicResults.appendChild(item);
                 });
+            } catch (err) { musicResults.innerHTML = '<div style="text-align:center; color:var(--neon-red); font-size:0.8rem; padding:10px;">Error finding signal.</div>'; }
+        }
+
+        window.sendMusic = function(track) {
+            if (window.currentMode === 'global' && !window.isNoctyx) {
+                if (Date.now() - window.lastGlobalSend < 10000) { window.sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait for cooldown.</span>'); return; }
             }
 
-            // 12. PRIVATE ROOM LOGIC
-            window.sendPrivateInvite = function(targetAlias) {
-                window.sysMsg(`Sent private request to ${targetAlias}.`);
-                socket.emit('invite_private', targetAlias);
-            }
-
-            socket.on('private_request', (data) => {
-                if (data.to === window.myGlobalAlias) {
-                    window.privateInviteData = data;
-                    privateInviteText.innerText = `${data.from} wants to pull you into a Private Void.`;
-                    privateInviteOverlay.style.display = 'flex';
-                }
-            });
-
-            acceptPrivateBtn.addEventListener('click', () => {
-                if(window.privateInviteData) {
-                    socket.emit('accept_private', window.privateInviteData);
-                    privateInviteOverlay.style.display = 'none';
-                }
-            });
+            musicSearchContainer.style.display = 'none'; musicSearchInput.value = ''; musicResults.innerHTML = '';
+            const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
+            sessionStorage.setItem('pending_media_' + msgId, 'true');
             
-            declinePrivateBtn.addEventListener('click', () => {
-                window.privateInviteData = null;
+            const msgObj = { id: msgId, type: 'music', text: "🎵 Shared a frequency", url: track.previewUrl, cover: track.artworkUrl100, title: track.trackName, artist: track.artistName };
+            if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
+            
+            if (window.currentMode === 'global') {
+                window.lastGlobalSend = Date.now(); sessionStorage.setItem('void_global_time', window.lastGlobalSend);
+                window.startGlobalCooldown();
+                window.appendMessageUI({ ...msgObj, sender: window.myGlobalAlias, isNoctyx: window.isNoctyx }, 'my-msg', true);
+                socket.emit('send_global', msgObj);
+            } else { socket.emit('send_message', msgObj); }
+            window.cancelReply();
+        }
+
+        // 9. MESSAGE SENDING & COOLDOWN
+        sendBtn.addEventListener('click', sendLocalMessage);
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !chatInput.disabled) sendLocalMessage(); });
+
+        window.startGlobalCooldown = function() {
+            let timeLeft = 10;
+            chatInput.disabled = true; sendBtn.disabled = true;
+            chatInput.placeholder = `Cooldown: ${timeLeft}s...`; chatInput.style.opacity = '0.5';
+            const cdTimer = setInterval(() => {
+                timeLeft--;
+                if(timeLeft <= 0) {
+                    clearInterval(cdTimer);
+                    chatInput.disabled = false; sendBtn.disabled = false;
+                    chatInput.placeholder = "Type a message..."; chatInput.style.opacity = '1'; chatInput.focus();
+                } else { chatInput.placeholder = `Cooldown: ${timeLeft}s...`; }
+            }, 1000);
+        };
+
+        function sendLocalMessage() {
+            const rawText = chatInput.value; const textToDisplay = rawText.trim();
+            if (textToDisplay === '') return;
+            
+            if (window.currentMode === 'global') {
+                if (!window.isNoctyx) {
+                    if (Date.now() - window.lastGlobalSend < 10000) return;
+                    if (window.globalCharCount + textToDisplay.length > 7000) { window.sysMsg('<span style="color:var(--neon-red)">Your signal faded. 7000 chars reached.</span>'); chatInput.disabled = true; return; }
+                    window.lastGlobalSend = Date.now(); window.globalCharCount += textToDisplay.length;
+                    sessionStorage.setItem('void_global_time', window.lastGlobalSend); sessionStorage.setItem('void_global_chars', window.globalCharCount);
+                    window.startGlobalCooldown();
+                }
+                const msgId = 'gmsg_' + Date.now();
+                const msgObj = { id: msgId, text: textToDisplay, type: 'text' };
+                if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
+                window.appendMessageUI({ ...msgObj, sender: window.myGlobalAlias, isNoctyx: window.isNoctyx }, 'my-msg', true);
+                socket.emit('send_global', msgObj);
+            } 
+            else {
+                window.usedChars += rawText.length;
+                const msgId = 'msg_' + Date.now();
+                const msgObj = { id: msgId, text: textToDisplay };
+                if (window.currentReplyTo) msgObj.replyTo = window.currentReplyTo;
+                window.appendMessageUI(msgObj, 'my-msg'); 
+                socket.emit('send_message', msgObj); 
+                window.updateVisualBar(window.usedChars);
+            }
+            chatInput.value = ''; window.cancelReply();
+        }
+
+        // 10. INCOMING MESSAGES
+        socket.on('receive_message', (msgObj) => { 
+            if (msgObj.system) { window.sysMsg(msgObj.text); return; }
+            typingIndicator.style.display = 'none'; 
+            let isMe = false;
+            if (msgObj.id && sessionStorage.getItem('pending_media_' + msgObj.id)) { isMe = true; sessionStorage.removeItem('pending_media_' + msgObj.id); }
+            window.appendMessageUI(msgObj, isMe ? 'my-msg' : 'stranger-msg'); 
+            if (!isMe && msgObj.type !== 'music') notificationSound.play().catch(()=>{}); 
+        });
+
+        socket.on('receive_global', (msgObj) => {
+            if (msgObj.sender !== window.myGlobalAlias) {
+                window.appendMessageUI(msgObj, 'stranger-msg', true);
+                if (msgObj.type !== 'music') notificationSound.play().catch(()=>{}); 
+            }
+        });
+
+        // 11. UI RENDERER
+        window.appendMessageUI = function(msgData, type, isGlobal = false) {
+            const msgId = msgData.id || 'msg_' + Date.now() + Math.floor(Math.random()*1000);
+            if (window.messageStore[msgId] && (msgData.type === 'image' || msgData.type === 'music')) return;
+
+            window.messageStore[msgId] = { text: msgData.text, sender: type === 'my-msg' ? 'You' : (msgData.senderAlias || msgData.sender || 'Stranger') };
+
+            const msgDiv = document.createElement('div'); msgDiv.className = `message ${type}`; msgDiv.id = msgId;
+            const timeString = `${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}`;
+            const metaHtml = type === 'my-msg' ? `${timeString} ✓` : timeString;
+
+            let aliasHtml = '';
+            if (isGlobal && type === 'stranger-msg') {
+                const nxClass = msgData.isNoctyx ? 'noctyx' : '';
+                const inviteBtn = (!window.isNoctyx && msgData.isNoctyx) ? '' : `<button class="invite-private-btn" onclick="window.sendPrivateInvite('${msgData.sender}')">✉️</button>`;
+                aliasHtml = `<div class="sender-alias ${nxClass}">${msgData.sender} ${inviteBtn}</div>`;
+            } else if (msgData.senderAlias === "Noctyx" && type === 'stranger-msg') {
+                aliasHtml = `<div class="sender-alias noctyx">Noctyx</div>`;
+            }
+
+            msgDiv.innerHTML = `
+                ${aliasHtml}
+                <div class="bubble-container" style="position:relative; width:100%;">
+                    <div class="bubble" id="bubble-${msgId}" onclick="window.openSheet('${msgId}')">
+                        <div class="reply-container"></div>
+                        <span class="msg-text-content"></span>
+                    </div>
+                    <div class="reaction-badge" id="react-${msgId}"></div>
+                </div>
+                <div class="msg-meta" style="display:flex; justify-content:${type === 'my-msg' ? 'flex-end' : 'flex-start'}; align-items:center;">
+                    ${metaHtml}
+                    <span onclick="window.openSheet('${msgId}')" style="margin: 0 8px; cursor: pointer; color: var(--neon-cyan); padding: 2px 6px; font-weight: bold; background: rgba(255,255,255,0.05); border-radius: 4px;">⋮</span>
+                </div>
+            `;
+            
+            const contentContainer = msgDiv.querySelector('.msg-text-content');
+            
+            if (msgData.type === 'image') {
+                const img = document.createElement('img'); img.src = msgData.url;
+                img.style.cssText = "max-width: 100%; border-radius: 10px; margin-top: 5px; display: block; border: 1px solid var(--glass-border);";
+                img.onload = () => { chatBox.scrollTop = chatBox.scrollHeight; };
+                contentContainer.appendChild(img);
+            } else if (msgData.type === 'music') {
+                contentContainer.innerHTML = `
+                    <div class="music-bubble">
+                        <img src="" class="music-cover">
+                        <div class="music-info"><div class="music-title"></div><div class="music-artist"></div></div>
+                        <div class="music-controls">
+                            <button class="music-loop-btn" id="loop-${msgId}" onclick="event.stopPropagation(); window.toggleLoop('${msgId}')">∞</button>
+                            <button class="music-play-btn" id="play-${msgId}" onclick="event.stopPropagation(); window.playVoidMusic('${msgData.url}', '${msgId}')">▶</button>
+                        </div>
+                    </div>`;
+                contentContainer.querySelector('.music-cover').src = msgData.cover || '';
+                contentContainer.querySelector('.music-title').textContent = msgData.title || 'Unknown Frequency';
+                contentContainer.querySelector('.music-artist').textContent = msgData.artist || 'Unknown Node';
+            } else { contentContainer.textContent = msgData.text; }
+            
+            if (msgData.replyTo) {
+                const replyDiv = document.createElement('div'); replyDiv.className = 'reply-quote';
+                replyDiv.innerHTML = `<strong></strong>: <span class="quote-text"></span>`;
+                replyDiv.querySelector('strong').textContent = msgData.replyTo.sender;
+                replyDiv.querySelector('.quote-text').textContent = msgData.replyTo.text;
+                msgDiv.querySelector('.reply-container').appendChild(replyDiv);
+            }
+            
+            chatBox.insertBefore(msgDiv, typingIndicator); 
+            if (msgData.type !== 'image') chatBox.scrollTop = chatBox.scrollHeight; 
+
+            const bubbleEl = msgDiv.querySelector(`#bubble-${msgId}`);
+            let startX = 0; let currentDiff = 0;
+            bubbleEl.addEventListener('touchstart', (e) => { 
+                // FLAW FIXED: If they touch a button inside the bubble (like Music Play), ignore swipe
+                if(e.target.closest('button')) return; 
+                startX = e.touches[0].clientX; currentDiff = 0; bubbleEl.style.transition = 'none'; 
+            }, {passive: true});
+            bubbleEl.addEventListener('touchmove', (e) => {
+                if(e.target.closest('button')) return;
+                let currentX = e.touches[0].clientX; currentDiff = currentX - startX;
+                if (type === 'stranger-msg' && currentDiff > 0) { bubbleEl.style.transform = `translateX(${Math.min(currentDiff, 60)}px)`; } 
+                else if (type === 'my-msg' && currentDiff < 0) { bubbleEl.style.transform = `translateX(${Math.max(currentDiff, -60)}px)`; }
+            }, {passive: true});
+            bubbleEl.addEventListener('touchend', (e) => {
+                if(e.target.closest('button')) return;
+                bubbleEl.style.transition = 'transform 0.2s ease'; bubbleEl.style.transform = 'translateX(0px)';
+                if (type === 'stranger-msg' && currentDiff > 40) window.setReply(msgId); 
+                else if (type === 'my-msg' && currentDiff < -40) window.setReply(msgId); 
+            });
+        }
+
+        // 12. PRIVATE ROOM LOGIC
+        socket.on('private_request', (data) => {
+            if (data.to === window.myGlobalAlias) {
+                window.privateInviteData = data;
+                privateInviteText.innerText = `${data.from} wants to pull you into a Private Void.`;
+                privateInviteOverlay.style.display = 'flex';
+            }
+        });
+
+        acceptPrivateBtn.addEventListener('click', () => {
+            if(window.privateInviteData) {
+                socket.emit('accept_private', window.privateInviteData);
                 privateInviteOverlay.style.display = 'none';
-            });
-
-            // 14. CORE HELPERS
-            window.updateVisualBar = function(total) {
-                if(window.currentMax > 10000) return; 
-                let remaining = window.currentMax - total; 
-                let percentage = (remaining / window.currentMax) * 100; 
-                if (percentage < 0) percentage = 0; 
-                charBar.style.width = `${percentage}%`;
-                if (remaining <= 0) { chatInput.disabled = true; chatInput.maxLength = remaining; }
-                if (remaining <= 300 && window.currentMax === 1500 && !window.isCountdownRunning && total > 0) { actionToast.style.display = 'block'; extendBtn.style.display = 'inline-block'; countdownText.style.display = 'none'; }
-                if (percentage < 20) { charBar.style.backgroundColor = 'var(--neon-red)'; charBar.style.boxShadow = '0 0 10px var(--neon-red)'; } 
-                else { charBar.style.backgroundColor = 'var(--neon-cyan)'; charBar.style.boxShadow = '0 0 10px var(--neon-cyan)'; }
             }
+        });
+        declinePrivateBtn.addEventListener('click', () => {
+            window.privateInviteData = null; privateInviteOverlay.style.display = 'none';
+        });
 
-            socket.on('sync_chars', (data) => { 
-                if(window.currentMode !== 'global') { window.currentMax = data.max; window.usedChars = data.used; window.updateVisualBar(window.usedChars); }
-            });
+        // 13. MEDIA PLAYBACK
+        window.playVoidMusic = function(url, btnId) {
+            const btn = document.getElementById('play-' + btnId);
+            const loopBtn = document.getElementById('loop-' + btnId);
+            if (window.globalAudio.src === url && !window.globalAudio.paused) { window.globalAudio.pause(); btn.innerHTML = '▶'; return; }
+            if (window.currentPlayingBtn) window.currentPlayingBtn.innerHTML = '▶';
+            window.globalAudio.src = url; window.globalAudio.loop = loopBtn.classList.contains('active');
+            window.globalAudio.play().catch(e => window.sysMsg("Audio blocked."));
+            btn.innerHTML = '⏸'; window.currentPlayingBtn = btn;
+            window.globalAudio.onended = () => { if(!window.globalAudio.loop) btn.innerHTML = '▶'; };
+        };
 
-            socket.on('typing', () => { 
-                if (window.currentMode === 'global') return;
-                typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; clearTimeout(window.typingTimeoutGlobal); window.typingTimeoutGlobal = setTimeout(() => typingIndicator.style.display = 'none', 1500); 
-            });
+        window.toggleLoop = function(btnId) {
+            const btn = document.getElementById('loop-' + btnId); btn.classList.toggle('active');
+            if (window.currentPlayingBtn && window.currentPlayingBtn.id === 'play-' + btnId) { window.globalAudio.loop = btn.classList.contains('active'); }
+        };
 
-            // 15. SHATTER
-            socket.on('force_shatter', () => { if(!window.isCountdownRunning && window.currentMode !== 'global') window.startCountdown(); });
-            
-            window.startCountdown = function() { 
-                window.isCountdownRunning = true; chatInput.disabled = true; chatInput.placeholder = "Time is up..."; actionToast.style.display = 'block'; extendBtn.style.display = 'none'; countdownText.style.display = 'block'; 
-                let secondsLeft = 5; countdownText.innerText = `Shattering in ${secondsLeft}...`; 
-                window.countdownTimer = setInterval(() => { secondsLeft--; if (secondsLeft <= 0) { clearInterval(window.countdownTimer); window.triggerVanish(); } else { countdownText.innerText = `Shattering in ${secondsLeft}...`; } }, 1000); 
+        // 14. CORE HELPERS
+        window.updateVisualBar = function(total) {
+            if(window.currentMax > 10000) return; 
+            let remaining = window.currentMax - total; let percentage = (remaining / window.currentMax) * 100; if (percentage < 0) percentage = 0; 
+            charBar.style.width = `${percentage}%`;
+            if (remaining <= 0) { chatInput.disabled = true; chatInput.maxLength = remaining; }
+            if (remaining <= 300 && window.currentMax === 1500 && !window.isCountdownRunning && total > 0) { actionToast.style.display = 'block'; extendBtn.style.display = 'inline-block'; countdownText.style.display = 'none'; }
+            if (percentage < 20) { charBar.style.backgroundColor = 'var(--neon-red)'; charBar.style.boxShadow = '0 0 10px var(--neon-red)'; } 
+            else { charBar.style.backgroundColor = 'var(--neon-cyan)'; charBar.style.boxShadow = '0 0 10px var(--neon-cyan)'; }
+        }
+
+        socket.on('sync_chars', (data) => { if(window.currentMode !== 'global') { window.currentMax = data.max; window.usedChars = data.used; window.updateVisualBar(window.usedChars); } });
+
+        socket.on('typing', () => { 
+            if (window.currentMode === 'global') return;
+            typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; clearTimeout(window.typingTimeoutGlobal); window.typingTimeoutGlobal = setTimeout(() => typingIndicator.style.display = 'none', 1500); 
+        });
+
+        // 15. SHATTER
+        socket.on('force_shatter', () => { if(!window.isCountdownRunning && window.currentMode !== 'global') window.startCountdown(); });
+        
+        window.startCountdown = function() { 
+            window.isCountdownRunning = true; chatInput.disabled = true; chatInput.placeholder = "Time is up..."; actionToast.style.display = 'block'; extendBtn.style.display = 'none'; countdownText.style.display = 'block'; 
+            let secondsLeft = 5; countdownText.innerText = `Shattering in ${secondsLeft}...`; 
+            window.countdownTimer = setInterval(() => { secondsLeft--; if (secondsLeft <= 0) { clearInterval(window.countdownTimer); window.triggerVanish(); } else { countdownText.innerText = `Shattering in ${secondsLeft}...`; } }, 1000); 
+        }
+        
+        window.triggerVanish = function() { 
+            countdownText.innerText = "Shattered."; chatBox.style.opacity = '0.1'; chatBox.style.filter = 'blur(4px)'; 
+            if(!window.globalAudio.paused) window.globalAudio.pause(); 
+            for (let key in window.messageStore) delete window.messageStore[key]; 
+            socket.emit('chat_shattered'); setTimeout(() => { actionToast.style.display = 'none'; shatterOverlay.style.display = 'flex'; }, 800); 
+        }
+        
+        socket.on('stranger_disconnected', () => { if(!window.isCountdownRunning && window.currentMode !== 'global') window.startCountdown(); });
+
+        extendBtn.addEventListener('click', () => { if(extendBtn.innerText.includes("Copied")) return; extendBtn.innerText = "Waiting..."; extendBtn.disabled = true; extendBtn.style.opacity = '0.6'; socket.emit('request_extend'); });
+        socket.on('extend_requested', () => { const reqId = 'ext-' + Date.now(); window.sysMsg(`Stranger requested +500 chars. <span id="${reqId}"><button onclick="window.acceptExtend(this)" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(reqId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); });
+        window.acceptExtend = function(btn) { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); margin-left:10px; font-size:0.8rem;'>(Accepted)</span>"; socket.emit('accept_extend'); }
+        socket.on('extend_accepted', (data) => { window.currentMax = data.max; window.usedChars = data.used; actionToast.style.display = 'none'; extendBtn.style.display = 'none'; chatInput.maxLength = window.currentMax - window.usedChars; window.updateVisualBar(window.usedChars); window.sysMsg('Extension Granted! <span>+500 characters</span> added.'); });
+
+        // 16. BOTTOM SHEET
+        window.openSheet = function(id) { window.activeSheetMsgId = id; sheetOverlay.style.display = 'block'; setTimeout(() => { sheetOverlay.style.opacity = '1'; bottomSheet.style.bottom = '0'; }, 10); }
+        window.closeSheet = function() { bottomSheet.style.bottom = '-100%'; sheetOverlay.style.opacity = '0'; setTimeout(() => { sheetOverlay.style.display = 'none'; window.activeSheetMsgId = null; }, 300); }
+        
+        sheetOverlay.addEventListener('click', window.closeSheet);
+        closeSheetBtn.addEventListener('click', window.closeSheet);
+        closeReplyBtn.addEventListener('click', () => window.cancelReply());
+        
+        window.sheetReact = function(emoji) { if(!window.activeSheetMsgId) return; window.showReaction(window.activeSheetMsgId, emoji); socket.emit('react_message', { msgId: window.activeSheetMsgId, emoji }); window.closeSheet(); }
+        window.sheetReply = function() { if(!window.activeSheetMsgId) return; window.setReply(window.activeSheetMsgId); window.closeSheet(); }
+        window.sheetCopy = function() { if(!window.activeSheetMsgId) return; navigator.clipboard.writeText(window.messageStore[window.activeSheetMsgId].text).then(() => { countdownText.style.display = 'none'; extendBtn.innerText = "Copied!"; extendBtn.style.display = 'inline-block'; actionToast.style.display = 'block'; setTimeout(() => { actionToast.style.display = 'none'; extendBtn.innerText = "Request +500 Chars"; }, 2000); }); window.closeSheet(); }
+        window.setReply = function(id) { const msgInfo = window.messageStore[id]; if(!msgInfo) return; window.currentReplyTo = { id, text: msgInfo.text, sender: msgInfo.sender }; replyText.innerText = msgInfo.text.length > 30 ? msgInfo.text.substring(0,30) + '...' : msgInfo.text; replyBanner.style.display = 'flex'; chatInput.focus(); }
+        window.cancelReply = function() { window.currentReplyTo = null; replyBanner.style.display = 'none'; replyText.innerText = '...'; }
+        
+        socket.on('receive_reaction', (data) => { window.showReaction(data.msgId, data.emoji); });
+        window.showReaction = function(msgId, emoji) { const badge = document.getElementById(`react-${msgId}`); if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulse 1s ease'; } }
+
+        // 17. GAMES (Global & 1v1 Restored)
+        window.openGameMenu = function() { gameMenu.style.display = 'flex'; }
+        window.inviteGame = function(gameType) { 
+            gameMenu.style.display = 'none'; 
+            if (window.currentMode === 'global') {
+                const inviteId = 'inv-' + Date.now();
+                socket.emit('game_invite_global', { game: gameType, inviteId: inviteId });
+                window.sysMsg(`You challenged The Nexus to ${gameType.toUpperCase()}. Waiting for a node...`);
+            } else {
+                window.sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); 
+                socket.emit('game_action', { type: 'invite', game: gameType }); 
             }
-            
-            window.triggerVanish = function() { 
-                countdownText.innerText = "Shattered."; chatBox.style.opacity = '0.1'; chatBox.style.filter = 'blur(4px)'; 
-                if(!window.globalAudio.paused) window.globalAudio.pause(); 
-                for (let key in window.messageStore) delete window.messageStore[key]; 
-                socket.emit('chat_shattered'); setTimeout(() => { actionToast.style.display = 'none'; shatterOverlay.style.display = 'flex'; }, 800); 
-            }
-            
-            socket.on('stranger_disconnected', () => { if(!window.isCountdownRunning && window.currentMode !== 'global') window.startCountdown(); });
+        };
+        
+        socket.on('global_game_invite', (data) => {
+            if (data.fromId === socket.id) return; 
+            window.sysMsg(`
+                <span style="color:var(--neon-cyan)">${data.fromAlias} challenged The Nexus to ${data.game.toUpperCase()}!</span> 
+                <button onclick="window.acceptGlobalGame('${data.inviteId}', '${data.game}', '${data.fromId}')" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px; font-family:'Outfit';">Accept</button>
+            `);
+        });
 
-            // 16. BOTTOM SHEET
-            window.openSheet = function(id) { window.activeSheetMsgId = id; sheetOverlay.style.display = 'block'; setTimeout(() => { sheetOverlay.style.opacity = '1'; bottomSheet.style.bottom = '0'; }, 10); }
-            window.closeSheet = function() { bottomSheet.style.bottom = '-100%'; sheetOverlay.style.opacity = '0'; setTimeout(() => { sheetOverlay.style.display = 'none'; window.activeSheetMsgId = null; }, 300); }
-            
-            sheetOverlay.addEventListener('click', window.closeSheet);
-            closeSheetBtn.addEventListener('click', window.closeSheet);
-            closeReplyBtn.addEventListener('click', () => window.cancelReply());
-            
-            window.sheetReact = function(emoji) { if(!window.activeSheetMsgId) return; window.showReaction(window.activeSheetMsgId, emoji); socket.emit('react_message', { msgId: window.activeSheetMsgId, emoji }); window.closeSheet(); }
-            window.sheetReply = function() { if(!window.activeSheetMsgId) return; window.setReply(window.activeSheetMsgId); window.closeSheet(); }
-            window.sheetCopy = function() { if(!window.activeSheetMsgId) return; navigator.clipboard.writeText(window.messageStore[window.activeSheetMsgId].text).then(() => { countdownText.style.display = 'none'; extendBtn.innerText = "Copied!"; extendBtn.style.display = 'inline-block'; actionToast.style.display = 'block'; setTimeout(() => { actionToast.style.display = 'none'; extendBtn.innerText = "Request +500 Chars"; }, 2000); }); window.closeSheet(); }
-            window.setReply = function(id) { const msgInfo = window.messageStore[id]; if(!msgInfo) return; window.currentReplyTo = { id, text: msgInfo.text, sender: msgInfo.sender }; replyText.innerText = msgInfo.text.length > 30 ? msgInfo.text.substring(0,30) + '...' : msgInfo.text; replyBanner.style.display = 'flex'; chatInput.focus(); }
-            window.cancelReply = function() { window.currentReplyTo = null; replyBanner.style.display = 'none'; replyText.innerText = '...'; }
-            
-            socket.on('receive_reaction', (data) => { window.showReaction(data.msgId, data.emoji); });
-            window.showReaction = function(msgId, emoji) { const badge = document.getElementById(`react-${msgId}`); if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulse 1s ease'; } }
+        window.acceptGlobalGame = function(inviteId, game, fromId) { socket.emit('accept_global_game', { inviteId, game, fromId }); }
+        socket.on('start_game_directly', (data) => { window.startGame(data.game, data.isPlayer1); });
+        
+        socket.on('game_action', (data) => {
+            if(window.currentMode === 'global') return;
+            if (data.type === 'invite') { const inviteId = 'inv-' + Date.now(); window.sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <span id="${inviteId}"><button onclick="window.acceptGame('${data.game}', this)" style="background:var(--neon-cyan); border:none; border-radius:5px; padding:3px 8px; cursor:pointer; color:#000; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(inviteId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); } 
+            else if (data.type === 'accept') { window.startGame(data.game, true); } 
+            else if (data.type === 'rps_move') { window.resolveRPS(data.move); } 
+            else if (data.type === 'ttt_move') { window.receiveTTT(data.index); }
+            else if (data.type === 'c4_move') { window.receiveC4(data.col); }
+        });
+        
+        window.acceptGame = function(gameType, btn) { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); font-size:0.8rem; margin-left:5px;'>(Accepted)</span>"; socket.emit('game_action', { type: 'accept', game: gameType }); window.startGame(gameType, false); };
 
-            // 17. GAMES (First to Strike Engine)
-            gameBtn.addEventListener('click', () => { gameMenu.style.display = 'flex'; });
-            
-            closeGameMenuBtn.addEventListener('click', () => gameMenu.style.display = 'none');
-            closeTttBtn.addEventListener('click', () => tttUi.style.display = 'none');
-            closeC4Btn.addEventListener('click', () => c4Ui.style.display = 'none');
+        window.startGame = function(gameType, isPlayer1) {
+            if (gameType === 'rps') { window.myRPS = null; window.strangerRPS = null; document.getElementById('rps-status').innerText = ""; document.getElementById('rps-ui').style.display = 'flex'; } 
+            else if (gameType === 'ttt') { window.initTTT(isPlayer1); } else if (gameType === 'c4') { window.initC4(isPlayer1); }
+        }
 
-            // Launchers
-            launchRps.addEventListener('click', () => window.inviteGame('rps'));
-            launchTtt.addEventListener('click', () => window.inviteGame('ttt'));
-            launchC4.addEventListener('click', () => window.inviteGame('c4'));
+        window.playRPS = function(move) { window.myRPS = move; document.getElementById('rps-status').innerText = "Waiting for opponent..."; socket.emit('game_action', { type: 'rps_move', move: move }); if (window.strangerRPS) window.checkRPSWin(); };
+        window.resolveRPS = function(strangerMove) { window.strangerRPS = strangerMove; if (window.myRPS) window.checkRPSWin(); }
+        window.checkRPSWin = function() { document.getElementById('rps-ui').style.display = 'none'; let res = "You Tied!"; if ((window.myRPS==='Rock' && window.strangerRPS==='Scissors') || (window.myRPS==='Paper' && window.strangerRPS==='Rock') || (window.myRPS==='Scissors' && window.strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>"; else if (window.myRPS !== window.strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>"; window.sysMsg(`RPS: You (${window.myRPS}) vs Opponent (${window.strangerRPS}). <b>${res}</b>`); }
 
-            window.inviteGame = function(gameType) { 
-                gameMenu.style.display = 'none'; 
-                if (window.currentMode === 'global') {
-                    const inviteId = 'inv-' + Date.now();
-                    socket.emit('game_invite_global', { game: gameType, inviteId: inviteId });
-                    window.sysMsg(`You challenged The Nexus to ${gameType.toUpperCase()}. Waiting for a node...`);
-                } else {
-                    window.sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); 
-                    socket.emit('game_action', { type: 'invite', game: gameType }); 
-                }
-            };
-            
-            socket.on('global_game_invite', (data) => {
-                if (data.fromId === socket.id) return; 
-                window.sysMsg(`
-                    <span style="color:var(--neon-cyan)">${data.fromAlias} challenged The Nexus to ${data.game.toUpperCase()}!</span> 
-                    <button onclick="window.acceptGlobalGame('${data.inviteId}', '${data.game}', '${data.fromId}')" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px; font-family:'Outfit';">Accept</button>
-                `);
-            });
+        window.initTTT = function(isPlayer1) { window.tttBoard = Array(9).fill(''); window.mySymbol = isPlayer1 ? 'X' : 'O'; window.myTurn = isPlayer1; document.getElementById('ttt-status').innerText = window.myTurn ? "Your Turn (" + window.mySymbol + ")" : "Opponent's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); tttUi.style.display = 'flex'; }
+        window.playTTT = function(index) { if (!window.myTurn || window.tttBoard[index] !== '') return; window.makeTTTMove(index, window.mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); window.myTurn = false; document.getElementById('ttt-status').innerText = "Opponent's Turn"; };
+        window.receiveTTT = function(index) { window.makeTTTMove(index, window.mySymbol === 'X' ? 'O' : 'X'); window.myTurn = true; document.getElementById('ttt-status').innerText = "Your Turn (" + window.mySymbol + ")"; }
+        window.makeTTTMove = function(index, symbol) { window.tttBoard[index] = symbol; const cells = document.querySelectorAll('.ttt-cell'); cells[index].innerText = symbol; cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)'; window.checkTTTWin(); }
+        window.checkTTTWin = function() { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null; wins.forEach(w => { if(window.tttBoard[w[0]] && window.tttBoard[w[0]]===window.tttBoard[w[1]] && window.tttBoard[w[0]]===window.tttBoard[w[2]]) winner = window.tttBoard[w[0]]; }); if (winner) { tttUi.style.display = 'none'; window.sysMsg(`Tic Tac Toe: <b>${winner === window.mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); } else if (!window.tttBoard.includes('')) { tttUi.style.display = 'none'; window.sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); } }
 
-            window.acceptGlobalGame = function(inviteId, game, fromId) {
-                socket.emit('accept_global_game', { inviteId, game, fromId });
-            }
+        window.initC4 = function(isPlayer1) { window.c4Board = Array(6).fill().map(()=>Array(7).fill('')); window.myC4Symbol = isPlayer1 ? 'p1' : 'p2'; window.myC4Turn = isPlayer1; const boardEl = document.getElementById('c4-board'); boardEl.innerHTML = ''; for(let r=0; r<6; r++) { for(let c=0; c<7; c++) { const cell = document.createElement('div'); cell.className = 'c4-cell'; cell.id = `c4-${r}-${c}`; cell.onclick = () => window.playC4(c); boardEl.appendChild(cell); } } document.getElementById('c4-status').innerText = window.myC4Turn ? "Your Turn (" + (window.myC4Symbol==='p1'?'Cyan':'Gold') + ")" : "Opponent's Turn"; c4Ui.style.display = 'flex'; }
+        window.playC4 = function(col) { if (!window.myC4Turn) return; let row = window.getLowestEmptyRow(col); if (row === -1) return; window.makeC4Move(row, col, window.myC4Symbol); socket.emit('game_action', { type: 'c4_move', col: col }); window.myC4Turn = false; document.getElementById('c4-status').innerText = "Opponent's Turn"; };
+        window.receiveC4 = function(col) { let row = window.getLowestEmptyRow(col); if(row === -1) return; window.makeC4Move(row, col, window.myC4Symbol === 'p1' ? 'p2' : 'p1'); window.myC4Turn = true; document.getElementById('c4-status').innerText = "Your Turn (" + (window.myC4Symbol==='p1'?'Cyan':'Gold') + ")"; }
+        window.getLowestEmptyRow = function(col) { for(let r=5; r>=0; r--) { if(window.c4Board[r][col] === '') return r; } return -1; }
+        window.makeC4Move = function(row, col, player) { window.c4Board[row][col] = player; document.getElementById(`c4-${row}-${col}`).classList.add(player); window.checkC4Win(row, col, player); }
+        window.checkC4Win = function(r, c, player) { const dirs = [[0,1], [1,0], [1,1], [1,-1]]; for (let [dr, dc] of dirs) { let count = 1; for(let i=1; i<=3; i++) { let nr = r + dr*i, nc = c + dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && window.c4Board[nr][nc] === player) count++; else break; } for(let i=1; i<=3; i++) { let nr = r - dr*i, nc = c - dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && window.c4Board[nr][nc] === player) count++; else break; } if(count >= 4) { c4Ui.style.display = 'none'; window.sysMsg(`Void Connect: <b>${player === window.myC4Symbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); return; } } if(window.c4Board[0].every(cell => cell !== '')) { c4Ui.style.display = 'none'; window.sysMsg(`Void Connect: <b>It's a Draw!</b>`); } }
 
-            socket.on('start_game_directly', (data) => {
-                window.startGame(data.game, data.isPlayer1);
-            });
-            
-            socket.on('game_action', (data) => {
-                if(window.currentMode === 'global') return;
-                if (data.type === 'invite') { const inviteId = 'inv-' + Date.now(); window.sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <span id="${inviteId}"><button onclick="window.acceptGame('${data.game}', this)" style="background:var(--neon-cyan); border:none; border-radius:5px; padding:3px 8px; cursor:pointer; color:#000; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(inviteId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); } 
-                else if (data.type === 'accept') { window.startGame(data.game, true); } 
-                else if (data.type === 'rps_move') { window.resolveRPS(data.move); } 
-                else if (data.type === 'ttt_move') { window.receiveTTT(data.index); }
-                else if (data.type === 'c4_move') { window.receiveC4(data.col); }
-            });
-            
-            window.acceptGame = function(gameType, btn) { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); font-size:0.8rem; margin-left:5px;'>(Accepted)</span>"; socket.emit('game_action', { type: 'accept', game: gameType }); window.startGame(gameType, false); };
+        // 18. RATING, VISIBILITY & ADMIN CLOSE
+        socket.on('submit_rating', (rating) => {
+            starBtns.forEach(s => { 
+                if(parseInt(s.getAttribute('data-val')) <= rating) { s.classList.add('active'); } 
+                else { s.classList.remove('active'); } 
+                s.style.pointerEvents = 'none'; 
+            }); 
+            ratingThanks.style.display = 'block';
+        });
 
-            window.startGame = function(gameType, isPlayer1) {
-                if (gameType === 'rps') { window.myRPS = null; window.strangerRPS = null; document.getElementById('rps-status').innerText = ""; document.getElementById('rps-ui').style.display = 'flex'; } 
-                else if (gameType === 'ttt') { window.initTTT(isPlayer1); } else if (gameType === 'c4') { window.initC4(isPlayer1); }
-            }
-
-            window.playRPS = function(move) { window.myRPS = move; document.getElementById('rps-status').innerText = "Waiting for opponent..."; socket.emit('game_action', { type: 'rps_move', move: move }); if (window.strangerRPS) window.checkRPSWin(); };
-            window.resolveRPS = function(strangerMove) { window.strangerRPS = strangerMove; if (window.myRPS) window.checkRPSWin(); }
-            window.checkRPSWin = function() { document.getElementById('rps-ui').style.display = 'none'; let res = "You Tied!"; if ((window.myRPS==='Rock' && window.strangerRPS==='Scissors') || (window.myRPS==='Paper' && window.strangerRPS==='Rock') || (window.myRPS==='Scissors' && window.strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>"; else if (window.myRPS !== window.strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>"; window.sysMsg(`RPS: You (${window.myRPS}) vs Opponent (${window.strangerRPS}). <b>${res}</b>`); }
-
-            window.initTTT = function(isPlayer1) { window.tttBoard = Array(9).fill(''); window.mySymbol = isPlayer1 ? 'X' : 'O'; window.myTurn = isPlayer1; document.getElementById('ttt-status').innerText = window.myTurn ? "Your Turn (" + window.mySymbol + ")" : "Opponent's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); tttUi.style.display = 'flex'; }
-            window.playTTT = function(index) { if (!window.myTurn || window.tttBoard[index] !== '') return; window.makeTTTMove(index, window.mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); window.myTurn = false; document.getElementById('ttt-status').innerText = "Opponent's Turn"; };
-            window.receiveTTT = function(index) { window.makeTTTMove(index, window.mySymbol === 'X' ? 'O' : 'X'); window.myTurn = true; document.getElementById('ttt-status').innerText = "Your Turn (" + window.mySymbol + ")"; }
-            window.makeTTTMove = function(index, symbol) { window.tttBoard[index] = symbol; const cells = document.querySelectorAll('.ttt-cell'); cells[index].innerText = symbol; cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)'; window.checkTTTWin(); }
-            window.checkTTTWin = function() { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null; wins.forEach(w => { if(window.tttBoard[w[0]] && window.tttBoard[w[0]]===window.tttBoard[w[1]] && window.tttBoard[w[0]]===window.tttBoard[w[2]]) winner = window.tttBoard[w[0]]; }); if (winner) { tttUi.style.display = 'none'; window.sysMsg(`Tic Tac Toe: <b>${winner === window.mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); } else if (!window.tttBoard.includes('')) { tttUi.style.display = 'none'; window.sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); } }
-
-            window.initC4 = function(isPlayer1) { window.c4Board = Array(6).fill().map(()=>Array(7).fill('')); window.myC4Symbol = isPlayer1 ? 'p1' : 'p2'; window.myC4Turn = isPlayer1; const boardEl = document.getElementById('c4-board'); boardEl.innerHTML = ''; for(let r=0; r<6; r++) { for(let c=0; c<7; c++) { const cell = document.createElement('div'); cell.className = 'c4-cell'; cell.id = `c4-${r}-${c}`; cell.onclick = () => window.playC4(c); boardEl.appendChild(cell); } } document.getElementById('c4-status').innerText = window.myC4Turn ? "Your Turn (" + (window.myC4Symbol==='p1'?'Cyan':'Gold') + ")" : "Opponent's Turn"; c4Ui.style.display = 'flex'; }
-            window.playC4 = function(col) { if (!window.myC4Turn) return; let row = window.getLowestEmptyRow(col); if (row === -1) return; window.makeC4Move(row, col, window.myC4Symbol); socket.emit('game_action', { type: 'c4_move', col: col }); window.myC4Turn = false; document.getElementById('c4-status').innerText = "Opponent's Turn"; };
-            window.receiveC4 = function(col) { let row = window.getLowestEmptyRow(col); if(row === -1) return; window.makeC4Move(row, col, window.myC4Symbol === 'p1' ? 'p2' : 'p1'); window.myC4Turn = true; document.getElementById('c4-status').innerText = "Your Turn (" + (window.myC4Symbol==='p1'?'Cyan':'Gold') + ")"; }
-            window.getLowestEmptyRow = function(col) { for(let r=5; r>=0; r--) { if(window.c4Board[r][col] === '') return r; } return -1; }
-            window.makeC4Move = function(row, col, player) { window.c4Board[row][col] = player; document.getElementById(`c4-${row}-${col}`).classList.add(player); window.checkC4Win(row, col, player); }
-            window.checkC4Win = function(r, c, player) { const dirs = [[0,1], [1,0], [1,1], [1,-1]]; for (let [dr, dc] of dirs) { let count = 1; for(let i=1; i<=3; i++) { let nr = r + dr*i, nc = c + dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && window.c4Board[nr][nc] === player) count++; else break; } for(let i=1; i<=3; i++) { let nr = r - dr*i, nc = c - dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && window.c4Board[nr][nc] === player) count++; else break; } if(count >= 4) { c4Ui.style.display = 'none'; window.sysMsg(`Void Connect: <b>${player === window.myC4Symbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); return; } } if(window.c4Board[0].every(cell => cell !== '')) { c4Ui.style.display = 'none'; window.sysMsg(`Void Connect: <b>It's a Draw!</b>`); } }
-
-            extendBtn.addEventListener('click', () => { if(extendBtn.innerText.includes("Copied")) return; extendBtn.innerText = "Waiting..."; extendBtn.disabled = true; extendBtn.style.opacity = '0.6'; socket.emit('request_extend'); });
-            socket.on('extend_requested', () => { const reqId = 'ext-' + Date.now(); window.sysMsg(`Stranger requested +500 chars. <span id="${reqId}"><button onclick="window.acceptExtend(this)" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(reqId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); });
-            window.acceptExtend = function(btn) { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); margin-left:10px; font-size:0.8rem;'>(Accepted)</span>"; socket.emit('accept_extend'); }
-            socket.on('extend_accepted', (data) => { window.currentMax = data.max; window.usedChars = data.used; actionToast.style.display = 'none'; extendBtn.style.display = 'none'; chatInput.maxLength = window.currentMax - window.usedChars; window.updateVisualBar(window.usedChars); window.sysMsg('Extension Granted! <span>+500 characters</span> added.'); });
-
-            socket.on('submit_rating', (rating) => {
-                starBtns.forEach(s => { 
-                    if(parseInt(s.getAttribute('data-val')) <= rating) { s.classList.add('active'); } 
-                    else { s.classList.remove('active'); } 
-                    s.style.pointerEvents = 'none'; 
-                }); 
-                ratingThanks.style.display = 'block';
-            });
-
-            // 18. VISIBILITY & ADMIN FIXES
-            document.addEventListener("visibilitychange", () => { if (socket.connected) { const status = document.hidden ? 'offline' : 'online'; socket.emit('user_status', status); } });
-            socket.on('stranger_status', (status) => { if (!statusDot) return; if (status === 'offline') { statusDot.style.backgroundColor = '#64748b'; statusDot.style.boxShadow = 'none'; } else { statusDot.style.backgroundColor = '#22c55e'; statusDot.style.boxShadow = '0 0 8px #22c55e'; } });
-            
-            closeAdminBtn.addEventListener('click', () => { adminUi.style.setProperty('display', 'none', 'important'); });
+        document.addEventListener("visibilitychange", () => { if (socket.connected) { const status = document.hidden ? 'offline' : 'online'; socket.emit('user_status', status); } });
+        socket.on('stranger_status', (status) => { if (!statusDot) return; if (status === 'offline') { statusDot.style.backgroundColor = '#64748b'; statusDot.style.boxShadow = 'none'; } else { statusDot.style.backgroundColor = '#22c55e'; statusDot.style.boxShadow = '0 0 8px #22c55e'; } });
+        
+        closeAdminBtn.addEventListener('click', () => { adminUi.style.setProperty('display', 'none', 'important'); });
         });
     </script>
 </body>
-            </html>
+</html>
