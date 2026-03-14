@@ -12,17 +12,33 @@
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
     <style>
+        /* === CORE RESET & VARIABLES === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         :root {
-            --bg-dark: #030712; --glass-bg: rgba(255, 255, 255, 0.02); --glass-border: rgba(255, 255, 255, 0.05);
-            --text-main: #f8fafc; --text-muted: #64748b; --neon-cyan: #06b6d4; --neon-gold: #fbbf24; --neon-red: #ef4444;
-            --my-bubble: rgba(6, 182, 212, 0.1); --stranger-bubble: rgba(255, 255, 255, 0.05);
+            --bg-dark: #030712; 
+            --glass-bg: rgba(255, 255, 255, 0.02); 
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --text-main: #f8fafc; 
+            --text-muted: #64748b; 
+            --neon-cyan: #06b6d4; 
+            --neon-gold: #fbbf24; 
+            --neon-red: #ef4444;
+            --neon-purple: #a855f7;
+            --my-bubble: rgba(6, 182, 212, 0.1); 
+            --stranger-bubble: rgba(255, 255, 255, 0.05);
         }
 
+        /* === LIGHT THEME === */
         body.light-theme {
-            --bg-dark: #f8fafc; --glass-bg: rgba(0, 0, 0, 0.03); --glass-border: rgba(0, 0, 0, 0.1);
-            --text-main: #0f172a; --text-muted: #475569; --neon-cyan: #0284c7;
-            --my-bubble: rgba(2, 132, 199, 0.1); --stranger-bubble: rgba(0, 0, 0, 0.05);
+            --bg-dark: #f8fafc; 
+            --glass-bg: rgba(0, 0, 0, 0.03); 
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-main: #0f172a; 
+            --text-muted: #475569; 
+            --neon-cyan: #0284c7;
+            --my-bubble: rgba(2, 132, 199, 0.1); 
+            --stranger-bubble: rgba(0, 0, 0, 0.05);
             background-image: radial-gradient(circle at 50% 50%, #e2e8f0 0%, #f8fafc 100%);
         }
         body.light-theme h1 { color: #0f172a; text-shadow: none; }
@@ -31,18 +47,33 @@
         body.light-theme .icon-btn, body.light-theme #chat-input, body.light-theme .system-message { background: rgba(0,0,0,0.05); }
         body.light-theme .bubble { border-color: rgba(0,0,0,0.1); }
 
-        body { background-color: var(--bg-dark); background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%); color: var(--text-main); font-family: 'Outfit', sans-serif; height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; transition: background 0.3s ease, color 0.3s ease; }
+        /* === GLOBAL LAYOUT === */
+        body { 
+            background-color: var(--bg-dark); 
+            background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%); 
+            color: var(--text-main); 
+            font-family: 'Outfit', sans-serif; 
+            height: 100vh; 
+            height: 100dvh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            transition: background 0.3s ease, color 0.3s ease; 
+        }
 
+        /* === LOBBY SCREEN === */
         #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; animation: fadeIn 1s ease-in; padding: 20px; }
         .lobby-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); }
 
         .void-portal { width: 90px; height: 90px; margin: 0 auto 20px auto; border-radius: 50%; background: radial-gradient(circle, #000 30%, var(--neon-cyan) 100%); box-shadow: 0 0 25px rgba(6, 182, 212, 0.3), inset 0 0 15px #000; animation: spinPortal 10s linear infinite, pulsePortal 3s ease-in-out infinite alternate; border: 1px solid rgba(6, 182, 212, 0.2); }
-        @keyframes spinPortal { 100% { transform: rotate(360deg); } } @keyframes pulsePortal { 100% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.6), inset 0 0 20px #000; transform: scale(1.02); } }
+        
+        @keyframes spinPortal { 100% { transform: rotate(360deg); } } 
+        @keyframes pulsePortal { 100% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.6), inset 0 0 20px #000; transform: scale(1.02); } }
 
         h1 { font-family: 'Cinzel', serif; font-size: 2.8rem; font-weight: 800; letter-spacing: 4px; margin-bottom: 5px; color: #ffffff; text-shadow: 0 0 15px rgba(255,255,255,0.2); user-select: none;}
-        .subtitle { font-size: 0.9rem; font-weight: 300; color: var(--text-muted); margin-bottom: 35px; letter-spacing: 1px; }
+        .subtitle { font-size: 0.9rem; font-weight: 300; color: var(--text-muted); margin-bottom: 30px; letter-spacing: 1px; }
 
-        .stats-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 35px; }
+        .stats-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
         .stat-box { flex: 1; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); padding: 12px 5px; border-radius: 12px; }
         .stat-number { font-size: 1.1rem; font-weight: 500; color: #e2e8f0; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; display: block; letter-spacing: 1px; }
@@ -50,22 +81,34 @@
         .dot { width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; animation: pulse 2s infinite; transition: background-color 0.3s ease, box-shadow 0.3s ease; }
         @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
+        .btn-group { display: flex; flex-direction: column; gap: 12px; }
         .enter-btn { width: 100%; background: transparent; color: var(--neon-cyan); border: 1px solid var(--neon-cyan); padding: 15px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.1); }
         .enter-btn:hover:not(:disabled) { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); }
         .enter-btn:disabled { opacity: 0.7; cursor: not-allowed; }
         
-        .install-btn { width: 100%; background: transparent; color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.2); padding: 10px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 0.85rem; cursor: pointer; transition: 0.2s; margin-top: 15px; display: none; }
-        .install-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .global-btn { border-color: var(--neon-purple); color: var(--neon-purple); box-shadow: inset 0 0 10px rgba(168, 85, 247, 0.1); padding: 12px; font-size: 0.9rem;}
+        .global-btn:hover:not(:disabled) { background: var(--neon-purple); color: #fff; box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); }
 
         .disclaimer { margin-top: 20px; font-size: 0.7rem; font-weight: 300; color: #475569; }
 
-        #chat-screen { display: none; flex-direction: column; width: 100%; height: 100%; max-width: 600px; margin: 0 auto; position: relative; animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Auth UI */
+        .auth-wrapper { margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; position: relative;}
+        .auth-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 5px 15px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: 0.2s; }
+        .noctyx-trigger { background: none; border: none; color: #3b82f6; font-size: 0.8rem; cursor: pointer; opacity: 0.5; transition: 0.2s;}
+        .noctyx-trigger:hover { opacity: 1; text-shadow: 0 0 8px #3b82f6;}
+        
+        .auth-input-group { display:none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); flex-direction: column; gap: 5px; z-index: 50;}
+        .auth-input { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; text-align: center; outline: none; width: 140px; font-family: 'Outfit';}
+        .auth-submit { background: var(--neon-cyan); border: none; color: #000; padding: 5px; border-radius: 6px; cursor: pointer; font-family: 'Outfit'; font-weight: bold; font-size: 0.75rem;}
 
-        .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); }
+        /* === CHAT SCREEN === */
+        #chat-screen { display: none; flex-direction: column; width: 100%; height: 100%; max-width: 600px; margin: 0 auto; position: relative; animation: fadeIn 0.5s ease-in; }
+        
+        .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);}
         .user-info { display: flex; align-items: center; gap: 10px; }
         .user-info h2 { font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 6px; margin: 0; white-space: nowrap; }
         .karma-score { font-size: 0.8rem; color: var(--neon-gold); background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(251, 191, 36, 0.15); display: flex; align-items: center; gap: 4px; }
+        
         .header-actions { display: flex; gap: 12px; align-items: center; }
         .icon-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-main); padding: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .icon-btn:hover { background: rgba(255,255,255,0.08); }
@@ -79,19 +122,24 @@
         .system-message { text-align: center; font-size: 0.8rem; font-weight: 300; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); margin: 5px 0; }
         .system-message span { color: var(--neon-cyan); font-weight: 500; }
         .system-message.gold span { color: var(--neon-gold); }
+        .system-message.red { border-color: rgba(239, 68, 68, 0.3); }
+        .system-message.red span { color: var(--neon-red); }
         
+        /* === BUBBLES === */
         .message { display: flex; flex-direction: column; max-width: 82%; animation: slideUp 0.3s ease; position: relative; }
         .stranger-msg { align-self: flex-start; align-items: flex-start; }
         .my-msg { align-self: flex-end; align-items: flex-end; }
         
-        .bubble { 
-            padding: 12px 16px; border-radius: 16px; font-size: 0.95rem; font-weight: 300; line-height: 1.5; border: 1px solid var(--glass-border); word-wrap: break-word; cursor: pointer; position: relative; z-index: 2;
-            -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; 
-            touch-action: pan-y; 
-        }
+        .bubble { padding: 12px 16px; border-radius: 16px; font-size: 0.95rem; font-weight: 300; line-height: 1.5; border: 1px solid var(--glass-border); word-wrap: break-word; cursor: pointer; position: relative; z-index: 2; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: pan-y; }
         .stranger-msg .bubble { background: var(--stranger-bubble); border-top-left-radius: 4px; }
         .my-msg .bubble { background: var(--my-bubble); border-top-right-radius: 4px; border-color: rgba(6, 182, 212, 0.2); }
         
+        /* Global & Noctyx Specific Styling */
+        .sender-alias { font-size: 0.7rem; font-weight: 600; color: var(--neon-purple); margin-bottom: 4px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;}
+        .sender-alias.noctyx { color: var(--neon-red); text-shadow: 0 0 8px rgba(239, 68, 68, 0.6); letter-spacing: 1px; font-family: 'Cinzel', serif;}
+        .invite-private-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 4px; font-size: 0.6rem; padding: 2px 6px; cursor: pointer; color: white; transition: 0.2s;}
+        .invite-private-btn:hover { background: var(--neon-cyan); color: black;}
+
         .msg-meta { font-size: 0.7rem; color: #475569; margin-top: 5px; font-weight: 300; display: flex; align-items: center; }
         
         .reply-quote { font-size: 0.8rem; background: rgba(0,0,0,0.3); border-left: 2px solid var(--neon-cyan); padding: 6px 10px; margin-bottom: 8px; border-radius: 4px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; pointer-events: none;}
@@ -100,35 +148,56 @@
         .reaction-badge { position: absolute; bottom: -8px; background: rgba(0,0,0,0.8); border: 1px solid var(--glass-border); border-radius: 12px; padding: 2px 6px; font-size: 0.8rem; z-index: 5; box-shadow: 0 2px 8px rgba(0,0,0,0.6); display: none; }
         .my-msg .reaction-badge { left: 10px; }
         .stranger-msg .reaction-badge { right: 10px; }
-        
-        #reply-banner { display: none; background: rgba(6, 182, 212, 0.1); border-left: 3px solid var(--neon-cyan); padding: 10px 15px; font-size: 0.85rem; color: var(--text-main); position: absolute; bottom: 100%; left: 0; width: 100%; backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); justify-content: space-between; align-items: center; }
 
         .typing-indicator { display: none; align-self: flex-start; font-size: 0.8rem; color: var(--text-muted); margin-left: 10px; }
         .typing-indicator span { animation: blink 1.4s infinite; opacity: 0.2; }
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
         @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* === NOTIFICATIONS & OVERLAYS === */
         #action-toast { padding: 10px 20px; text-align: center; display: none; margin-bottom: 5px;}
         #extend-btn { background: transparent; color: var(--neon-gold); border: 1px solid var(--neon-gold); padding: 8px 16px; border-radius: 20px; font-family: 'Outfit', sans-serif; font-size: 0.85rem; cursor: pointer; transition: 0.3s; box-shadow: inset 0 0 8px rgba(251, 191, 36, 0.2); }
-        #extend-btn:hover { background: var(--neon-gold); color: #000; box-shadow: 0 0 15px rgba(251, 191, 36, 0.5); }
+        
         #countdown-text { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--neon-red); font-weight: bold; animation: pulseRed 1s infinite; display: none; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
         @keyframes pulseRed { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.6; transform: scale(0.98); } }
+
+        #shatter-overlay { position: absolute; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 20; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
+        #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
+        #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
+        
+        .overlay-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 250px; }
+        .secondary-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+        .secondary-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+
+        /* Private Invite Modal */
+        #private-invite-overlay { display:none; position:absolute; inset:0; background:rgba(0,0,0,0.8); z-index:30; justify-content:center; align-items:center; backdrop-filter:blur(5px); }
+        .invite-box { background:var(--bg-dark); border:1px solid var(--neon-purple); padding:20px; border-radius:15px; text-align:center; width:80%; max-width:300px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); }
+        .invite-box h3 { color:var(--neon-purple); margin-bottom:10px; font-family: 'Outfit'; }
+        .invite-box p { font-size:0.9rem; margin-bottom:20px; color:var(--text-muted); }
+        .invite-btns { display:flex; gap:10px; }
+        .invite-btns button { flex:1; padding:10px; border-radius:8px; cursor: pointer; font-family: 'Outfit'; font-weight: bold; transition: 0.2s;}
+        #accept-private-btn { background:var(--neon-purple); color:white; border:none; }
+        #accept-private-btn:hover { background: #9333ea; }
+        #decline-private-btn { background:transparent; color:white; border:1px solid var(--glass-border); }
 
         /* === MUSIC SEARCH UI === */
         #music-search-container { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background: rgba(3, 7, 18, 0.95); backdrop-filter: blur(15px); padding: 15px 20px; z-index: 15; border-top: 1px solid var(--glass-border); border-bottom: 1px solid rgba(6, 182, 212, 0.2); box-shadow: 0 -10px 20px rgba(0,0,0,0.5);}
         #music-search-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 12px 15px; border-radius: 12px; font-family: 'Outfit'; outline: none; margin-bottom: 10px; font-size: 0.9rem;}
         #music-search-input:focus { border-color: var(--neon-cyan); }
+        
         #music-results { max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; scrollbar-width: none; }
         .music-result-item { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.03); cursor: pointer; transition: 0.2s; border: 1px solid transparent;}
         .music-result-item:active { background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.3); }
         .music-result-item img { width: 40px; height: 40px; border-radius: 6px; box-shadow: 0 0 5px rgba(0,0,0,0.5);}
+        
         .music-result-info { display: flex; flex-direction: column; overflow: hidden; }
         .music-result-title { font-size: 0.85rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;}
         .music-result-artist { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* === MUSIC BUBBLE CSS === */
+        /* === MUSIC PLAYER BUBBLE CSS === */
         .music-bubble { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 12px; border: 1px solid var(--glass-border); margin-top: 5px; width: 100%; min-width: 220px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);}
         .music-cover { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; box-shadow: 0 0 10px rgba(6, 182, 212, 0.3); }
         .music-info { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
@@ -140,29 +209,72 @@
         .music-loop-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); font-size: 1.2rem;}
         .music-loop-btn.active { color: var(--neon-gold); border-color: var(--neon-gold); box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); text-shadow: 0 0 5px var(--neon-gold);}
 
-        .chat-footer { display: flex; gap: 10px; padding: 15px 20px 20px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); position: relative; z-index: 10;}
-        #chat-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 12px 15px; border-radius: 12px; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 0.95rem; outline: none; transition: 0.3s; }
-        #chat-input:focus { border-color: rgba(6, 182, 212, 0.5); }
-        .send-btn { background: var(--neon-cyan); color: #000; border: none; padding: 0 18px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .send-btn:hover { background: #0891b2; }
-
-        #shatter-overlay { position: absolute; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 20; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
-        #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
-        #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
+        /* === FLAWLESS MOBILE FOOTER CSS === */
+        .chat-footer { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 12px 15px; 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(10px); 
+            border-top: 1px solid var(--glass-border); 
+            position: relative; 
+            z-index: 10;
+        }
         
-        #rating-box { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 25px; margin-bottom: 25px; width: 100%; max-width: 250px; }
-        .rating-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .star-container { display: flex; justify-content: center; gap: 8px; direction: row; }
-        .star-btn { background: none; border: none; font-size: 1.8rem; color: rgba(255,255,255,0.1); cursor: pointer; transition: color 0.2s, transform 0.2s; padding: 0; line-height: 1; }
-        .star-btn.active, .star-btn:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); transform: scale(1.1); }
-        #rating-thanks { display: none; color: var(--neon-gold); font-size: 0.85rem; margin-top: 10px; font-weight: 500; }
+        .action-group { 
+            display: flex; 
+            gap: 4px; 
+            flex-shrink: 0; 
+        }
+        
+        .chat-footer .icon-btn { 
+            width: 38px; 
+            height: 38px; 
+            padding: 0; 
+            flex-shrink: 0;
+        }
 
-        .overlay-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 250px; }
-        .secondary-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
-        .secondary-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        #chat-input { 
+            flex: 1; 
+            min-width: 0; 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--glass-border); 
+            padding: 10px 15px; 
+            border-radius: 12px; 
+            color: var(--text-main); 
+            font-family: 'Outfit', sans-serif; 
+            font-size: 0.95rem; 
+            outline: none; 
+            transition: 0.3s; 
+            height: 40px;
+        }
+        #chat-input:focus { border-color: rgba(6, 182, 212, 0.5); }
 
+        .send-btn { 
+            background: var(--neon-cyan); 
+            color: #000; 
+            border: none; 
+            padding: 0 16px; 
+            height: 40px; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: 0.2s; 
+            flex-shrink: 0; 
+        }
+        .send-btn:hover { background: #0891b2; }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #reply-banner { display: none; background: rgba(6, 182, 212, 0.1); border-left: 3px solid var(--neon-cyan); padding: 10px 15px; font-size: 0.85rem; color: var(--text-main); position: absolute; bottom: 100%; left: 0; width: 100%; backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); justify-content: space-between; align-items: center; }
+
+        /* === GAME MODALS === */
         .game-modal { position: fixed; inset: 0; background: rgba(3,7,18,0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .game-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--neon-cyan); color: var(--text-main); padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; margin: 10px; width: 80%; max-width: 200px; font-family: 'Outfit'; }
+        .game-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--neon-cyan); color: var(--text-main); padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; margin: 10px; width: 80%; max-width: 250px; font-family: 'Outfit'; transition: 0.2s;}
+        .game-btn:hover { background: rgba(6, 182, 212, 0.1); }
         .close-game { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; z-index: 50;}
         
         #ttt-board { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; margin-top: 20px; }
@@ -173,9 +285,11 @@
         .c4-cell.p1 { background: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan); border-color: #fff; }
         .c4-cell.p2 { background: var(--neon-gold); box-shadow: 0 0 15px var(--neon-gold); border-color: #fff; }
 
+        /* === ADMIN UI === */
         .admin-stat { font-size: 1.2rem; color: white; margin: 10px 0; font-family: 'Outfit'; }
         .admin-stat span { color: var(--neon-cyan); font-weight: bold; }
 
+        /* === BOTTOM SHEET === */
         #sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99998; display: none; opacity: 0; transition: opacity 0.3s; }
         #bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--bg-dark); border-top: 1px solid var(--neon-cyan); border-radius: 20px 20px 0 0; padding: 25px 20px; z-index: 99999; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 40px rgba(0,0,0,0.9); font-family: 'Outfit', sans-serif;}
         .sheet-emojis { display: flex; justify-content: space-between; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border);}
@@ -193,17 +307,48 @@
             <div class="void-portal"></div>
             <h1>THE VOID</h1>
             <p class="subtitle">1500 characters. Then it shatters.</p>
+            
             <div class="stats-container">
-                <div class="stat-box"><span class="stat-number"><div class="dot"></div> <span id="active-users-count">...</span></span><span class="stat-label">Active Now</span></div>
-                <div class="stat-box"><span class="stat-number"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> <span id="vanished-count">...</span></span><span class="stat-label">Vanished</span></div>
+                <div class="stat-box">
+                    <span class="stat-number">
+                        <div class="dot"></div> <span id="active-users-count">...</span>
+                    </span>
+                    <span class="stat-label">Active Now</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg> 
+                        <span id="vanished-count">...</span>
+                    </span>
+                    <span class="stat-label">Vanished</span>
+                </div>
             </div>
-            <button class="enter-btn" id="find-btn">Enter</button>
-            <button id="install-btn" class="install-btn">Add to Home Screen</button>
+
+            <div class="btn-group">
+                <button class="enter-btn" id="find-btn">Enter Void (1v1)</button>
+                <button class="enter-btn global-btn" id="global-btn">Join Global Abyss</button>
+            </div>
+
             <p class="disclaimer">100% Anonymous. No logs kept.</p>
             
-            <div id="admin-login-wrapper" style="margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                <button id="admin-login-btn" style="background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 5px 15px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: 0.2s;">Admin Login</button>
-                <input type="password" id="admin-pass-input" placeholder="Enter Code" style="display:none; background: rgba(0,0,0,0.4); border: 1px solid var(--neon-cyan); color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; text-align: center; outline: none; width: 120px;">
+            <div class="auth-wrapper">
+                <button class="auth-btn" id="admin-login-btn">Admin</button>
+                <button class="noctyx-trigger" id="noctyx-trigger-btn">◈</button>
+                
+                <div class="auth-input-group" id="admin-auth-group">
+                    <input type="password" class="auth-input" id="admin-pass-input" placeholder="Admin Code" autocomplete="off">
+                    <button class="auth-submit" id="admin-submit">Authorize</button>
+                </div>
+                
+                <div class="auth-input-group" id="noctyx-auth-group">
+                    <input type="text" class="auth-input" id="nx-user" placeholder="Entity ID" autocomplete="off">
+                    <input type="password" class="auth-input" id="nx-pass" placeholder="Passcode" autocomplete="off">
+                    <button class="auth-submit" id="nx-submit" style="background:var(--neon-red); color:white;">Override</button>
+                </div>
             </div>
         </div>
     </div>
@@ -211,24 +356,31 @@
     <div id="chat-screen">
         <header class="chat-header">
             <div class="user-info">
-                <div class="dot"></div>
-                <h2>Stranger <span id="stranger-flag">🇧🇩</span></h2>
-                <span class="karma-score"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> <span id="stranger-karma">5.0</span></span>
+                <div class="dot" id="status-dot"></div>
+                <h2 id="room-title">Stranger <span id="stranger-flag">🇧🇩</span></h2>
             </div>
             <div class="header-actions">
-                <button class="icon-btn" id="theme-btn" title="Toggle Theme"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
-                <button class="icon-btn" id="exit-btn" title="Exit Chat"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></button>
+                <button class="icon-btn" id="theme-btn" title="Toggle Theme">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                </button>
+                <button class="icon-btn" id="exit-btn" title="Exit Chat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
             </div>
         </header>
         
-        <div class="progress-container"><div class="progress-bar" id="char-bar"></div></div>
+        <div class="progress-container" id="progress-wrapper">
+            <div class="progress-bar" id="char-bar"></div>
+        </div>
 
         <main class="chat-box" id="chat-box">
             <div class="system-message" id="welcome-msg">
                 A stranger appeared from the void.<br>
                 The connection has <span>1,500 characters</span> before it shatters.
             </div>
-            <div class="typing-indicator" id="typing-indicator">Stranger is typing<span>.</span><span>.</span><span>.</span></div>
+            <div class="typing-indicator" id="typing-indicator">
+                Stranger is typing<span>.</span><span>.</span><span>.</span>
+            </div>
         </main>
 
         <div id="action-toast">
@@ -239,23 +391,28 @@
         <div id="shatter-overlay">
             <h2>Shattered</h2>
             <p>The void has consumed this connection.</p>
-            <div id="rating-box">
-                <div class="rating-title">Rate the Vibe</div>
-                <div class="star-container">
-                    <button class="star-btn" data-val="1">★</button><button class="star-btn" data-val="2">★</button><button class="star-btn" data-val="3">★</button><button class="star-btn" data-val="4">★</button><button class="star-btn" data-val="5">★</button>
-                </div>
-                <div id="rating-thanks">Rating Sent to Stranger!</div>
-            </div>
+            
             <div class="overlay-buttons">
                 <button class="enter-btn" id="new-stranger-btn">Find New Stranger</button>
                 <button class="secondary-btn" id="return-lobby-btn">Return to Lobby</button>
             </div>
         </div>
 
+        <div id="private-invite-overlay">
+            <div class="invite-box">
+                <h3>Private Void Request</h3>
+                <p id="private-invite-text"></p>
+                <div class="invite-btns">
+                    <button id="accept-private-btn">Accept</button>
+                    <button id="decline-private-btn">Decline</button>
+                </div>
+            </div>
+        </div>
+
         <footer class="chat-footer">
             
             <div id="music-search-container">
-                <input type="text" id="music-search-input" placeholder="Search for a frequency (Artist, Song)..." autocomplete="off">
+                <input type="text" id="music-search-input" placeholder="Search frequency (Artist, Song)..." autocomplete="off">
                 <div id="music-results"></div>
             </div>
 
@@ -264,19 +421,26 @@
                 <button id="close-reply" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size: 1.2rem;">✖</button>
             </div>
             
-            <button class="icon-btn" id="game-btn" title="Games"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg></button>
-            
-            <button class="icon-btn" id="music-btn" title="Share Music" onclick="toggleMusicSearch()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-            </button>
+            <div class="action-group">
+                <button class="icon-btn" id="game-btn" title="Games">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>
+                </button>
+                
+                <button class="icon-btn" id="music-btn" title="Share Music" onclick="window.toggleMusicSearch()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                </button>
 
-            <input type="file" id="image-input" accept="image/*" style="display:none">
-            <button class="icon-btn" id="photo-btn" title="Send Photo" onclick="clickPhotoBtn()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-            </button>
+                <input type="file" id="image-input" accept="image/*" style="display:none">
+                <button class="icon-btn" id="photo-btn" title="Send Photo" onclick="window.clickPhotoBtn()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                </button>
+            </div>
 
             <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
-            <button class="send-btn" id="send-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+            
+            <button class="send-btn" id="send-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
         </footer>
     </div>
 
@@ -310,16 +474,16 @@
     <div class="game-modal" id="game-menu">
         <button class="close-game" onclick="document.getElementById('game-menu').style.display='none'">✖</button>
         <h2 style="font-family:'Cinzel'; color:var(--neon-cyan); margin-bottom: 20px;">VOID GAMES</h2>
-        <button class="game-btn" onclick="inviteGame('rps')">Rock Paper Scissors</button>
-        <button class="game-btn" onclick="inviteGame('ttt')">Tic Tac Toe</button>
-        <button class="game-btn" onclick="inviteGame('c4')">Void Connect 4</button>
+        <button class="game-btn" onclick="window.inviteGame('rps')">Rock Paper Scissors</button>
+        <button class="game-btn" onclick="window.inviteGame('ttt')">Tic Tac Toe</button>
+        <button class="game-btn" onclick="window.inviteGame('c4')">Void Connect 4</button>
     </div>
 
     <div class="game-modal" id="rps-ui">
         <h2 style="color:var(--neon-cyan); margin-bottom: 20px;">Choose Weapon</h2>
-        <button class="game-btn" onclick="playRPS('Rock')">✊ Rock</button>
-        <button class="game-btn" onclick="playRPS('Paper')">✋ Paper</button>
-        <button class="game-btn" onclick="playRPS('Scissors')">✌️ Scissors</button>
+        <button class="game-btn" onclick="window.playRPS('Rock')">✊ Rock</button>
+        <button class="game-btn" onclick="window.playRPS('Paper')">✋ Paper</button>
+        <button class="game-btn" onclick="window.playRPS('Scissors')">✌️ Scissors</button>
         <p id="rps-status" style="margin-top:20px; color:var(--text-muted);"></p>
     </div>
 
@@ -328,9 +492,9 @@
         <h2 style="color:var(--neon-cyan); margin-bottom: 10px;">Tic Tac Toe</h2>
         <p id="ttt-status" style="color:var(--neon-gold);">Your turn (X)</p>
         <div id="ttt-board">
-            <div class="ttt-cell" onclick="playTTT(0)"></div><div class="ttt-cell" onclick="playTTT(1)"></div><div class="ttt-cell" onclick="playTTT(2)"></div>
-            <div class="ttt-cell" onclick="playTTT(3)"></div><div class="ttt-cell" onclick="playTTT(4)"></div><div class="ttt-cell" onclick="playTTT(5)"></div>
-            <div class="ttt-cell" onclick="playTTT(6)"></div><div class="ttt-cell" onclick="playTTT(7)"></div><div class="ttt-cell" onclick="playTTT(8)"></div>
+            <div class="ttt-cell" onclick="window.playTTT(0)"></div><div class="ttt-cell" onclick="window.playTTT(1)"></div><div class="ttt-cell" onclick="window.playTTT(2)"></div>
+            <div class="ttt-cell" onclick="window.playTTT(3)"></div><div class="ttt-cell" onclick="window.playTTT(4)"></div><div class="ttt-cell" onclick="window.playTTT(5)"></div>
+            <div class="ttt-cell" onclick="window.playTTT(6)"></div><div class="ttt-cell" onclick="window.playTTT(7)"></div><div class="ttt-cell" onclick="window.playTTT(8)"></div>
         </div>
     </div>
 
@@ -341,56 +505,197 @@
         <div id="c4-board"></div>
     </div>
 
-    <div id="sheet-overlay" onclick="closeSheet()"></div>
+    <div id="sheet-overlay" onclick="window.closeSheet()"></div>
     <div id="bottom-sheet">
         <div class="sheet-emojis">
-            <button class="sheet-emoji-btn" onclick="sheetReact('❤️')">❤️</button>
-            <button class="sheet-emoji-btn" onclick="sheetReact('😂')">😂</button>
-            <button class="sheet-emoji-btn" onclick="sheetReact('👍')">👍</button>
-            <button class="sheet-emoji-btn" onclick="sheetReact('😲')">😲</button>
+            <button class="sheet-emoji-btn" onclick="window.sheetReact('❤️')">❤️</button>
+            <button class="sheet-emoji-btn" onclick="window.sheetReact('😂')">😂</button>
+            <button class="sheet-emoji-btn" onclick="window.sheetReact('👍')">👍</button>
+            <button class="sheet-emoji-btn" onclick="window.sheetReact('😲')">😲</button>
         </div>
-        <button class="sheet-action-btn" onclick="sheetReply()">↩️ Reply to Message</button>
-        <button class="sheet-action-btn" onclick="sheetCopy()">📋 Copy Text</button>
-        <button class="sheet-action-btn sheet-cancel" onclick="closeSheet()">Cancel</button>
+        <button class="sheet-action-btn" onclick="window.sheetReply()">↩️ Reply to Message</button>
+        <button class="sheet-action-btn" onclick="window.sheetCopy()">📋 Copy Text</button>
+        <button class="sheet-action-btn sheet-cancel" onclick="window.closeSheet()">Cancel</button>
     </div>
 
     <script>
+        'use strict';
+
+        // === SYSTEM GLOBALS ===
         const IMGBB_API_KEY = "e4920da45c283d4ae48a5ca34df75005"; 
-
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-btn').style.display = 'block'; });
-        document.getElementById('install-btn').addEventListener('click', async () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; document.getElementById('install-btn').style.display = 'none'; } });
-
         const socket = io("https://the-void-server.onrender.com"); 
         const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
-
-        // GLOBAL AUDIO PLAYER FOR VOID
         let globalAudio = new Audio();
         let currentPlayingBtn = null;
 
-        const findBtn = document.getElementById('find-btn'), lobbyScreen = document.getElementById('lobby-screen'), chatScreen = document.getElementById('chat-screen');
-        const chatInput = document.getElementById('chat-input'), sendBtn = document.getElementById('send-btn'), charBar = document.getElementById('char-bar'), chatBox = document.getElementById('chat-box');
+        // === STATE MACHINE ===
+        let currentMode = 'lobby'; 
+        let isNoctyx = false;
+        let myGlobalAlias = '';
+        
+        let currentMax = 1500; 
+        let usedChars = 0; 
+        let myCurrentRoom = null; 
+        let isCountdownRunning = false; 
+        let countdownTimer = null; 
+        
+        let globalCharCount = 0;
+        let lastGlobalSend = 0;
+        
+        const messageStore = {}; 
+        let currentReplyTo = null; 
+        let allAdminMessages = [];
+        let privateInviteData = null;
+
+        // === DOM ELEMENTS ===
+        const lobbyScreen = document.getElementById('lobby-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatBox = document.getElementById('chat-box');
         const typingIndicator = document.getElementById('typing-indicator');
+        
+        const roomTitle = document.getElementById('room-title');
+        const progressWrapper = document.getElementById('progress-wrapper');
+        const charBar = document.getElementById('char-bar');
+        
+        const actionToast = document.getElementById('action-toast');
+        const extendBtn = document.getElementById('extend-btn');
+        const countdownText = document.getElementById('countdown-text');
+        const shatterOverlay = document.getElementById('shatter-overlay');
 
-        let currentMax = 1500; let usedChars = 0; let isCountdownRunning = false; let countdownTimer = null; let myCurrentRoom = null; 
-        const messageStore = {}; let currentReplyTo = null; let allAdminMessages = [];
+        const imageInput = document.getElementById('image-input');
+        const musicSearchContainer = document.getElementById('music-search-container');
+        const musicSearchInput = document.getElementById('music-search-input');
+        const musicResults = document.getElementById('music-results');
 
-        // IMAGE UPLOAD
+        // === PWA ===
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
+        installBtn.addEventListener('click', async () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; installBtn.style.display = 'none'; } });
+
+        // === AUTH & LOBBY LOGIC ===
+        document.getElementById('admin-login-btn').addEventListener('click', () => {
+            const group = document.getElementById('admin-auth-group');
+            document.getElementById('noctyx-auth-group').style.display = 'none';
+            group.style.display = group.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        document.getElementById('admin-submit').addEventListener('click', () => {
+            const pass = document.getElementById('admin-pass-input').value;
+            if(pass) socket.emit('get_admin_data', pass);
+            document.getElementById('admin-auth-group').style.display = 'none';
+            document.getElementById('admin-pass-input').value = '';
+        });
+
+        document.getElementById('noctyx-trigger-btn').addEventListener('click', () => {
+            const group = document.getElementById('noctyx-auth-group');
+            document.getElementById('admin-auth-group').style.display = 'none';
+            group.style.display = group.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        document.getElementById('nx-submit').addEventListener('click', () => {
+            const user = document.getElementById('nx-user').value;
+            const pass = document.getElementById('nx-pass').value;
+            socket.emit('auth_noctyx', { user, pass });
+            document.getElementById('noctyx-auth-group').style.display = 'none';
+        });
+
+        socket.on('noctyx_verified', (data) => {
+            isNoctyx = true;
+            myGlobalAlias = data.alias;
+            document.getElementById('noctyx-trigger-btn').style.color = "var(--neon-red)";
+            document.getElementById('noctyx-trigger-btn').style.textShadow = "0 0 10px var(--neon-red)";
+            alert("Protocol Override: Noctyx Active.");
+        });
+        
+        socket.on('auth_failed', () => { alert("Authorization Denied."); });
+        socket.on('admin_error', () => { alert("Admin Access Denied."); });
+
+        // === MODE SWITCHING LOGIC ===
+        document.getElementById('find-btn').addEventListener('click', () => {
+            document.getElementById('find-btn').innerText = "Drifting..."; 
+            document.getElementById('find-btn').disabled = true;
+            currentMode = '1v1';
+            socket.emit('find_match', { localKarma: localStorage.getItem('void_karma') || "5.0" });
+        });
+
+        document.getElementById('global-btn').addEventListener('click', () => {
+            currentMode = 'global';
+            document.getElementById('global-btn').innerText = "Connecting...";
+            socket.emit('join_global');
+            
+            lobbyScreen.style.display = 'none'; 
+            chatScreen.style.display = 'flex';
+            roomTitle.innerHTML = 'Global Abyss <span style="color:var(--neon-purple); font-size:0.8rem;">(7000 limits)</span>';
+            progressWrapper.style.display = 'none'; 
+            chatInput.disabled = false;
+            
+            chatBox.innerHTML = '';
+            chatBox.appendChild(typingIndicator);
+            sysMsg("You have entered the Global Abyss.<br>Messages fade after 2 hours. Signal dies at 7000 chars.");
+        });
+
+        socket.on('global_joined', (data) => {
+            myGlobalAlias = data.alias;
+        });
+
+        // === 1V1 & PRIVATE CONNECTION ===
+        socket.on('match_found', (data) => { 
+            lobbyScreen.style.display = 'none'; 
+            chatScreen.style.display = 'flex';
+            chatBox.innerHTML = ''; chatBox.appendChild(typingIndicator);
+            
+            myCurrentRoom = data.roomId;
+            currentMode = data.isPrivateSide ? 'private' : '1v1';
+            
+            if (currentMode === 'private') {
+                roomTitle.innerHTML = 'Private Void <span style="color:var(--neon-cyan); font-size:0.8rem;">(500 limits)</span>';
+                currentMax = data.isInfinite ? 9999999 : 500;
+                sysMsg("You slipped into a Private Void. 500 chars.");
+            } else {
+                roomTitle.innerHTML = data.strangerNoctyx ? '<span style="color:var(--neon-red); text-shadow:0 0 8px red; font-family: Cinzel;">NOCTYX</span>' : 'Stranger <span id="stranger-flag">🇧🇩</span>';
+                currentMax = data.isInfinite ? 9999999 : 1500;
+                sysMsg(data.isInfinite ? "<span style='color:var(--neon-red)'>God Mode Activated. Limits removed.</span>" : "A stranger appeared. 1500 chars.");
+            }
+
+            usedChars = 0;
+            progressWrapper.style.display = data.isInfinite ? 'none' : 'block';
+            chatInput.maxLength = currentMax;
+            updateVisualBar(0);
+        });
+
+        socket.on('global_history', (history) => {
+            history.forEach(msg => {
+                const isMe = msg.sender === myGlobalAlias; 
+                appendMessageUI(msg, isMe ? 'my-msg' : 'stranger-msg', true); 
+            });
+        });
+
+        // === IMAGE UPLOAD LOGIC ===
         let localPhotoCount = parseInt(localStorage.getItem('void_daily_photos')) || 0;
         const lastPhotoDate = localStorage.getItem('void_photo_date');
         const today = new Date().toDateString();
-        if (lastPhotoDate !== today) { localPhotoCount = 0; localStorage.setItem('void_photo_date', today); localStorage.setItem('void_daily_photos', 0); }
-
-        function clickPhotoBtn() {
-            if (localPhotoCount >= 20) { sysMsg("⚠️ VOID ERROR: Daily photo limit (20) reached."); return; }
-            document.getElementById('image-input').click();
+        
+        if (lastPhotoDate !== today) { 
+            localPhotoCount = 0; 
+            localStorage.setItem('void_photo_date', today); 
+            localStorage.setItem('void_daily_photos', 0); 
         }
 
-        document.getElementById('image-input').addEventListener('change', async (e) => {
+        window.clickPhotoBtn = function() {
+            if (localPhotoCount >= 20 && !isNoctyx) { sysMsg("⚠️ VOID ERROR: Daily photo limit (20) reached."); return; }
+            imageInput.click();
+        }
+
+        imageInput.addEventListener('change', async (e) => {
             const file = e.target.files[0]; if(!file) return;
             
-            const originalPlaceholder = chatInput.placeholder; chatInput.placeholder = "Uploading to the void..."; chatInput.disabled = true;
+            const originalPlaceholder = chatInput.placeholder; 
+            chatInput.placeholder = "Uploading to the void..."; 
+            chatInput.disabled = true;
             sendBtn.style.pointerEvents = 'none'; sendBtn.style.opacity = '0.5';
 
             const formData = new FormData(); formData.append('image', file);
@@ -398,194 +703,133 @@
             try {
                 const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
                 const data = await res.json();
+                
                 if(data.success) {
-                    localPhotoCount++; localStorage.setItem('void_daily_photos', localPhotoCount);
-                    
+                    if(!isNoctyx){ localPhotoCount++; localStorage.setItem('void_daily_photos', localPhotoCount); }
                     const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
                     sessionStorage.setItem('pending_media_' + msgId, 'true');
-
                     const msgObj = { id: msgId, text: "📷 Photo", type: 'image', url: data.data.url };
                     if (currentReplyTo) msgObj.replyTo = currentReplyTo;
-                    socket.emit('send_message', msgObj); cancelReply();
-                } else { sysMsg("Upload failed. The void rejected your image."); }
+                    
+                    if (currentMode === 'global') {
+                        appendMessageUI({ ...msgObj, sender: myGlobalAlias, isNoctyx: isNoctyx }, 'my-msg', true);
+                        socket.emit('send_global', msgObj);
+                    } else {
+                        socket.emit('send_message', msgObj); 
+                    }
+                    window.cancelReply();
+                } else { sysMsg("Upload failed."); }
             } catch(err) { sysMsg("Upload error occurred."); }
             
-            chatInput.placeholder = originalPlaceholder; chatInput.disabled = false; sendBtn.style.pointerEvents = 'auto'; sendBtn.style.opacity = '1'; document.getElementById('image-input').value = ''; 
+            chatInput.placeholder = originalPlaceholder; chatInput.disabled = false; sendBtn.style.pointerEvents = 'auto'; sendBtn.style.opacity = '1'; imageInput.value = ''; 
         });
 
-        // === ITUNES MUSIC SEARCH ===
-        function toggleMusicSearch() {
-            const cont = document.getElementById('music-search-container');
-            if(cont.style.display === 'block') { cont.style.display = 'none'; } 
-            else { cont.style.display = 'block'; document.getElementById('music-search-input').focus(); }
+        // === ITUNES MUSIC SEARCH LOGIC ===
+        window.toggleMusicSearch = function() {
+            if(musicSearchContainer.style.display === 'block') { musicSearchContainer.style.display = 'none'; } 
+            else { musicSearchContainer.style.display = 'block'; musicSearchInput.focus(); }
         }
 
         let searchTimeout;
-        document.getElementById('music-search-input').addEventListener('input', (e) => {
+        musicSearchInput.addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
             const query = e.target.value.trim();
-            if (query.length < 2) { document.getElementById('music-results').innerHTML = ''; return; }
+            if (query.length < 2) { musicResults.innerHTML = ''; return; }
             searchTimeout = setTimeout(() => searchiTunes(query), 500);
         });
 
         async function searchiTunes(query) {
-            const resCont = document.getElementById('music-results');
-            resCont.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:10px;">Searching the frequency...</div>';
+            musicResults.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:10px;">Searching frequency...</div>';
             try {
-                // FLAWLESS: Uses country=IN to guarantee South Asian (Bangla/Hindi) and global hits work perfectly
                 const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=5&country=IN`;
                 const res = await fetch(url);
                 const data = await res.json();
-                resCont.innerHTML = '';
-                if(data.results.length === 0) { resCont.innerHTML = '<div style="text-align:center; color:var(--neon-red); font-size:0.8rem; padding:10px;">No signal found.</div>'; return; }
-
+                musicResults.innerHTML = '';
+                if(data.results.length === 0) { musicResults.innerHTML = '<div style="text-align:center; color:var(--neon-red); font-size:0.8rem; padding:10px;">No signal found.</div>'; return; }
                 data.results.forEach(track => {
                     if(!track.previewUrl) return; 
                     const item = document.createElement('div');
                     item.className = 'music-result-item';
                     item.innerHTML = `<img src="${track.artworkUrl100}" alt="cover"><div class="music-result-info"><div class="music-result-title">${track.trackName}</div><div class="music-result-artist">${track.artistName}</div></div>`;
                     item.onclick = () => sendMusic(track);
-                    resCont.appendChild(item);
+                    musicResults.appendChild(item);
                 });
-            } catch (err) {
-                resCont.innerHTML = '<div style="text-align:center; color:var(--neon-red); font-size:0.8rem; padding:10px;">Error tuning frequency.</div>';
-            }
+            } catch (err) { musicResults.innerHTML = '<div style="text-align:center; color:var(--neon-red); font-size:0.8rem; padding:10px;">Error finding signal.</div>'; }
         }
 
         function sendMusic(track) {
-            document.getElementById('music-search-container').style.display = 'none';
-            document.getElementById('music-search-input').value = ''; document.getElementById('music-results').innerHTML = '';
-
+            musicSearchContainer.style.display = 'none';
+            musicSearchInput.value = ''; musicResults.innerHTML = '';
+            
             const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
             sessionStorage.setItem('pending_media_' + msgId, 'true');
-
-            const msgObj = { 
-                id: msgId, type: 'music', text: "🎵 Shared a frequency", 
-                url: track.previewUrl, cover: track.artworkUrl100, 
-                title: track.trackName, artist: track.artistName 
-            };
+            
+            const msgObj = { id: msgId, type: 'music', text: "🎵 Shared a frequency", url: track.previewUrl, cover: track.artworkUrl100, title: track.trackName, artist: track.artistName };
             if (currentReplyTo) msgObj.replyTo = currentReplyTo;
-            socket.emit('send_message', msgObj); cancelReply();
-        }
-
-        // Admin Logic
-        document.getElementById('admin-login-btn').addEventListener('click', () => {
-            const input = document.getElementById('admin-pass-input'), btn = document.getElementById('admin-login-btn');
-            if (input.style.display === 'none') { input.style.display = 'block'; input.focus(); btn.innerText = "Authorize"; btn.style.color = "var(--neon-cyan)"; } 
-            else { if (input.value) socket.emit('get_admin_data', input.value); input.value = ''; input.style.display = 'none'; btn.innerText = "Admin Login"; btn.style.color = "var(--text-muted)"; }
-        });
-        socket.on('admin_error', () => { alert("Access Denied."); });
-
-        let lockedRoomId = null; let knownRooms = new Set(); 
-
-        socket.on('admin_dashboard', (data) => {
-            document.getElementById('ad-total').innerText = data.totalUsers; document.getElementById('ad-wait').innerText = data.waitingUsers; document.getElementById('ad-rooms').innerText = data.activeRooms; document.getElementById('ad-vanish').innerText = data.totalVanished;
-            knownRooms.clear(); document.getElementById('admin-room-list').innerHTML = ''; document.getElementById('spy-container').innerHTML = ''; allAdminMessages = []; document.getElementById('admin-ui').style.display = 'flex';
-        });
-
-        document.getElementById('view-global-btn').addEventListener('click', () => { lockedRoomId = null; document.getElementById('spy-header-text').innerHTML = '<div class="dot" style="width:6px; height:6px;"></div> Global Feed'; document.getElementById('spy-header-text').style.color = 'var(--neon-gold)'; renderAdminFeed(); });
-
-        socket.on('spy_feed', (data) => {
-            data.timestamp = Date.now(); allAdminMessages.push(data);
-            if (!knownRooms.has(data.roomId)) {
-                knownRooms.add(data.roomId);
-                const roomBtn = document.createElement('button'); roomBtn.innerText = "Room " + knownRooms.size; 
-                roomBtn.style.cssText = "background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; text-align: left; font-family: 'Outfit'; margin-bottom: 5px;";
-                roomBtn.addEventListener('click', () => { lockedRoomId = data.roomId; document.getElementById('spy-header-text').innerHTML = `<div class="dot" style="width:6px; height:6px; background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red);"></div> ${roomBtn.innerText}`; document.getElementById('spy-header-text').style.color = 'var(--neon-red)'; renderAdminFeed(); });
-                document.getElementById('admin-room-list').appendChild(roomBtn);
+            
+            if (currentMode === 'global') {
+                appendMessageUI({ ...msgObj, sender: myGlobalAlias, isNoctyx: isNoctyx }, 'my-msg', true);
+                socket.emit('send_global', msgObj);
+            } else {
+                socket.emit('send_message', msgObj); 
             }
-            if (!lockedRoomId || lockedRoomId === data.roomId) appendAdminMessage(data);
-        });
-
-        setInterval(() => { const oneHourAgo = Date.now() - 3600000; allAdminMessages = allAdminMessages.filter(m => m.timestamp > oneHourAgo); }, 60000);
-        function renderAdminFeed() { document.getElementById('spy-container').innerHTML = ''; const filteredMsgs = lockedRoomId ? allAdminMessages.filter(m => m.roomId === lockedRoomId) : allAdminMessages; filteredMsgs.forEach(m => appendAdminMessage(m)); }
-
-        // ADMIN PANEL RENDERS MUSIC & IMAGES
-        function appendAdminMessage(data) {
-            const entry = document.createElement('div');
-            entry.style.cssText = "font-size: 0.85rem; color: #e2e8f0; background: rgba(255,255,255,0.04); padding: 10px; border-radius: 8px; border-left: 3px solid var(--neon-cyan); line-height: 1.4; animation: slideUp 0.2s ease;";
-            const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            entry.innerHTML = `[${time}] 💬 ` + data.text;
-            
-            if (data.type === 'image' && data.url) {
-                entry.innerHTML += `<br>`;
-                const img = document.createElement('img');
-                img.src = data.url;
-                img.style.cssText = "max-width: 150px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--glass-border);";
-                img.onload = () => { const spyCont = document.getElementById('spy-container'); spyCont.scrollTop = spyCont.scrollHeight; };
-                entry.appendChild(img);
-            } else if (data.type === 'music' && data.url) {
-                // FLAWLESS: Adds native audio player so Admin can hear the vibe
-                entry.innerHTML += `<br>
-                <div style="display:flex; align-items:center; gap:10px; margin-top:8px; background:rgba(0,0,0,0.5); padding:8px; border-radius:8px; border:1px solid var(--glass-border);">
-                    <img src="${data.cover}" style="width:35px; height:35px; border-radius:4px;">
-                    <div style="flex:1; overflow:hidden;">
-                        <div style="font-size:0.75rem; color:var(--neon-cyan); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.title}</div>
-                        <div style="font-size:0.65rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.artist}</div>
-                    </div>
-                    <audio controls src="${data.url}" style="height:25px; width:130px; border-radius:4px;"></audio>
-                </div>`;
-            }
-            
-            document.getElementById('spy-container').prepend(entry); 
-            if (document.getElementById('spy-container').childNodes.length > 1000) document.getElementById('spy-container').removeChild(document.getElementById('spy-container').lastChild);
+            window.cancelReply();
         }
 
-        document.getElementById('theme-btn').addEventListener('click', () => document.body.classList.toggle('light-theme'));
-        document.getElementById('game-btn').addEventListener('click', () => document.getElementById('game-menu').style.display = 'flex');
-
-        socket.on('connect', () => { 
-            const dot = document.querySelector('.user-info .dot');
-            if (dot && chatScreen.style.display === 'flex') { dot.style.backgroundColor = '#22c55e'; dot.style.boxShadow = '0 0 8px #22c55e'; if (myCurrentRoom) socket.emit('reclaim_session', myCurrentRoom); else socket.emit('user_status', 'online'); }
-        });
-        socket.on('stats_update', (data) => { document.getElementById('active-users-count').innerText = data.activeUsers; document.getElementById('vanished-count').innerText = data.vanishedChats; });
-
-        document.addEventListener('DOMContentLoaded', () => { if (sessionStorage.getItem('void_auto_search') === 'true') { sessionStorage.removeItem('void_auto_search'); setTimeout(() => findBtn.click(), 300); } });
-
-        findBtn.addEventListener('click', () => { findBtn.innerText = "Drifting into the void..."; findBtn.style.background = "rgba(6, 182, 212, 0.1)"; findBtn.style.color = "#06b6d4"; findBtn.disabled = true; socket.emit('find_match', { localKarma: localStorage.getItem('void_karma') || "5.0" }); });
-
-        socket.on('match_found', (strangerData) => { 
-            lobbyScreen.style.display = 'none'; chatScreen.style.display = 'flex';
-            document.getElementById('stranger-karma').innerText = strangerData.karma; document.getElementById('stranger-flag').innerText = strangerData.flag || "🇧🇩";
-            chatInput.maxLength = currentMax - usedChars; myCurrentRoom = strangerData.roomId; 
-            const dot = document.querySelector('.user-info .dot'); if (dot) { dot.style.backgroundColor = '#22c55e'; dot.style.boxShadow = '0 0 8px #22c55e'; }
-        });
-
-        socket.on('sync_chars', (data) => { currentMax = data.max; usedChars = data.used; updateVisualBar(usedChars); });
-        chatInput.addEventListener('input', () => socket.emit('typing'));
-
-        function updateVisualBar(total) {
-            let remaining = currentMax - total; let percentage = (remaining / currentMax) * 100; if (percentage < 0) percentage = 0; 
-            charBar.style.width = `${percentage}%`;
-            if (remaining <= 0) chatInput.disabled = true; chatInput.maxLength = remaining;
-            if (remaining <= 300 && currentMax === 1500 && !isCountdownRunning && total > 0) { document.getElementById('action-toast').style.display = 'block'; extendBtn.style.display = 'inline-block'; countdownText.style.display = 'none'; }
-            if (percentage < 20) { charBar.style.backgroundColor = 'var(--neon-red)'; charBar.style.boxShadow = '0 0 10px var(--neon-red)'; } else { charBar.style.backgroundColor = 'var(--neon-cyan)'; charBar.style.boxShadow = '0 0 10px var(--neon-cyan)'; }
-        }
-
-        function cancelReply() { currentReplyTo = null; const banner = document.getElementById('reply-banner'); if (banner) banner.style.display = 'none'; document.getElementById('reply-text').innerText = '...'; }
-        document.getElementById('close-reply').addEventListener('click', cancelReply);
-
+        // === MESSAGE SENDING ===
         sendBtn.addEventListener('click', sendLocalMessage);
         chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !chatInput.disabled) sendLocalMessage(); });
 
         function sendLocalMessage() {
-            const rawText = chatInput.value; const textToDisplay = rawText.trim();
+            const rawText = chatInput.value; 
+            const textToDisplay = rawText.trim();
             if (textToDisplay === '') return;
-            usedChars += rawText.length;
-            const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
-            const msgObj = { id: msgId, text: textToDisplay };
-            if (currentReplyTo) msgObj.replyTo = currentReplyTo;
-            appendMessageUI(msgObj, 'my-msg'); chatInput.value = ''; updateVisualBar(usedChars); socket.emit('send_message', msgObj); cancelReply();
+            
+            if (currentMode === 'global') {
+                if (!isNoctyx) {
+                    if (Date.now() - lastGlobalSend < 10000) {
+                        sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait 10 seconds.</span>');
+                        return;
+                    }
+                    if (globalCharCount + textToDisplay.length > 7000) {
+                        sysMsg('<span style="color:var(--neon-red)">Your signal faded. 7000 chars reached.</span>');
+                        chatInput.disabled = true;
+                        return;
+                    }
+                    lastGlobalSend = Date.now();
+                    globalCharCount += textToDisplay.length;
+                }
+                
+                const msgId = 'gmsg_' + Date.now();
+                const msgObj = { id: msgId, text: textToDisplay, type: 'text' };
+                if (currentReplyTo) msgObj.replyTo = currentReplyTo;
+                
+                appendMessageUI({ ...msgObj, sender: myGlobalAlias, isNoctyx: isNoctyx }, 'my-msg', true);
+                socket.emit('send_global', msgObj);
+            } 
+            else {
+                usedChars += rawText.length;
+                const msgId = 'msg_' + Date.now();
+                const msgObj = { id: msgId, text: textToDisplay };
+                if (currentReplyTo) msgObj.replyTo = currentReplyTo;
+                
+                appendMessageUI(msgObj, 'my-msg'); 
+                socket.emit('send_message', msgObj); 
+                updateVisualBar(usedChars);
+            }
+            
+            chatInput.value = ''; 
+            window.cancelReply();
         }
 
+        // === INCOMING MESSAGES ===
         socket.on('receive_message', (msgObj) => { 
             if (msgObj.system) { sysMsg(msgObj.text); return; }
             typingIndicator.style.display = 'none'; 
             
             let isMe = false;
             if (msgObj.id && sessionStorage.getItem('pending_media_' + msgObj.id)) {
-                isMe = true;
+                isMe = true; 
                 sessionStorage.removeItem('pending_media_' + msgObj.id);
             }
             
@@ -593,30 +837,40 @@
             if (!isMe && msgObj.type !== 'music') notificationSound.play().catch(()=>{}); 
         });
 
-        let typingTimeout;
-        socket.on('typing', () => { typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; clearTimeout(typingTimeout); typingTimeout = setTimeout(() => typingIndicator.style.display = 'none', 1500); });
+        socket.on('receive_global', (msgObj) => {
+            if (msgObj.sender !== myGlobalAlias) {
+                appendMessageUI(msgObj, 'stranger-msg', true);
+                if (msgObj.type !== 'music') notificationSound.play().catch(()=>{}); 
+            }
+        });
 
-        // === FLAWLESS: Music & Image Bubble Renderer ===
-        function appendMessageUI(msgData, type) {
-            const isObj = typeof msgData === 'object';
-            const text = isObj ? msgData.text : msgData;
-            const msgId = isObj && msgData.id ? msgData.id : 'msg_' + Date.now() + Math.floor(Math.random()*1000);
-            const replyInfo = isObj && msgData.replyTo ? msgData.replyTo : null;
-
+        // === UI RENDERER ===
+        function appendMessageUI(msgData, type, isGlobal = false) {
+            const msgId = msgData.id || 'msg_' + Date.now() + Math.floor(Math.random()*1000);
             if (messageStore[msgId] && (msgData.type === 'image' || msgData.type === 'music')) return;
 
-            messageStore[msgId] = { text: text, sender: type === 'my-msg' ? 'You' : 'Stranger' };
+            messageStore[msgId] = { text: msgData.text, sender: type === 'my-msg' ? 'You' : (msgData.senderAlias || msgData.sender || 'Stranger') };
 
             const msgDiv = document.createElement('div'); 
-            msgDiv.className = `message ${type}`;
+            msgDiv.className = `message ${type}`; 
             msgDiv.id = msgId;
 
             const timeString = `${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}`;
             const metaHtml = type === 'my-msg' ? `${timeString} ✓` : timeString;
 
+            let aliasHtml = '';
+            if (isGlobal && type === 'stranger-msg') {
+                const nxClass = msgData.isNoctyx ? 'noctyx' : '';
+                const inviteBtn = (!isNoctyx && msgData.isNoctyx) ? '' : `<button class="invite-private-btn" onclick="window.sendPrivateInvite('${msgData.sender}')">✉️</button>`;
+                aliasHtml = `<div class="sender-alias ${nxClass}">${msgData.sender} ${inviteBtn}</div>`;
+            } else if (msgData.senderAlias === "Noctyx" && type === 'stranger-msg') {
+                aliasHtml = `<div class="sender-alias noctyx">Noctyx</div>`;
+            }
+
             msgDiv.innerHTML = `
+                ${aliasHtml}
                 <div class="bubble-container" style="position:relative; width:100%;">
-                    <div class="bubble" id="bubble-${msgId}" onclick="openSheet('${msgId}')">
+                    <div class="bubble" id="bubble-${msgId}" onclick="window.openSheet('${msgId}')">
                         <div class="reply-container"></div>
                         <span class="msg-text-content"></span>
                     </div>
@@ -624,20 +878,19 @@
                 </div>
                 <div class="msg-meta" style="display:flex; justify-content:${type === 'my-msg' ? 'flex-end' : 'flex-start'}; align-items:center;">
                     ${metaHtml}
-                    <span onclick="openSheet('${msgId}')" style="margin: 0 8px; cursor: pointer; color: var(--neon-cyan); padding: 2px 6px; font-weight: bold; background: rgba(255,255,255,0.05); border-radius: 4px;">⋮</span>
+                    <span onclick="window.openSheet('${msgId}')" style="margin: 0 8px; cursor: pointer; color: var(--neon-cyan); padding: 2px 6px; font-weight: bold; background: rgba(255,255,255,0.05); border-radius: 4px;">⋮</span>
                 </div>
             `;
             
             const contentContainer = msgDiv.querySelector('.msg-text-content');
             
             if (msgData.type === 'image') {
-                const img = document.createElement('img');
+                const img = document.createElement('img'); 
                 img.src = msgData.url;
                 img.style.cssText = "max-width: 100%; border-radius: 10px; margin-top: 5px; display: block; border: 1px solid var(--glass-border);";
                 img.onload = () => { chatBox.scrollTop = chatBox.scrollHeight; };
                 contentContainer.appendChild(img);
             } else if (msgData.type === 'music') {
-                // FLAWLESS MUSIC BUBBLE
                 contentContainer.innerHTML = `
                     <div class="music-bubble">
                         <img src="${msgData.cover}" class="music-cover">
@@ -646,23 +899,24 @@
                             <div class="music-artist">${msgData.artist}</div>
                         </div>
                         <div class="music-controls">
-                            <button class="music-loop-btn" id="loop-${msgId}" onclick="event.stopPropagation(); toggleLoop('${msgId}')">∞</button>
-                            <button class="music-play-btn" id="play-${msgId}" onclick="event.stopPropagation(); playVoidMusic('${msgData.url}', '${msgId}')">▶</button>
+                            <button class="music-loop-btn" id="loop-${msgId}" onclick="event.stopPropagation(); window.toggleLoop('${msgId}')">∞</button>
+                            <button class="music-play-btn" id="play-${msgId}" onclick="event.stopPropagation(); window.playVoidMusic('${msgData.url}', '${msgId}')">▶</button>
                         </div>
                     </div>`;
-            } else {
-                contentContainer.textContent = text;
+            } else { 
+                contentContainer.textContent = msgData.text; 
             }
             
-            if (replyInfo) {
-                const replyDiv = document.createElement('div'); replyDiv.className = 'reply-quote';
-                replyDiv.innerHTML = `<strong>${replyInfo.sender}</strong>: <span class="quote-text"></span>`;
-                replyDiv.querySelector('.quote-text').textContent = replyInfo.text;
+            if (msgData.replyTo) {
+                const replyDiv = document.createElement('div'); 
+                replyDiv.className = 'reply-quote';
+                replyDiv.innerHTML = `<strong>${msgData.replyTo.sender}</strong>: <span class="quote-text"></span>`;
+                replyDiv.querySelector('.quote-text').textContent = msgData.replyTo.text;
                 msgDiv.querySelector('.reply-container').appendChild(replyDiv);
             }
             
             chatBox.insertBefore(msgDiv, typingIndicator); 
-            if(msgData.type !== 'image') { chatBox.scrollTop = chatBox.scrollHeight; }
+            if (msgData.type !== 'image') chatBox.scrollTop = chatBox.scrollHeight; 
 
             const bubbleEl = msgDiv.querySelector(`#bubble-${msgId}`);
             let startX = 0; let currentDiff = 0;
@@ -674,117 +928,172 @@
             }, {passive: true});
             bubbleEl.addEventListener('touchend', () => {
                 bubbleEl.style.transition = 'transform 0.2s ease'; bubbleEl.style.transform = 'translateX(0px)';
-                if (type === 'stranger-msg' && currentDiff > 40) { setReply(msgId); } else if (type === 'my-msg' && currentDiff < -40) { setReply(msgId); }
+                if (type === 'stranger-msg' && currentDiff > 40) window.setReply(msgId); 
+                else if (type === 'my-msg' && currentDiff < -40) window.setReply(msgId); 
             });
         }
 
-        // === MUSIC AUDIO HANDLER ===
-        window.playVoidMusic = (url, btnId) => {
+        // === PRIVATE ROOM LOGIC ===
+        window.sendPrivateInvite = function(targetAlias) {
+            sysMsg(`Sent private request to ${targetAlias}.`);
+            socket.emit('invite_private', targetAlias);
+        }
+
+        socket.on('private_request', (data) => {
+            if (data.to === myGlobalAlias) {
+                privateInviteData = data;
+                document.getElementById('private-invite-text').innerText = `${data.from} wants to pull you into a Private Void.`;
+                document.getElementById('private-invite-overlay').style.display = 'flex';
+            }
+        });
+
+        document.getElementById('accept-private-btn').addEventListener('click', () => {
+            if(privateInviteData) {
+                socket.emit('accept_private', privateInviteData);
+                document.getElementById('private-invite-overlay').style.display = 'none';
+            }
+        });
+        
+        document.getElementById('decline-private-btn').addEventListener('click', () => {
+            privateInviteData = null;
+            document.getElementById('private-invite-overlay').style.display = 'none';
+        });
+
+        // === MEDIA LOGIC ===
+        window.playVoidMusic = function(url, btnId) {
             const btn = document.getElementById('play-' + btnId);
             const loopBtn = document.getElementById('loop-' + btnId);
-
-            if (globalAudio.src === url && !globalAudio.paused) {
-                globalAudio.pause(); btn.innerHTML = '▶'; return;
-            }
-
+            if (globalAudio.src === url && !globalAudio.paused) { globalAudio.pause(); btn.innerHTML = '▶'; return; }
             if (currentPlayingBtn) currentPlayingBtn.innerHTML = '▶';
-
-            globalAudio.src = url;
-            globalAudio.loop = loopBtn.classList.contains('active');
-            globalAudio.play().catch(e => sysMsg("Audio blocked by browser."));
-            
-            btn.innerHTML = '⏸';
-            currentPlayingBtn = btn;
-
+            globalAudio.src = url; globalAudio.loop = loopBtn.classList.contains('active');
+            globalAudio.play().catch(e => sysMsg("Audio blocked."));
+            btn.innerHTML = '⏸'; currentPlayingBtn = btn;
             globalAudio.onended = () => { if(!globalAudio.loop) btn.innerHTML = '▶'; };
         };
 
-        window.toggleLoop = (btnId) => {
-            const btn = document.getElementById('loop-' + btnId);
-            btn.classList.toggle('active');
-            if (currentPlayingBtn && currentPlayingBtn.id === 'play-' + btnId) {
-                globalAudio.loop = btn.classList.contains('active');
-            }
+        window.toggleLoop = function(btnId) {
+            const btn = document.getElementById('loop-' + btnId); btn.classList.toggle('active');
+            if (currentPlayingBtn && currentPlayingBtn.id === 'play-' + btnId) { globalAudio.loop = btn.classList.contains('active'); }
         };
 
-        let activeSheetMsgId = null;
-        function openSheet(id) { activeSheetMsgId = id; document.getElementById('sheet-overlay').style.display = 'block'; setTimeout(() => { document.getElementById('sheet-overlay').style.opacity = '1'; document.getElementById('bottom-sheet').style.bottom = '0'; }, 10); }
-        function closeSheet() { document.getElementById('bottom-sheet').style.bottom = '-100%'; document.getElementById('sheet-overlay').style.opacity = '0'; setTimeout(() => { document.getElementById('sheet-overlay').style.display = 'none'; activeSheetMsgId = null; }, 300); }
-        function sheetReact(emoji) { if(!activeSheetMsgId) return; showReaction(activeSheetMsgId, emoji); socket.emit('react_message', { msgId: activeSheetMsgId, emoji }); closeSheet(); }
-        function sheetReply() { if(!activeSheetMsgId) return; setReply(activeSheetMsgId); closeSheet(); }
-        function sheetCopy() { if(!activeSheetMsgId) return; navigator.clipboard.writeText(messageStore[activeSheetMsgId].text).then(() => { const t = document.getElementById('action-toast'); const b = document.getElementById('extend-btn'); document.getElementById('countdown-text').style.display = 'none'; b.innerText = "Copied!"; b.style.display = 'inline-block'; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; b.innerText = "Request +500 Chars"; }, 2000); }); closeSheet(); }
-        function setReply(id) { const msgInfo = messageStore[id]; if(!msgInfo) return; currentReplyTo = { id, text: msgInfo.text, sender: msgInfo.sender }; document.getElementById('reply-text').innerText = msgInfo.text.length > 30 ? msgInfo.text.substring(0,30) + '...' : msgInfo.text; document.getElementById('reply-banner').style.display = 'flex'; chatInput.focus(); }
+        // === CORE HELPERS ===
+        function updateVisualBar(total) {
+            if(currentMax > 10000) return; 
+            let remaining = currentMax - total; 
+            let percentage = (remaining / currentMax) * 100; 
+            if (percentage < 0) percentage = 0; 
+            charBar.style.width = `${percentage}%`;
+            if (remaining <= 0) { chatInput.disabled = true; chatInput.maxLength = remaining; }
+            if (remaining <= 300 && currentMax === 1500 && !isCountdownRunning && total > 0) { actionToast.style.display = 'block'; extendBtn.style.display = 'inline-block'; countdownText.style.display = 'none'; }
+            if (percentage < 20) { charBar.style.backgroundColor = 'var(--neon-red)'; charBar.style.boxShadow = '0 0 10px var(--neon-red)'; } 
+            else { charBar.style.backgroundColor = 'var(--neon-cyan)'; charBar.style.boxShadow = '0 0 10px var(--neon-cyan)'; }
+        }
 
-        socket.on('receive_reaction', (data) => { showReaction(data.msgId, data.emoji); });
-        function showReaction(msgId, emoji) { const badge = document.getElementById(`react-${msgId}`); if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulse 1s ease'; } }
-        function sysMsg(html) { const div = document.createElement('div'); div.className = 'system-message gold'; div.innerHTML = html; chatBox.insertBefore(div, typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; return div; }
+        socket.on('sync_chars', (data) => { 
+            if(currentMode !== 'global') {
+                currentMax = data.max; usedChars = data.used; updateVisualBar(usedChars); 
+            }
+        });
 
-        extendBtn.addEventListener('click', () => { if(extendBtn.innerText.includes("Copied")) return; extendBtn.innerText = "Waiting..."; extendBtn.disabled = true; extendBtn.style.opacity = '0.6'; socket.emit('request_extend'); });
-        socket.on('extend_requested', () => { const reqId = 'ext-' + Date.now(); sysMsg(`Stranger requested +500 chars. <span id="${reqId}"><button onclick="acceptExtend(this)" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(reqId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); });
-        window.acceptExtend = (btn) => { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); margin-left:10px; font-size:0.8rem;'>(Accepted)</span>"; socket.emit('accept_extend'); }
-        socket.on('extend_accepted', (data) => { currentMax = data.max; usedChars = data.used; actionToast.style.display = 'none'; extendBtn.style.display = 'none'; chatInput.maxLength = currentMax - usedChars; updateVisualBar(usedChars); sysMsg('Extension Granted! <span>+500 characters</span> added.'); });
-
-        socket.on('force_shatter', () => { if(!isCountdownRunning) startCountdown(); });
-        function startCountdown() { isCountdownRunning = true; chatInput.disabled = true; chatInput.placeholder = "Time is up..."; actionToast.style.display = 'block'; extendBtn.style.display = 'none'; countdownText.style.display = 'block'; let secondsLeft = 5; countdownText.innerText = `Shattering in ${secondsLeft}...`; countdownTimer = setInterval(() => { secondsLeft--; if (secondsLeft <= 0) { clearInterval(countdownTimer); triggerVanish(); } else { countdownText.innerText = `Shattering in ${secondsLeft}...`; } }, 1000); }
+        // FLAW FIXED: Typing indicator hidden in global
+        socket.on('typing', () => { 
+            if (currentMode === 'global') return;
+            typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; clearTimeout(typingTimeout); typingTimeout = setTimeout(() => typingIndicator.style.display = 'none', 1500); 
+        });
         
-        // FLAWLESS SHATTER: Music stops instantly
-        function triggerVanish() { 
+        let typingTimeout;
+
+        // SHATTER
+        socket.on('force_shatter', () => { if(!isCountdownRunning && currentMode !== 'global') window.startCountdown(); });
+        
+        window.startCountdown = function() { 
+            isCountdownRunning = true; chatInput.disabled = true; chatInput.placeholder = "Time is up..."; actionToast.style.display = 'block'; extendBtn.style.display = 'none'; countdownText.style.display = 'block'; 
+            let secondsLeft = 5; countdownText.innerText = `Shattering in ${secondsLeft}...`; 
+            countdownTimer = setInterval(() => { secondsLeft--; if (secondsLeft <= 0) { clearInterval(countdownTimer); window.triggerVanish(); } else { countdownText.innerText = `Shattering in ${secondsLeft}...`; } }, 1000); 
+        }
+        
+        window.triggerVanish = function() { 
             countdownText.innerText = "Shattered."; chatBox.style.opacity = '0.1'; chatBox.style.filter = 'blur(4px)'; 
-            if(!globalAudio.paused) globalAudio.pause(); // Music stops
+            if(!globalAudio.paused) globalAudio.pause(); 
             for (let key in messageStore) delete messageStore[key]; 
             socket.emit('chat_shattered'); setTimeout(() => { actionToast.style.display = 'none'; shatterOverlay.style.display = 'flex'; }, 800); 
         }
         
-        socket.on('stranger_disconnected', () => { if(!isCountdownRunning) startCountdown(); });
+        socket.on('stranger_disconnected', () => { if(!isCountdownRunning && currentMode !== 'global') window.startCountdown(); });
 
-        starBtns.forEach(btn => { btn.addEventListener('click', (e) => { const rating = parseInt(e.target.getAttribute('data-val')); socket.emit('submit_rating', rating); starBtns.forEach(s => { if(parseInt(s.getAttribute('data-val')) <= rating) { s.classList.add('active'); } else { s.classList.remove('active'); } s.style.pointerEvents = 'none'; }); ratingThanks.style.display = 'block'; }); });
-        socket.on('receive_rating', (newRating) => { let myCurrentKarma = parseFloat(localStorage.getItem('void_karma') || 5.0); let updatedKarma = ((myCurrentKarma + newRating) / 2).toFixed(1); if (updatedKarma < 1.0) updatedKarma = "1.0"; localStorage.setItem('void_karma', updatedKarma); });
+        // === BOTTOM SHEET ===
+        let activeSheetMsgId = null;
+        window.openSheet = function(id) { activeSheetMsgId = id; document.getElementById('sheet-overlay').style.display = 'block'; setTimeout(() => { document.getElementById('sheet-overlay').style.opacity = '1'; document.getElementById('bottom-sheet').style.bottom = '0'; }, 10); }
+        window.closeSheet = function() { document.getElementById('bottom-sheet').style.bottom = '-100%'; document.getElementById('sheet-overlay').style.opacity = '0'; setTimeout(() => { document.getElementById('sheet-overlay').style.display = 'none'; activeSheetMsgId = null; }, 300); }
+        window.sheetReact = function(emoji) { if(!activeSheetMsgId) return; window.showReaction(activeSheetMsgId, emoji); socket.emit('react_message', { msgId: activeSheetMsgId, emoji }); window.closeSheet(); }
+        window.sheetReply = function() { if(!activeSheetMsgId) return; window.setReply(activeSheetMsgId); window.closeSheet(); }
+        window.sheetCopy = function() { if(!activeSheetMsgId) return; navigator.clipboard.writeText(messageStore[activeSheetMsgId].text).then(() => { countdownText.style.display = 'none'; extendBtn.innerText = "Copied!"; extendBtn.style.display = 'inline-block'; actionToast.style.display = 'block'; setTimeout(() => { actionToast.style.display = 'none'; extendBtn.innerText = "Request +500 Chars"; }, 2000); }); window.closeSheet(); }
+        window.setReply = function(id) { const msgInfo = messageStore[id]; if(!msgInfo) return; currentReplyTo = { id, text: msgInfo.text, sender: msgInfo.sender }; document.getElementById('reply-text').innerText = msgInfo.text.length > 30 ? msgInfo.text.substring(0,30) + '...' : msgInfo.text; document.getElementById('reply-banner').style.display = 'flex'; chatInput.focus(); }
+        window.cancelReply = function() { currentReplyTo = null; const banner = document.getElementById('reply-banner'); if (banner) banner.style.display = 'none'; document.getElementById('reply-text').innerText = '...'; }
+        
+        socket.on('receive_reaction', (data) => { window.showReaction(data.msgId, data.emoji); });
+        window.showReaction = function(msgId, emoji) { const badge = document.getElementById(`react-${msgId}`); if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulse 1s ease'; } }
 
-        document.getElementById('return-lobby-btn').addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); location.reload(); });
-        exitBtn.addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); location.reload(); });
-        newStrangerBtn.addEventListener('click', () => { myCurrentRoom = null; socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
-
-        window.inviteGame = (gameType) => { document.getElementById('game-menu').style.display = 'none'; sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); socket.emit('game_action', { type: 'invite', game: gameType }); };
-        socket.on('game_action', (data) => {
-            if (data.type === 'invite') { const inviteId = 'inv-' + Date.now(); sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <span id="${inviteId}"><button onclick="acceptGame('${data.game}', this)" style="background:var(--neon-cyan); border:none; border-radius:5px; padding:3px 8px; cursor:pointer; color:#000; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(inviteId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); } 
-            else if (data.type === 'accept') { startGame(data.game, true); } 
-            else if (data.type === 'rps_move') { resolveRPS(data.move); } 
-            else if (data.type === 'ttt_move') { receiveTTT(data.index); }
-            else if (data.type === 'c4_move') { receiveC4(data.col); }
+        // === GAMES & BUTTONS ===
+        themeBtn.addEventListener('click', () => document.body.classList.toggle('light-theme'));
+        
+        gameBtn.addEventListener('click', () => {
+            if(currentMode === 'global') { sysMsg("<span style='color:var(--neon-gold)'>Retreat to a private void to play games.</span>"); return; }
+            document.getElementById('game-menu').style.display = 'flex';
         });
 
-        window.acceptGame = (gameType, btn) => { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); font-size:0.8rem; margin-left:5px;'>(Accepted)</span>"; socket.emit('game_action', { type: 'accept', game: gameType }); startGame(gameType, false); };
+        returnLobbyBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
+        exitBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
+        newStrangerBtn.addEventListener('click', () => { socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
 
-        function startGame(gameType, isPlayer1) {
+        window.inviteGame = function(gameType) { document.getElementById('game-menu').style.display = 'none'; sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); socket.emit('game_action', { type: 'invite', game: gameType }); };
+        socket.on('game_action', (data) => {
+            if(currentMode === 'global') return;
+            if (data.type === 'invite') { const inviteId = 'inv-' + Date.now(); sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <span id="${inviteId}"><button onclick="window.acceptGame('${data.game}', this)" style="background:var(--neon-cyan); border:none; border-radius:5px; padding:3px 8px; cursor:pointer; color:#000; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(inviteId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); } 
+            else if (data.type === 'accept') { window.startGame(data.game, true); } 
+            else if (data.type === 'rps_move') { window.resolveRPS(data.move); } 
+            else if (data.type === 'ttt_move') { window.receiveTTT(data.index); }
+            else if (data.type === 'c4_move') { window.receiveC4(data.col); }
+        });
+        window.acceptGame = function(gameType, btn) { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); font-size:0.8rem; margin-left:5px;'>(Accepted)</span>"; socket.emit('game_action', { type: 'accept', game: gameType }); window.startGame(gameType, false); };
+
+        window.startGame = function(gameType, isPlayer1) {
             if (gameType === 'rps') { myRPS = null; strangerRPS = null; document.getElementById('rps-status').innerText = ""; document.getElementById('rps-ui').style.display = 'flex'; } 
-            else if (gameType === 'ttt') { initTTT(isPlayer1); }
-            else if (gameType === 'c4') { initC4(isPlayer1); }
+            else if (gameType === 'ttt') { window.initTTT(isPlayer1); } else if (gameType === 'c4') { window.initC4(isPlayer1); }
         }
 
         let myRPS = null, strangerRPS = null;
-        window.playRPS = (move) => { myRPS = move; document.getElementById('rps-status').innerText = "Waiting for stranger..."; socket.emit('game_action', { type: 'rps_move', move: move }); if (strangerRPS) checkRPSWin(); };
-        function resolveRPS(strangerMove) { strangerRPS = strangerMove; if (myRPS) checkRPSWin(); }
-        function checkRPSWin() { document.getElementById('rps-ui').style.display = 'none'; let res = "You Tied!"; if ((myRPS==='Rock' && strangerRPS==='Scissors') || (myRPS==='Paper' && strangerRPS==='Rock') || (myRPS==='Scissors' && strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>"; else if (myRPS !== strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>"; sysMsg(`RPS: You (${myRPS}) vs Stranger (${strangerRPS}). <b>${res}</b>`); }
+        window.playRPS = function(move) { myRPS = move; document.getElementById('rps-status').innerText = "Waiting for stranger..."; socket.emit('game_action', { type: 'rps_move', move: move }); if (strangerRPS) window.checkRPSWin(); };
+        window.resolveRPS = function(strangerMove) { strangerRPS = strangerMove; if (myRPS) window.checkRPSWin(); }
+        window.checkRPSWin = function() { document.getElementById('rps-ui').style.display = 'none'; let res = "You Tied!"; if ((myRPS==='Rock' && strangerRPS==='Scissors') || (myRPS==='Paper' && strangerRPS==='Rock') || (myRPS==='Scissors' && strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>"; else if (myRPS !== strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>"; sysMsg(`RPS: You (${myRPS}) vs Stranger (${strangerRPS}). <b>${res}</b>`); }
 
         let tttBoard = [], mySymbol = '', myTurn = false;
-        function initTTT(isPlayer1) { tttBoard = Array(9).fill(''); mySymbol = isPlayer1 ? 'X' : 'O'; myTurn = isPlayer1; document.getElementById('ttt-status').innerText = myTurn ? "Your Turn (" + mySymbol + ")" : "Stranger's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); document.getElementById('ttt-ui').style.display = 'flex'; }
-        window.playTTT = (index) => { if (!myTurn || tttBoard[index] !== '') return; makeTTTMove(index, mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); myTurn = false; document.getElementById('ttt-status').innerText = "Stranger's Turn"; };
-        function receiveTTT(index) { makeTTTMove(index, mySymbol === 'X' ? 'O' : 'X'); myTurn = true; document.getElementById('ttt-status').innerText = "Your Turn (" + mySymbol + ")"; }
-        function makeTTTMove(index, symbol) { tttBoard[index] = symbol; const cells = document.querySelectorAll('.ttt-cell'); cells[index].innerText = symbol; cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)'; checkTTTWin(); }
-        function checkTTTWin() { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null; wins.forEach(w => { if(tttBoard[w[0]] && tttBoard[w[0]]===tttBoard[w[1]] && tttBoard[w[0]]===tttBoard[w[2]]) winner = tttBoard[w[0]]; }); if (winner) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`Tic Tac Toe: <b>${winner === mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); } else if (!tttBoard.includes('')) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); } }
+        window.initTTT = function(isPlayer1) { tttBoard = Array(9).fill(''); mySymbol = isPlayer1 ? 'X' : 'O'; myTurn = isPlayer1; document.getElementById('ttt-status').innerText = myTurn ? "Your Turn (" + mySymbol + ")" : "Stranger's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); document.getElementById('ttt-ui').style.display = 'flex'; }
+        window.playTTT = function(index) { if (!myTurn || tttBoard[index] !== '') return; window.makeTTTMove(index, mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); myTurn = false; document.getElementById('ttt-status').innerText = "Stranger's Turn"; };
+        window.receiveTTT = function(index) { window.makeTTTMove(index, mySymbol === 'X' ? 'O' : 'X'); myTurn = true; document.getElementById('ttt-status').innerText = "Your Turn (" + mySymbol + ")"; }
+        window.makeTTTMove = function(index, symbol) { tttBoard[index] = symbol; const cells = document.querySelectorAll('.ttt-cell'); cells[index].innerText = symbol; cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)'; window.checkTTTWin(); }
+        window.checkTTTWin = function() { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null; wins.forEach(w => { if(tttBoard[w[0]] && tttBoard[w[0]]===tttBoard[w[1]] && tttBoard[w[0]]===tttBoard[w[2]]) winner = tttBoard[w[0]]; }); if (winner) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`Tic Tac Toe: <b>${winner === mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); } else if (!tttBoard.includes('')) { document.getElementById('ttt-ui').style.display = 'none'; sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); } }
 
         let c4Board = [], myC4Symbol = '', myC4Turn = false;
-        function initC4(isPlayer1) { c4Board = Array(6).fill().map(()=>Array(7).fill('')); myC4Symbol = isPlayer1 ? 'p1' : 'p2'; myC4Turn = isPlayer1; const boardEl = document.getElementById('c4-board'); boardEl.innerHTML = ''; for(let r=0; r<6; r++) { for(let c=0; c<7; c++) { const cell = document.createElement('div'); cell.className = 'c4-cell'; cell.id = `c4-${r}-${c}`; cell.onclick = () => playC4(c); boardEl.appendChild(cell); } } document.getElementById('c4-status').innerText = myC4Turn ? "Your Turn (" + (myC4Symbol==='p1'?'Cyan':'Gold') + ")" : "Stranger's Turn"; document.getElementById('c4-ui').style.display = 'flex'; }
-        window.playC4 = (col) => { if (!myC4Turn) return; let row = getLowestEmptyRow(col); if (row === -1) return; makeC4Move(row, col, myC4Symbol); socket.emit('game_action', { type: 'c4_move', col: col }); myC4Turn = false; document.getElementById('c4-status').innerText = "Stranger's Turn"; };
-        function receiveC4(col) { let row = getLowestEmptyRow(col); if(row === -1) return; makeC4Move(row, col, myC4Symbol === 'p1' ? 'p2' : 'p1'); myC4Turn = true; document.getElementById('c4-status').innerText = "Your Turn (" + (myC4Symbol==='p1'?'Cyan':'Gold') + ")"; }
-        function getLowestEmptyRow(col) { for(let r=5; r>=0; r--) { if(c4Board[r][col] === '') return r; } return -1; }
-        function makeC4Move(row, col, player) { c4Board[row][col] = player; document.getElementById(`c4-${row}-${col}`).classList.add(player); checkC4Win(row, col, player); }
-        function checkC4Win(r, c, player) { const dirs = [[0,1], [1,0], [1,1], [1,-1]]; for (let [dr, dc] of dirs) { let count = 1; for(let i=1; i<=3; i++) { let nr = r + dr*i, nc = c + dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } for(let i=1; i<=3; i++) { let nr = r - dr*i, nc = c - dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } if(count >= 4) { document.getElementById('c4-ui').style.display = 'none'; sysMsg(`Void Connect: <b>${player === myC4Symbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); return; } } if(c4Board[0].every(cell => cell !== '')) { document.getElementById('c4-ui').style.display = 'none'; sysMsg(`Void Connect: <b>It's a Draw!</b>`); } }
+        window.initC4 = function(isPlayer1) { c4Board = Array(6).fill().map(()=>Array(7).fill('')); myC4Symbol = isPlayer1 ? 'p1' : 'p2'; myC4Turn = isPlayer1; const boardEl = document.getElementById('c4-board'); boardEl.innerHTML = ''; for(let r=0; r<6; r++) { for(let c=0; c<7; c++) { const cell = document.createElement('div'); cell.className = 'c4-cell'; cell.id = `c4-${r}-${c}`; cell.onclick = () => window.playC4(c); boardEl.appendChild(cell); } } document.getElementById('c4-status').innerText = myC4Turn ? "Your Turn (" + (myC4Symbol==='p1'?'Cyan':'Gold') + ")" : "Stranger's Turn"; document.getElementById('c4-ui').style.display = 'flex'; }
+        window.playC4 = function(col) { if (!myC4Turn) return; let row = window.getLowestEmptyRow(col); if (row === -1) return; window.makeC4Move(row, col, myC4Symbol); socket.emit('game_action', { type: 'c4_move', col: col }); myC4Turn = false; document.getElementById('c4-status').innerText = "Stranger's Turn"; };
+        window.receiveC4 = function(col) { let row = window.getLowestEmptyRow(col); if(row === -1) return; window.makeC4Move(row, col, myC4Symbol === 'p1' ? 'p2' : 'p1'); myC4Turn = true; document.getElementById('c4-status').innerText = "Your Turn (" + (myC4Symbol==='p1'?'Cyan':'Gold') + ")"; }
+        window.getLowestEmptyRow = function(col) { for(let r=5; r>=0; r--) { if(c4Board[r][col] === '') return r; } return -1; }
+        window.makeC4Move = function(row, col, player) { c4Board[row][col] = player; document.getElementById(`c4-${row}-${col}`).classList.add(player); window.checkC4Win(row, col, player); }
+        window.checkC4Win = function(r, c, player) { const dirs = [[0,1], [1,0], [1,1], [1,-1]]; for (let [dr, dc] of dirs) { let count = 1; for(let i=1; i<=3; i++) { let nr = r + dr*i, nc = c + dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } for(let i=1; i<=3; i++) { let nr = r - dr*i, nc = c - dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } if(count >= 4) { document.getElementById('c4-ui').style.display = 'none'; sysMsg(`Void Connect: <b>${player === myC4Symbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); return; } } if(c4Board[0].every(cell => cell !== '')) { document.getElementById('c4-ui').style.display = 'none'; sysMsg(`Void Connect: <b>It's a Draw!</b>`); } }
+
+        socket.on('submit_rating', (rating) => {
+            starBtns.forEach(s => { 
+                if(parseInt(s.getAttribute('data-val')) <= rating) { s.classList.add('active'); } 
+                else { s.classList.remove('active'); } 
+                s.style.pointerEvents = 'none'; 
+            }); 
+            ratingThanks.style.display = 'block';
+        });
 
         document.addEventListener("visibilitychange", () => { if (socket.connected) { const status = document.hidden ? 'offline' : 'online'; socket.emit('user_status', status); } });
         socket.on('stranger_status', (status) => { const dot = document.querySelector('.user-info .dot'); if (!dot) return; if (status === 'offline') { dot.style.backgroundColor = '#64748b'; dot.style.boxShadow = 'none'; } else { dot.style.backgroundColor = '#22c55e'; dot.style.boxShadow = '0 0 8px #22c55e'; } });
-        socket.on('disconnect', () => { const dot = document.querySelector('.user-info .dot'); if (dot) dot.style.backgroundColor = '#ef4444'; if(!globalAudio.paused) globalAudio.pause(); });
-
+        
     </script>
 </body>
     </html>
