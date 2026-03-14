@@ -1187,7 +1187,14 @@
             function showReaction(msgId, emoji) { const badge = document.getElementById(`react-${msgId}`); if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulse 1s ease'; } }
 
             // 15. GAMES
-            gameBtn.addEventListener('click', () => { gameMenu.style.display = 'flex'; });
+            gameBtn.addEventListener('click', () => { 
+                if (currentMode === 'global') {
+                    sysMsg("<span style='color:var(--text-muted)'>Enter private room to play games</span>");
+                } else {
+                    gameMenu.style.display = 'flex'; 
+                }
+            });
+            
             closeGameMenuBtn.addEventListener('click', () => gameMenu.style.display = 'none');
             closeTttBtn.addEventListener('click', () => tttUi.style.display = 'none');
             closeC4Btn.addEventListener('click', () => c4Ui.style.display = 'none');
