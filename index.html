@@ -326,6 +326,7 @@
             <p class="disclaimer">100% Anonymous. No logs kept.</p>
             
             <div class="auth-wrapper">
+                <button class="auth-btn" id="install-btn" style="display: none; border-color: var(--neon-cyan); color: var(--neon-cyan);">Install App</button>
                 <button class="auth-btn" id="admin-login-btn">Admin</button>
                 <button class="noctyx-trigger" id="noctyx-trigger-btn">◈</button>
             </div>
@@ -527,6 +528,7 @@
             const adminPassInput = document.getElementById('admin-pass-input');
             const adminSubmit = document.getElementById('admin-submit');
             
+            const installBtn = document.getElementById('install-btn'); // Added PWA Install Bind
             const noctyxTriggerBtn = document.getElementById('noctyx-trigger-btn');
             const noctyxAuthGroup = document.getElementById('noctyx-auth-group');
             const nxUser = document.getElementById('nx-user');
@@ -618,6 +620,25 @@
 
             // 3. PWA
             if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(e => console.log(e));
+
+            // PWA INSTALL LOGIC (NEW ADDITION)
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                if (installBtn) installBtn.style.display = 'inline-block';
+            });
+
+            if (installBtn) {
+                installBtn.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        if (outcome === 'accepted') installBtn.style.display = 'none';
+                        deferredPrompt = null;
+                    }
+                });
+            }
 
             // 4. LOBBY LISTENERS
             adminLoginBtn.addEventListener('click', () => {
