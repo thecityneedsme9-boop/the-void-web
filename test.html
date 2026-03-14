@@ -15,7 +15,6 @@
         /* === CORE RESET & FIXES === */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* Kills the ugly mobile blue tap flash */
         button, a, .bubble, .icon-btn { -webkit-tap-highlight-color: transparent; outline: none; }
         
         :root {
@@ -91,7 +90,7 @@
 
         .disclaimer { margin-top: 20px; font-size: 0.7rem; font-weight: 300; color: #475569; }
 
-        /* === AUTH UI === */
+        /* AUTH UI */
         .auth-wrapper { margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .auth-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 5px 15px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: 0.2s; }
         .noctyx-trigger { background: none; border: none; color: #3b82f6; font-size: 0.8rem; cursor: pointer; opacity: 0.5; transition: 0.2s;}
@@ -136,7 +135,6 @@
         .stranger-msg .bubble { background: var(--stranger-bubble); border-top-left-radius: 4px; }
         .my-msg .bubble { background: var(--my-bubble); border-top-right-radius: 4px; border-color: rgba(6, 182, 212, 0.2); }
         
-        /* Global & Noctyx specific */
         .sender-alias { font-size: 0.7rem; font-weight: 600; color: var(--neon-purple); margin-bottom: 4px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;}
         .sender-alias.noctyx { color: var(--neon-red); text-shadow: 0 0 8px rgba(239, 68, 68, 0.6); letter-spacing: 1px; font-family: 'Cinzel', serif;}
         .invite-private-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 4px; font-size: 0.6rem; padding: 2px 6px; cursor: pointer; color: white; transition: 0.2s;}
@@ -159,55 +157,11 @@
         @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* === FOOTER AND CHAT INPUT === */
-        .chat-footer { 
-            display: flex; 
-            align-items: center; 
-            gap: 6px; 
-            padding: 12px 15px; 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(10px); 
-            border-top: 1px solid var(--glass-border); 
-            position: relative; 
-            z-index: 10;
-        }
-        
-        .action-group { display: flex; gap: 4px; flex-shrink: 0; }
-        .chat-footer .icon-btn { width: 38px; height: 38px; padding: 0; flex-shrink: 0; }
-
-        #chat-input { 
-            flex: 1; 
-            min-width: 0; 
-            background: rgba(0,0,0,0.3); 
-            border: 1px solid var(--glass-border); 
-            padding: 10px 15px; 
-            border-radius: 12px; 
-            color: var(--text-main); 
-            font-family: 'Outfit', sans-serif; 
-            font-size: 0.95rem; 
-            outline: none; 
-            transition: 0.3s; 
-            height: 40px;
-        }
-        #chat-input:focus { border-color: rgba(6, 182, 212, 0.5); }
-
-        .send-btn { 
-            background: var(--neon-cyan); 
-            color: #000; 
-            border: none; 
-            padding: 0 16px; 
-            height: 40px; 
-            border-radius: 12px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            transition: 0.2s; 
-            flex-shrink: 0; 
-        }
-        .send-btn:hover { background: #0891b2; }
-        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* === NOTIFICATIONS & OVERLAYS === */
+        #action-toast { padding: 10px 20px; text-align: center; display: none; margin-bottom: 5px;}
+        #extend-btn { background: transparent; color: var(--neon-gold); border: 1px solid var(--neon-gold); padding: 8px 16px; border-radius: 20px; font-family: 'Outfit', sans-serif; font-size: 0.85rem; cursor: pointer; transition: 0.3s; box-shadow: inset 0 0 8px rgba(251, 191, 36, 0.2); }
+        #countdown-text { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--neon-red); font-weight: bold; animation: pulseRed 1s infinite; display: none; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+        @keyframes pulseRed { 0% { opacity: 0.6; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.6; transform: scale(0.98); } }
 
         /* === MUSIC SEARCH UI === */
         #music-search-container { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background: rgba(3, 7, 18, 0.95); backdrop-filter: blur(15px); padding: 15px 20px; z-index: 15; border-top: 1px solid var(--glass-border); border-bottom: 1px solid rgba(6, 182, 212, 0.2); box-shadow: 0 -10px 20px rgba(0,0,0,0.5);}
@@ -222,6 +176,7 @@
         .music-result-title { font-size: 0.85rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500;}
         .music-result-artist { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+        /* === MUSIC PLAYER BUBBLE CSS === */
         .music-bubble { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 12px; border: 1px solid var(--glass-border); margin-top: 5px; width: 100%; min-width: 220px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);}
         .music-cover { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; box-shadow: 0 0 10px rgba(6, 182, 212, 0.3); }
         .music-info { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
@@ -233,23 +188,27 @@
         .music-loop-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); font-size: 1.2rem;}
         .music-loop-btn.active { color: var(--neon-gold); border-color: var(--neon-gold); box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); text-shadow: 0 0 5px var(--neon-gold);}
 
-        /* === OUT-OF-BODY MODALS (HIGH Z-INDEX) === */
-        #action-toast { padding: 10px 20px; text-align: center; display: none; margin-bottom: 5px; position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 100;}
-        #extend-btn { background: transparent; color: var(--neon-gold); border: 1px solid var(--neon-gold); padding: 8px 16px; border-radius: 20px; font-family: 'Outfit', sans-serif; font-size: 0.85rem; cursor: pointer; transition: 0.3s; box-shadow: inset 0 0 8px rgba(251, 191, 36, 0.2); }
-        #countdown-text { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--neon-red); font-weight: bold; animation: pulseRed 1s infinite; display: none; text-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+        /* === FOOTER === */
+        .chat-footer { display: flex; align-items: center; gap: 6px; padding: 12px 15px; background: var(--glass-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); position: relative; z-index: 10; }
+        .action-group { display: flex; gap: 4px; flex-shrink: 0; }
+        .chat-footer .icon-btn { width: 38px; height: 38px; padding: 0; flex-shrink: 0; }
+        #chat-input { flex: 1; min-width: 0; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 10px 15px; border-radius: 12px; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 0.95rem; outline: none; transition: 0.3s; height: 40px; }
+        #chat-input:focus { border-color: rgba(6, 182, 212, 0.5); }
+        .send-btn { background: var(--neon-cyan); color: #000; border: none; padding: 0 16px; height: 40px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
+        .send-btn:hover { background: #0891b2; }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         #reply-banner { display: none; background: rgba(6, 182, 212, 0.1); border-left: 3px solid var(--neon-cyan); padding: 10px 15px; font-size: 0.85rem; color: var(--text-main); position: absolute; bottom: 100%; left: 0; width: 100%; backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); justify-content: space-between; align-items: center; }
 
+        /* === ROOT LEVEL MODALS === */
         #shatter-overlay { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; animation: fadeIn 1s ease forwards; }
         #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
         #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
-        
         #rating-box { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 25px; margin-bottom: 25px; width: 100%; max-width: 250px; z-index: 25;}
         .rating-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .star-container { display: flex; justify-content: center; gap: 8px; direction: row; }
         .star-btn { background: none; border: none; font-size: 1.8rem; color: rgba(255,255,255,0.1); cursor: pointer; transition: color 0.2s, transform 0.2s; padding: 0; line-height: 1; }
         .star-btn.active, .star-btn:hover { color: var(--neon-gold); text-shadow: 0 0 10px var(--neon-gold); transform: scale(1.1); }
         #rating-thanks { display: none; color: var(--neon-gold); font-size: 0.85rem; margin-top: 10px; font-weight: 500; }
-
         .overlay-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 250px; }
         .secondary-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border); padding: 12px; border-radius: 12px; font-family: 'Outfit', sans-serif; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
         .secondary-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
@@ -300,18 +259,12 @@
             
             <div class="stats-container">
                 <div class="stat-box">
-                    <span class="stat-number">
-                        <div class="dot"></div> <span id="active-users-count">...</span>
-                    </span>
+                    <span class="stat-number"><div class="dot"></div> <span id="active-users-count">...</span></span>
                     <span class="stat-label">Active Now</span>
                 </div>
                 <div class="stat-box">
                     <span class="stat-number">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                        </svg> 
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> 
                         <span id="vanished-count">...</span>
                     </span>
                     <span class="stat-label">Vanished</span>
@@ -379,7 +332,6 @@
         </div>
 
         <footer class="chat-footer">
-            
             <div id="music-search-container">
                 <input type="text" id="music-search-input" placeholder="Search frequency (Artist, Song)..." autocomplete="off">
                 <div id="music-results"></div>
@@ -416,11 +368,7 @@
         <div id="rating-box">
             <div class="rating-title">Rate the Vibe</div>
             <div class="star-container">
-                <button class="star-btn" data-val="1">★</button>
-                <button class="star-btn" data-val="2">★</button>
-                <button class="star-btn" data-val="3">★</button>
-                <button class="star-btn" data-val="4">★</button>
-                <button class="star-btn" data-val="5">★</button>
+                <button class="star-btn" data-val="1">★</button><button class="star-btn" data-val="2">★</button><button class="star-btn" data-val="3">★</button><button class="star-btn" data-val="4">★</button><button class="star-btn" data-val="5">★</button>
             </div>
             <div id="rating-thanks">Rating Sent!</div>
         </div>
@@ -495,7 +443,7 @@
     <div class="game-modal" id="c4-ui">
         <button class="close-game" id="close-c4-btn">✖</button>
         <h2 style="color:var(--neon-cyan); margin-bottom: 10px;">Void Connect</h2>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px; text-align:center; max-width:280px;">Connect 4 orbs horizontally, vertically, or diagonally to win.</p>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px; text-align:center; max-width:280px;">Drop orbs to connect 4 in a row horizontally, vertically, or diagonally. First to do so wins.</p>
         <p id="c4-status" style="color:var(--neon-gold);">Your turn (Cyan)</p>
         <div id="c4-board"></div>
     </div>
@@ -516,83 +464,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // 1. DOM BINDINGS (100% SECURE)
-            const lobbyScreen = document.getElementById('lobby-screen');
-            const chatScreen = document.getElementById('chat-screen');
-            const activeUsersCount = document.getElementById('active-users-count');
-            const vanishedCount = document.getElementById('vanished-count');
-            
-            const adminLoginBtn = document.getElementById('admin-login-btn');
-            const adminAuthGroup = document.getElementById('admin-auth-group');
-            const adminPassInput = document.getElementById('admin-pass-input');
-            const adminSubmit = document.getElementById('admin-submit');
-            
-            const noctyxTriggerBtn = document.getElementById('noctyx-trigger-btn');
-            const noctyxAuthGroup = document.getElementById('noctyx-auth-group');
-            const nxUser = document.getElementById('nx-user');
-            const nxPass = document.getElementById('nx-pass');
-            const nxSubmit = document.getElementById('nx-submit');
-            
-            const findBtn = document.getElementById('find-btn');
-            const globalBtn = document.getElementById('global-btn');
-            
-            const roomTitle = document.getElementById('room-title');
-            const themeBtn = document.getElementById('theme-btn');
-            const exitBtn = document.getElementById('exit-btn');
-            
-            const progressWrapper = document.getElementById('progress-wrapper');
-            const charBar = document.getElementById('char-bar');
-            const chatBox = document.getElementById('chat-box');
-            const typingIndicator = document.getElementById('typing-indicator');
-            
-            const chatInput = document.getElementById('chat-input');
-            const sendBtn = document.getElementById('send-btn');
-            const gameBtn = document.getElementById('game-btn');
-            const photoBtn = document.getElementById('photo-btn');
-            const imageInput = document.getElementById('image-input');
-            const musicBtn = document.getElementById('music-btn');
-            
-            const musicSearchContainer = document.getElementById('music-search-container');
-            const musicSearchInput = document.getElementById('music-search-input');
-            const musicResults = document.getElementById('music-results');
-            
-            const actionToast = document.getElementById('action-toast');
-            const extendBtn = document.getElementById('extend-btn');
-            const countdownText = document.getElementById('countdown-text');
-            const shatterOverlay = document.getElementById('shatter-overlay');
-            const returnLobbyBtn = document.getElementById('return-lobby-btn');
-            const newStrangerBtn = document.getElementById('new-stranger-btn');
-            
-            const replyBanner = document.getElementById('reply-banner');
-            const replyText = document.getElementById('reply-text');
-            const closeReplyBtn = document.getElementById('close-reply');
-            
-            const privateInviteOverlay = document.getElementById('private-invite-overlay');
-            const privateInviteText = document.getElementById('private-invite-text');
-            const acceptPrivateBtn = document.getElementById('accept-private-btn');
-            const declinePrivateBtn = document.getElementById('decline-private-btn');
-
-            const sheetOverlay = document.getElementById('sheet-overlay');
-            const bottomSheet = document.getElementById('bottom-sheet');
-            const closeSheetBtn = document.getElementById('close-sheet-btn');
-
-            const adminUi = document.getElementById('admin-ui');
-            const closeAdminBtn = document.getElementById('close-admin-btn');
-            
-            const gameMenu = document.getElementById('game-menu');
-            const closeGameMenuBtn = document.getElementById('close-game-menu-btn');
-            const launchRps = document.getElementById('launch-rps');
-            const launchTtt = document.getElementById('launch-ttt');
-            const launchC4 = document.getElementById('launch-c4');
-            
-            const tttUi = document.getElementById('ttt-ui');
-            const closeTttBtn = document.getElementById('close-ttt-btn');
-            const c4Ui = document.getElementById('c4-ui');
-            const closeC4Btn = document.getElementById('close-c4-btn');
-            const starBtns = document.querySelectorAll('.star-btn');
-            const ratingThanks = document.getElementById('rating-thanks');
-
-            // 2. STATE VARIABLES
+            // 1. GLOBALS
             const IMGBB_API_KEY = "e4920da45c283d4ae48a5ca34df75005"; 
             const socket = io("https://the-void-server.onrender.com"); 
             const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
@@ -615,6 +487,69 @@
             let privateInviteData = null;
             let typingTimeoutGlobal = null;
             let activeSheetMsgId = null;
+
+            // 2. DOM BINDINGS 
+            const lobbyScreen = document.getElementById('lobby-screen');
+            const chatScreen = document.getElementById('chat-screen');
+            const activeUsersCount = document.getElementById('active-users-count');
+            const vanishedCount = document.getElementById('vanished-count');
+            const adminLoginBtn = document.getElementById('admin-login-btn');
+            const adminAuthGroup = document.getElementById('admin-auth-group');
+            const adminPassInput = document.getElementById('admin-pass-input');
+            const adminSubmit = document.getElementById('admin-submit');
+            const noctyxTriggerBtn = document.getElementById('noctyx-trigger-btn');
+            const noctyxAuthGroup = document.getElementById('noctyx-auth-group');
+            const nxUser = document.getElementById('nx-user');
+            const nxPass = document.getElementById('nx-pass');
+            const nxSubmit = document.getElementById('nx-submit');
+            const findBtn = document.getElementById('find-btn');
+            const globalBtn = document.getElementById('global-btn');
+            const roomTitle = document.getElementById('room-title');
+            const statusDot = document.getElementById('status-dot');
+            const themeBtn = document.getElementById('theme-btn');
+            const exitBtn = document.getElementById('exit-btn');
+            const progressWrapper = document.getElementById('progress-wrapper');
+            const charBar = document.getElementById('char-bar');
+            const chatBox = document.getElementById('chat-box');
+            const typingIndicator = document.getElementById('typing-indicator');
+            const chatInput = document.getElementById('chat-input');
+            const sendBtn = document.getElementById('send-btn');
+            const gameBtn = document.getElementById('game-btn');
+            const photoBtn = document.getElementById('photo-btn');
+            const imageInput = document.getElementById('image-input');
+            const musicBtn = document.getElementById('music-btn');
+            const musicSearchContainer = document.getElementById('music-search-container');
+            const musicSearchInput = document.getElementById('music-search-input');
+            const musicResults = document.getElementById('music-results');
+            const actionToast = document.getElementById('action-toast');
+            const extendBtn = document.getElementById('extend-btn');
+            const countdownText = document.getElementById('countdown-text');
+            const shatterOverlay = document.getElementById('shatter-overlay');
+            const returnLobbyBtn = document.getElementById('return-lobby-btn');
+            const newStrangerBtn = document.getElementById('new-stranger-btn');
+            const replyBanner = document.getElementById('reply-banner');
+            const replyText = document.getElementById('reply-text');
+            const closeReplyBtn = document.getElementById('close-reply');
+            const privateInviteOverlay = document.getElementById('private-invite-overlay');
+            const privateInviteText = document.getElementById('private-invite-text');
+            const acceptPrivateBtn = document.getElementById('accept-private-btn');
+            const declinePrivateBtn = document.getElementById('decline-private-btn');
+            const sheetOverlay = document.getElementById('sheet-overlay');
+            const bottomSheet = document.getElementById('bottom-sheet');
+            const closeSheetBtn = document.getElementById('close-sheet-btn');
+            const adminUi = document.getElementById('admin-ui');
+            const closeAdminBtn = document.getElementById('close-admin-btn');
+            const gameMenu = document.getElementById('game-menu');
+            const closeGameMenuBtn = document.getElementById('close-game-menu-btn');
+            const launchRps = document.getElementById('launch-rps');
+            const launchTtt = document.getElementById('launch-ttt');
+            const launchC4 = document.getElementById('launch-c4');
+            const tttUi = document.getElementById('ttt-ui');
+            const closeTttBtn = document.getElementById('close-ttt-btn');
+            const c4Ui = document.getElementById('c4-ui');
+            const closeC4Btn = document.getElementById('close-c4-btn');
+            const starBtns = document.querySelectorAll('.star-btn');
+            const ratingThanks = document.getElementById('rating-thanks');
 
             // 3. PWA
             if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(e => console.log(e));
@@ -663,9 +598,8 @@
 
             // 5. SOCKET CONNECTION
             socket.on('connect', () => { 
-                const dot = document.querySelector('.user-info .dot');
-                if (dot && chatScreen.style.display === 'flex') { 
-                    dot.style.backgroundColor = '#22c55e'; dot.style.boxShadow = '0 0 8px #22c55e'; 
+                if (statusDot && chatScreen.style.display === 'flex') { 
+                    statusDot.style.backgroundColor = '#22c55e'; statusDot.style.boxShadow = '0 0 8px #22c55e'; 
                     if (myCurrentRoom) socket.emit('reclaim_session', myCurrentRoom); 
                     else socket.emit('user_status', 'online'); 
                 }
@@ -856,7 +790,7 @@
                         item.innerHTML = `<img src="${track.artworkUrl100 || ''}" alt="cover"><div class="music-result-info"><div class="music-result-title"></div><div class="music-result-artist"></div></div>`;
                         item.querySelector('.music-result-title').textContent = track.trackName;
                         item.querySelector('.music-result-artist').textContent = track.artistName;
-                        item.addEventListener('click', () => sendMusic(track));
+                        item.onclick = () => sendMusic(track);
                         musicResults.appendChild(item);
                     });
                 } catch (err) { musicResults.innerHTML = '<div style="text-align:center; color:var(--neon-red); font-size:0.8rem; padding:10px;">Error finding signal.</div>'; }
@@ -869,6 +803,7 @@
                 musicSearchContainer.style.display = 'none'; musicSearchInput.value = ''; musicResults.innerHTML = '';
                 const msgId = 'msg_' + Date.now() + Math.floor(Math.random()*1000);
                 sessionStorage.setItem('pending_media_' + msgId, 'true');
+                
                 const msgObj = { id: msgId, type: 'music', text: "🎵 Shared a frequency", url: track.previewUrl, cover: track.artworkUrl100, title: track.trackName, artist: track.artistName };
                 if (currentReplyTo) msgObj.replyTo = currentReplyTo;
                 
@@ -881,7 +816,7 @@
                 cancelReply();
             }
 
-            // 8. CHAT SENDING
+            // 8. CHAT SENDING & EVENT DELEGATION
             sendBtn.addEventListener('click', sendLocalMessage);
             chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !chatInput.disabled) sendLocalMessage(); });
 
@@ -943,6 +878,76 @@
                 }
             });
 
+            // THE MASTER EVENT DELEGATOR (CATCHES ALL BUTTON CLICKS SECURELY)
+            chatBox.addEventListener('click', (e) => {
+                const target = e.target;
+                
+                // Music Buttons
+                if (target.classList.contains('music-play-btn')) {
+                    const url = target.getAttribute('data-url');
+                    const id = target.getAttribute('data-id');
+                    const loopBtn = chatBox.querySelector(`.music-loop-btn[data-id="${id}"]`);
+                    if (globalAudio.src === url && !globalAudio.paused) { globalAudio.pause(); target.innerHTML = '▶'; return; }
+                    if (currentPlayingBtn) currentPlayingBtn.innerHTML = '▶';
+                    globalAudio.src = url; globalAudio.loop = loopBtn ? loopBtn.classList.contains('active') : false;
+                    globalAudio.play().catch(err => sysMsg("Audio blocked."));
+                    target.innerHTML = '⏸'; currentPlayingBtn = target;
+                    globalAudio.onended = () => { if(!globalAudio.loop) target.innerHTML = '▶'; };
+                    return;
+                }
+                
+                if (target.classList.contains('music-loop-btn')) {
+                    target.classList.toggle('active');
+                    const id = target.getAttribute('data-id');
+                    if (currentPlayingBtn && currentPlayingBtn.getAttribute('data-id') === id) { globalAudio.loop = target.classList.contains('active'); }
+                    return;
+                }
+
+                // Global Game Accept
+                if (target.classList.contains('accept-global-btn')) {
+                    socket.emit('accept_global_game', { 
+                        inviteId: target.getAttribute('data-invite'), 
+                        game: target.getAttribute('data-game'), 
+                        fromId: target.getAttribute('data-from') 
+                    });
+                    target.innerText = "Accepted!"; target.disabled = true; target.style.opacity = '0.5';
+                    return;
+                }
+
+                // 1v1 Game Accept
+                if (target.classList.contains('accept-1v1-btn')) {
+                    target.parentElement.innerHTML = "<span style='color:var(--neon-cyan); font-size:0.8rem; margin-left:5px;'>(Accepted)</span>"; 
+                    const game = target.getAttribute('data-game');
+                    socket.emit('game_action', { type: 'accept', game: game }); 
+                    startGame(game, false);
+                    return;
+                }
+
+                // Extend Char Limit
+                if (target.classList.contains('accept-extend-btn')) {
+                    target.parentElement.innerHTML = "<span style='color:var(--neon-cyan); margin-left:10px; font-size:0.8rem;'>(Accepted)</span>"; 
+                    socket.emit('accept_extend');
+                    return;
+                }
+
+                // Private Room Invite
+                if (target.classList.contains('invite-private-btn')) {
+                    const tgt = target.getAttribute('data-target');
+                    sysMsg(`Sent private request to ${tgt}.`);
+                    socket.emit('invite_private', tgt);
+                    return;
+                }
+
+                // Open Bottom Sheet (dots or bubble)
+                if (target.classList.contains('dots-btn')) {
+                    openSheet(target.getAttribute('data-id')); return;
+                }
+                const bubble = target.closest('.bubble');
+                if (bubble && !target.closest('button')) {
+                    openSheet(bubble.getAttribute('data-id')); return;
+                }
+            });
+
             // 9. UI RENDERER
             function appendMessageUI(msgData, type, isGlobal = false) {
                 const msgId = msgData.id || 'msg_' + Date.now() + Math.floor(Math.random()*1000);
@@ -987,16 +992,13 @@
                 } else if (msgData.type === 'music') {
                     contentContainer.innerHTML = `
                         <div class="music-bubble">
-                            <img src="" class="music-cover">
-                            <div class="music-info"><div class="music-title"></div><div class="music-artist"></div></div>
+                            <img src="${msgData.cover || ''}" class="music-cover">
+                            <div class="music-info"><div class="music-title">${msgData.title || 'Unknown'}</div><div class="music-artist">${msgData.artist || 'Unknown'}</div></div>
                             <div class="music-controls">
                                 <button class="music-loop-btn" data-id="${msgId}">∞</button>
                                 <button class="music-play-btn" data-url="${msgData.url}" data-id="${msgId}">▶</button>
                             </div>
                         </div>`;
-                    contentContainer.querySelector('.music-cover').src = msgData.cover || '';
-                    contentContainer.querySelector('.music-title').textContent = msgData.title || 'Unknown Frequency';
-                    contentContainer.querySelector('.music-artist').textContent = msgData.artist || 'Unknown Node';
                 } else { contentContainer.textContent = msgData.text; }
                 
                 if (msgData.replyTo) {
@@ -1010,7 +1012,7 @@
                 chatBox.insertBefore(msgDiv, typingIndicator); 
                 if (msgData.type !== 'image') chatBox.scrollTop = chatBox.scrollHeight; 
 
-                // SWIPE ENGINE
+                // FLAW FIXED: Swiping ignores buttons entirely
                 const bubbleEl = msgDiv.querySelector(`.bubble`);
                 let startX = 0; let currentDiff = 0;
                 bubbleEl.addEventListener('touchstart', (e) => { 
@@ -1031,76 +1033,7 @@
                 });
             }
 
-            // 10. CHAT BOX EVENT DELEGATION (CRITICAL FIX FOR DYNAMIC BUTTONS)
-            chatBox.addEventListener('click', (e) => {
-                const target = e.target;
-                
-                // Music Play
-                const playBtn = target.closest('.music-play-btn');
-                if(playBtn) {
-                    const url = playBtn.getAttribute('data-url'); const id = playBtn.getAttribute('data-id');
-                    const loopBtn = chatBox.querySelector(`.music-loop-btn[data-id="${id}"]`);
-                    if (globalAudio.src === url && !globalAudio.paused) { globalAudio.pause(); playBtn.innerHTML = '▶'; return; }
-                    if (currentPlayingBtn) currentPlayingBtn.innerHTML = '▶';
-                    globalAudio.src = url; globalAudio.loop = loopBtn ? loopBtn.classList.contains('active') : false;
-                    globalAudio.play().catch(err => sysMsg("Audio blocked."));
-                    playBtn.innerHTML = '⏸'; currentPlayingBtn = playBtn;
-                    globalAudio.onended = () => { if(!globalAudio.loop) playBtn.innerHTML = '▶'; };
-                    return;
-                }
-
-                // Music Loop
-                const loopBtn = target.closest('.music-loop-btn');
-                if(loopBtn) {
-                    loopBtn.classList.toggle('active');
-                    const id = loopBtn.getAttribute('data-id');
-                    if (currentPlayingBtn && currentPlayingBtn.getAttribute('data-id') === id) { globalAudio.loop = loopBtn.classList.contains('active'); }
-                    return;
-                }
-
-                // Global Game Accept
-                const acceptGlobalBtn = target.closest('.accept-global-game');
-                if(acceptGlobalBtn) {
-                    const inviteId = acceptGlobalBtn.getAttribute('data-invite');
-                    const game = acceptGlobalBtn.getAttribute('data-game');
-                    const fromId = acceptGlobalBtn.getAttribute('data-from');
-                    socket.emit('accept_global_game', { inviteId, game, fromId });
-                    return;
-                }
-
-                // 1v1 Game Accept
-                const acceptGameBtn = target.closest('.accept-1v1-game');
-                if(acceptGameBtn) {
-                    acceptGameBtn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); font-size:0.8rem; margin-left:5px;'>(Accepted)</span>"; 
-                    const game = acceptGameBtn.getAttribute('data-game');
-                    socket.emit('game_action', { type: 'accept', game: game }); startGame(game, false);
-                    return;
-                }
-
-                // Extend Accept
-                const acceptExtBtn = target.closest('.accept-extend');
-                if(acceptExtBtn) {
-                    acceptExtBtn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); margin-left:10px; font-size:0.8rem;'>(Accepted)</span>"; socket.emit('accept_extend');
-                    return;
-                }
-
-                // Invite Private
-                const invitePrivBtn = target.closest('.invite-private-btn');
-                if(invitePrivBtn) {
-                    const targetAlias = invitePrivBtn.getAttribute('data-target');
-                    sysMsg(`Sent private request to ${targetAlias}.`);
-                    socket.emit('invite_private', targetAlias);
-                    return;
-                }
-
-                // Open Sheet (3 dots or Bubble click)
-                const dotsBtn = target.closest('.dots-btn');
-                const bubbleBtn = target.closest('.bubble');
-                if(dotsBtn) { openSheet(dotsBtn.getAttribute('data-id')); return; }
-                if(bubbleBtn && !target.closest('button')) { openSheet(bubbleBtn.getAttribute('data-id')); return; }
-            });
-
-            // 11. PRIVATE INVITE OVERLAY LOGIC
+            // 10. PRIVATE ROOM LOGIC
             socket.on('private_request', (data) => {
                 if (data.to === myGlobalAlias) {
                     privateInviteData = data;
@@ -1117,12 +1050,7 @@
             });
             declinePrivateBtn.addEventListener('click', () => { privateInviteData = null; privateInviteOverlay.style.display = 'none'; });
 
-            // 12. HELPERS
-            function sysMsg(html) { 
-                const div = document.createElement('div'); div.className = 'system-message gold'; div.innerHTML = html; 
-                chatBox.insertBefore(div, typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; return div; 
-            }
-
+            // 11. CORE HELPERS
             function updateVisualBar(total) {
                 if(currentMax > 10000) return; 
                 let remaining = currentMax - total; let percentage = (remaining / currentMax) * 100; if (percentage < 0) percentage = 0; 
@@ -1140,7 +1068,7 @@
                 typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; clearTimeout(typingTimeoutGlobal); typingTimeoutGlobal = setTimeout(() => typingIndicator.style.display = 'none', 1500); 
             });
 
-            // 13. SHATTER
+            // 12. SHATTER
             socket.on('force_shatter', () => { if(!isCountdownRunning && currentMode !== 'global') startCountdown(); });
             
             function startCountdown() { 
@@ -1159,21 +1087,21 @@
             socket.on('stranger_disconnected', () => { if(!isCountdownRunning && currentMode !== 'global') startCountdown(); });
 
             extendBtn.addEventListener('click', () => { if(extendBtn.innerText.includes("Copied")) return; extendBtn.innerText = "Waiting..."; extendBtn.disabled = true; extendBtn.style.opacity = '0.6'; socket.emit('request_extend'); });
-            socket.on('extend_requested', () => { const reqId = 'ext-' + Date.now(); sysMsg(`Stranger requested +500 chars. <span id="${reqId}"><button class="accept-extend" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(reqId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); });
+            socket.on('extend_requested', () => { const reqId = 'ext-' + Date.now(); sysMsg(`Stranger requested +500 chars. <span id="${reqId}"><button class="accept-extend-btn" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(reqId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); });
             socket.on('extend_accepted', (data) => { currentMax = data.max; usedChars = data.used; actionToast.style.display = 'none'; extendBtn.style.display = 'none'; chatInput.maxLength = currentMax - usedChars; updateVisualBar(usedChars); sysMsg('Extension Granted! <span>+500 characters</span> added.'); });
 
-            // 14. BOTTOM SHEET
+            // 13. BOTTOM SHEET
             function openSheet(id) { activeSheetMsgId = id; sheetOverlay.style.display = 'block'; setTimeout(() => { sheetOverlay.style.opacity = '1'; bottomSheet.style.bottom = '0'; }, 10); }
             function closeSheet() { bottomSheet.style.bottom = '-100%'; sheetOverlay.style.opacity = '0'; setTimeout(() => { sheetOverlay.style.display = 'none'; activeSheetMsgId = null; }, 300); }
             
             sheetOverlay.addEventListener('click', closeSheet);
             closeSheetBtn.addEventListener('click', closeSheet);
-            closeReplyBtn.addEventListener('click', () => cancelReply());
             
             document.querySelectorAll('.sheet-emoji-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    if(!activeSheetMsgId) return;
                     const emoji = e.target.getAttribute('data-emoji');
-                    if(!activeSheetMsgId) return; showReaction(activeSheetMsgId, emoji); socket.emit('react_message', { msgId: activeSheetMsgId, emoji }); closeSheet();
+                    showReaction(activeSheetMsgId, emoji); socket.emit('react_message', { msgId: activeSheetMsgId, emoji }); closeSheet();
                 });
             });
 
@@ -1182,11 +1110,12 @@
 
             function openReply(id) { const msgInfo = messageStore[id]; if(!msgInfo) return; currentReplyTo = { id, text: msgInfo.text, sender: msgInfo.sender }; replyText.innerText = msgInfo.text.length > 30 ? msgInfo.text.substring(0,30) + '...' : msgInfo.text; replyBanner.style.display = 'flex'; chatInput.focus(); }
             function cancelReply() { currentReplyTo = null; replyBanner.style.display = 'none'; replyText.innerText = '...'; }
+            closeReplyBtn.addEventListener('click', cancelReply);
             
             socket.on('receive_reaction', (data) => { showReaction(data.msgId, data.emoji); });
             function showReaction(msgId, emoji) { const badge = document.getElementById(`react-${msgId}`); if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulse 1s ease'; } }
 
-            // 15. GAMES
+            // 14. GAMES
             gameBtn.addEventListener('click', () => { gameMenu.style.display = 'flex'; });
             closeGameMenuBtn.addEventListener('click', () => gameMenu.style.display = 'none');
             closeTttBtn.addEventListener('click', () => tttUi.style.display = 'none');
@@ -1212,7 +1141,7 @@
                 if (data.fromId === socket.id) return; 
                 sysMsg(`
                     <span style="color:var(--neon-cyan)">${data.fromAlias} challenged The Nexus to ${data.game.toUpperCase()}!</span> 
-                    <button class="accept-global-game" data-invite="${data.inviteId}" data-game="${data.game}" data-from="${data.fromId}" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px; font-family:'Outfit';">Accept</button>
+                    <button class="accept-global-btn" data-invite="${data.inviteId}" data-game="${data.game}" data-from="${data.fromId}" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px; font-family:'Outfit';">Accept</button>
                 `);
             });
 
@@ -1220,19 +1149,19 @@
             
             socket.on('game_action', (data) => {
                 if(currentMode === 'global') return;
-                if (data.type === 'invite') { const inviteId = 'inv-' + Date.now(); sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <span id="${inviteId}"><button class="accept-1v1-game" data-game="${data.game}" style="background:var(--neon-cyan); border:none; border-radius:5px; padding:3px 8px; cursor:pointer; color:#000; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(inviteId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); } 
+                if (data.type === 'invite') { const inviteId = 'inv-' + Date.now(); sysMsg(`Stranger wants to play ${data.game.toUpperCase()}. <span id="${inviteId}"><button class="accept-1v1-btn" data-game="${data.game}" style="background:var(--neon-cyan); border:none; border-radius:5px; padding:3px 8px; cursor:pointer; color:#000; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(inviteId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); } 
                 else if (data.type === 'accept') { startGame(data.game, true); } 
                 else if (data.type === 'rps_move') { resolveRPS(data.move); } 
                 else if (data.type === 'ttt_move') { receiveTTT(data.index); }
                 else if (data.type === 'c4_move') { receiveC4(data.col); }
             });
-
+            
             function startGame(gameType, isPlayer1) {
                 if (gameType === 'rps') { myRPS = null; strangerRPS = null; document.getElementById('rps-status').innerText = ""; document.getElementById('rps-ui').style.display = 'flex'; } 
                 else if (gameType === 'ttt') { initTTT(isPlayer1); } else if (gameType === 'c4') { initC4(isPlayer1); }
             }
 
-            // RPS Handlers
+            // RPS
             let myRPS = null, strangerRPS = null;
             document.getElementById('rps-rock').addEventListener('click', () => playRPS('Rock'));
             document.getElementById('rps-paper').addEventListener('click', () => playRPS('Paper'));
@@ -1242,14 +1171,9 @@
             function resolveRPS(strangerMove) { strangerRPS = strangerMove; if (myRPS) checkRPSWin(); }
             function checkRPSWin() { document.getElementById('rps-ui').style.display = 'none'; let res = "You Tied!"; if ((myRPS==='Rock' && strangerRPS==='Scissors') || (myRPS==='Paper' && strangerRPS==='Rock') || (myRPS==='Scissors' && strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>"; else if (myRPS !== strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>"; sysMsg(`RPS: You (${myRPS}) vs Opponent (${strangerRPS}). <b>${res}</b>`); }
 
-            // TTT Handlers
+            // TTT
             let tttBoard = [], mySymbol = '', myTurn = false;
-            document.getElementById('ttt-board').addEventListener('click', (e) => {
-                if(e.target.classList.contains('ttt-cell')) {
-                    const idx = e.target.getAttribute('data-idx');
-                    playTTT(idx);
-                }
-            });
+            document.getElementById('ttt-board').addEventListener('click', (e) => { if(e.target.classList.contains('ttt-cell')) { playTTT(e.target.getAttribute('data-idx')); } });
 
             function initTTT(isPlayer1) { tttBoard = Array(9).fill(''); mySymbol = isPlayer1 ? 'X' : 'O'; myTurn = isPlayer1; document.getElementById('ttt-status').innerText = myTurn ? "Your Turn (" + mySymbol + ")" : "Opponent's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); tttUi.style.display = 'flex'; }
             function playTTT(index) { if (!myTurn || tttBoard[index] !== '') return; makeTTTMove(index, mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); myTurn = false; document.getElementById('ttt-status').innerText = "Opponent's Turn"; };
@@ -1257,7 +1181,7 @@
             function makeTTTMove(index, symbol) { tttBoard[index] = symbol; const cells = document.querySelectorAll('.ttt-cell'); cells[index].innerText = symbol; cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)'; checkTTTWin(); }
             function checkTTTWin() { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null; wins.forEach(w => { if(tttBoard[w[0]] && tttBoard[w[0]]===tttBoard[w[1]] && tttBoard[w[0]]===tttBoard[w[2]]) winner = tttBoard[w[0]]; }); if (winner) { tttUi.style.display = 'none'; sysMsg(`Tic Tac Toe: <b>${winner === mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); } else if (!tttBoard.includes('')) { tttUi.style.display = 'none'; sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); } }
 
-            // C4 Handlers
+            // C4
             let c4Board = [], myC4Symbol = '', myC4Turn = false;
             function initC4(isPlayer1) { c4Board = Array(6).fill().map(()=>Array(7).fill('')); myC4Symbol = isPlayer1 ? 'p1' : 'p2'; myC4Turn = isPlayer1; const boardEl = document.getElementById('c4-board'); boardEl.innerHTML = ''; for(let r=0; r<6; r++) { for(let c=0; c<7; c++) { const cell = document.createElement('div'); cell.className = 'c4-cell'; cell.id = `c4-${r}-${c}`; cell.onclick = () => playC4(c); boardEl.appendChild(cell); } } document.getElementById('c4-status').innerText = myC4Turn ? "Your Turn (" + (myC4Symbol==='p1'?'Cyan':'Gold') + ")" : "Opponent's Turn"; c4Ui.style.display = 'flex'; }
             function playC4(col) { if (!myC4Turn) return; let row = getLowestEmptyRow(col); if (row === -1) return; makeC4Move(row, col, myC4Symbol); socket.emit('game_action', { type: 'c4_move', col: col }); myC4Turn = false; document.getElementById('c4-status').innerText = "Opponent's Turn"; };
@@ -1266,7 +1190,7 @@
             function makeC4Move(row, col, player) { c4Board[row][col] = player; document.getElementById(`c4-${row}-${col}`).classList.add(player); checkC4Win(row, col, player); }
             function checkC4Win(r, c, player) { const dirs = [[0,1], [1,0], [1,1], [1,-1]]; for (let [dr, dc] of dirs) { let count = 1; for(let i=1; i<=3; i++) { let nr = r + dr*i, nc = c + dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } for(let i=1; i<=3; i++) { let nr = r - dr*i, nc = c - dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && c4Board[nr][nc] === player) count++; else break; } if(count >= 4) { c4Ui.style.display = 'none'; sysMsg(`Void Connect: <b>${player === myC4Symbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); return; } } if(c4Board[0].every(cell => cell !== '')) { c4Ui.style.display = 'none'; sysMsg(`Void Connect: <b>It's a Draw!</b>`); } }
 
-            // 16. RATING & VISIBILITY
+            // 15. VISIBILITY & RATINGS
             socket.on('submit_rating', (rating) => {
                 starBtns.forEach(s => { 
                     if(parseInt(s.getAttribute('data-val')) <= rating) { s.classList.add('active'); } 
@@ -1278,6 +1202,7 @@
 
             document.addEventListener("visibilitychange", () => { if (socket.connected) { const status = document.hidden ? 'offline' : 'online'; socket.emit('user_status', status); } });
             socket.on('stranger_status', (status) => { if (!statusDot) return; if (status === 'offline') { statusDot.style.backgroundColor = '#64748b'; statusDot.style.boxShadow = 'none'; } else { statusDot.style.backgroundColor = '#22c55e'; statusDot.style.boxShadow = '0 0 8px #22c55e'; } });
+            
             closeAdminBtn.addEventListener('click', () => { adminUi.style.setProperty('display', 'none', 'important'); });
 
         }); // END DOM CONTENT LOADED
