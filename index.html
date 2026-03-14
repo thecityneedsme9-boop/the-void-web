@@ -539,6 +539,7 @@
             const globalBtn = document.getElementById('global-btn');
             
             const roomTitle = document.getElementById('room-title');
+            const statusDot = document.getElementById('status-dot');
             const themeBtn = document.getElementById('theme-btn');
             const exitBtn = document.getElementById('exit-btn');
             
@@ -905,6 +906,7 @@
             // 8. CHAT SENDING
             sendBtn.addEventListener('click', sendLocalMessage);
             chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !chatInput.disabled) sendLocalMessage(); });
+            chatInput.addEventListener('input', () => { if (currentMode !== 'global') socket.emit('typing'); });
 
             function startGlobalCooldown() {
                 let timeLeft = 10;
