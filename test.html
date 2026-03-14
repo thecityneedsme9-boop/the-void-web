@@ -91,13 +91,12 @@
 
         .disclaimer { margin-top: 20px; font-size: 0.7rem; font-weight: 300; color: #475569; }
 
-        /* === FIXED AUTH UI === */
-        .auth-wrapper { margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        /* Auth UI */
+        .auth-wrapper { margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; position: relative;}
         .auth-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 5px 15px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: 0.2s; }
         .noctyx-trigger { background: none; border: none; color: #3b82f6; font-size: 0.8rem; cursor: pointer; opacity: 0.5; transition: 0.2s;}
         .noctyx-trigger:hover { opacity: 1; text-shadow: 0 0 8px #3b82f6;}
         
-        /* Static positioning so it pushes content down and remains clickable */
         .auth-input-group { display: none; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); width: 100%; animation: fadeIn 0.3s ease;}
         .auth-input { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: white; padding: 10px; border-radius: 8px; font-size: 0.85rem; text-align: center; outline: none; width: 100%; font-family: 'Outfit';}
         .auth-input:focus { border-color: var(--neon-cyan); }
@@ -171,7 +170,6 @@
         #shatter-overlay h2 { font-family: 'Cinzel', serif; color: var(--neon-cyan); font-size: 2.2rem; margin-bottom: 5px; letter-spacing: 2px;}
         #shatter-overlay p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
         
-        /* Ensures rating is visible */
         #rating-box { background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 25px; margin-bottom: 25px; width: 100%; max-width: 250px; z-index: 25;}
         .rating-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .star-container { display: flex; justify-content: center; gap: 8px; direction: row; }
@@ -457,7 +455,7 @@
         </footer>
     </div>
 
-    <div class="game-modal" id="admin-ui" style="justify-content: flex-start; padding-top: 40px;">
+    <div class="game-modal" id="admin-ui" style="justify-content: flex-start; padding-top: 40px !important; z-index: 100000 !important;">
         <button class="close-game" id="close-admin-btn">✖</button>
         <h2 style="font-family:'Cinzel'; color:var(--neon-red); margin-bottom: 15px; font-size: 1.8rem;">SYSTEM ADMIN</h2>
         
@@ -514,6 +512,7 @@
     <div class="game-modal" id="c4-ui">
         <button class="close-game" id="close-c4-btn">✖</button>
         <h2 style="color:var(--neon-cyan); margin-bottom: 10px;">Void Connect</h2>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px; text-align:center; max-width:280px;">Connect 4 orbs horizontally, vertically, or diagonally to win.</p>
         <p id="c4-status" style="color:var(--neon-gold);">Your turn (Cyan)</p>
         <div id="c4-board"></div>
     </div>
@@ -532,81 +531,101 @@
     </div>
 
     <script>
-        // GLOBALS ASSIGNED TO WINDOW TO PREVENT INLINE ONCLICK FAILURES
+        'use strict';
+
+        // 1. GLOBALS
         const IMGBB_API_KEY = "e4920da45c283d4ae48a5ca34df75005"; 
         const socket = io("https://the-void-server.onrender.com"); 
         const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
-        
         window.globalAudio = new Audio();
         window.currentPlayingBtn = null;
+
+        // 3. APP STATE
         window.currentMode = 'lobby'; 
         window.isNoctyx = false;
         window.myGlobalAlias = '';
+        
         window.currentMax = 1500; 
         window.usedChars = 0; 
         window.myCurrentRoom = null; 
         window.isCountdownRunning = false; 
         window.countdownTimer = null; 
+        
         window.globalCharCount = parseInt(sessionStorage.getItem('void_global_chars')) || 0;
         window.lastGlobalSend = parseInt(sessionStorage.getItem('void_global_time')) || 0;
+        
         window.messageStore = {}; 
         window.currentReplyTo = null; 
         window.allAdminMessages = [];
         window.privateInviteData = null;
-        window.typingTimeoutGlobal = null;
-        window.activeSheetMsgId = null;
 
-        // ONLY EXECUTE AFTER DOM IS 100% RENDERED TO PREVENT NULL CRASHES
+        // EXECUTE ONLY WHEN DOM IS READY
         document.addEventListener('DOMContentLoaded', () => {
 
-            // DOM ELEMENT DECLARATIONS
             const lobbyScreen = document.getElementById('lobby-screen');
             const chatScreen = document.getElementById('chat-screen');
+            
             const activeUsersCount = document.getElementById('active-users-count');
             const vanishedCount = document.getElementById('vanished-count');
+            
             const adminLoginBtn = document.getElementById('admin-login-btn');
             const adminAuthGroup = document.getElementById('admin-auth-group');
             const adminPassInput = document.getElementById('admin-pass-input');
             const adminSubmit = document.getElementById('admin-submit');
+            
             const noctyxTriggerBtn = document.getElementById('noctyx-trigger-btn');
             const noctyxAuthGroup = document.getElementById('noctyx-auth-group');
             const nxUser = document.getElementById('nx-user');
             const nxPass = document.getElementById('nx-pass');
             const nxSubmit = document.getElementById('nx-submit');
+            
             const findBtn = document.getElementById('find-btn');
             const globalBtn = document.getElementById('global-btn');
+            
             const roomTitle = document.getElementById('room-title');
             const statusDot = document.getElementById('status-dot');
             const themeBtn = document.getElementById('theme-btn');
             const exitBtn = document.getElementById('exit-btn');
+            
             const progressWrapper = document.getElementById('progress-wrapper');
             const charBar = document.getElementById('char-bar');
             const chatBox = document.getElementById('chat-box');
             const typingIndicator = document.getElementById('typing-indicator');
+            
             const chatInput = document.getElementById('chat-input');
             const sendBtn = document.getElementById('send-btn');
+            const gameBtn = document.getElementById('game-btn');
+            const photoBtn = document.getElementById('photo-btn');
             const imageInput = document.getElementById('image-input');
+            const musicBtn = document.getElementById('music-btn');
+            
             const musicSearchContainer = document.getElementById('music-search-container');
             const musicSearchInput = document.getElementById('music-search-input');
             const musicResults = document.getElementById('music-results');
+            
             const actionToast = document.getElementById('action-toast');
             const extendBtn = document.getElementById('extend-btn');
             const countdownText = document.getElementById('countdown-text');
             const shatterOverlay = document.getElementById('shatter-overlay');
             const returnLobbyBtn = document.getElementById('return-lobby-btn');
             const newStrangerBtn = document.getElementById('new-stranger-btn');
+            
             const replyBanner = document.getElementById('reply-banner');
             const replyText = document.getElementById('reply-text');
             const closeReplyBtn = document.getElementById('close-reply');
+            
             const privateInviteOverlay = document.getElementById('private-invite-overlay');
             const privateInviteText = document.getElementById('private-invite-text');
             const acceptPrivateBtn = document.getElementById('accept-private-btn');
             const declinePrivateBtn = document.getElementById('decline-private-btn');
+
             const sheetOverlay = document.getElementById('sheet-overlay');
             const bottomSheet = document.getElementById('bottom-sheet');
             const closeSheetBtn = document.getElementById('close-sheet-btn');
+
             const adminUi = document.getElementById('admin-ui');
             const closeAdminBtn = document.getElementById('close-admin-btn');
+            
             const gameMenu = document.getElementById('game-menu');
             const closeGameMenuBtn = document.getElementById('close-game-menu-btn');
             const tttUi = document.getElementById('ttt-ui');
@@ -616,7 +635,7 @@
             const starBtns = document.querySelectorAll('.star-btn');
             const ratingThanks = document.getElementById('rating-thanks');
 
-            // 1. PWA SETUP
+            // 4. PWA SETUP
             if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
             let deferredPrompt;
             const installBtn = document.getElementById('install-btn');
@@ -635,7 +654,7 @@
                 });
             }
 
-            // 2. LOBBY & AUTH
+            // 5. EVENT LISTENERS: AUTH & LOBBY
             adminLoginBtn.addEventListener('click', () => {
                 noctyxAuthGroup.style.display = 'none';
                 adminAuthGroup.style.display = adminAuthGroup.style.display === 'flex' ? 'none' : 'flex';
@@ -688,7 +707,7 @@
             returnLobbyBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
             newStrangerBtn.addEventListener('click', () => { socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
 
-            // 3. SOCKET CORE EVENTS
+            // 6. SOCKET EVENTS: CORE & STATS
             socket.on('connect', () => { 
                 if (statusDot && chatScreen.style.display === 'flex') { 
                     statusDot.style.backgroundColor = '#22c55e'; 
@@ -717,6 +736,94 @@
             socket.on('auth_failed', () => { alert("Authorization Denied."); });
             socket.on('admin_error', () => { alert("Admin Access Denied."); });
 
+            socket.on('admin_dashboard', (data) => {
+                document.getElementById('ad-total').innerText = data.totalUsers; 
+                document.getElementById('ad-wait').innerText = data.waitingUsers; 
+                document.getElementById('ad-rooms').innerText = data.activeRooms; 
+                document.getElementById('ad-vanish').innerText = data.totalVanished;
+                
+                window.knownRooms = new Set(); 
+                document.getElementById('admin-room-list').innerHTML = ''; 
+                document.getElementById('spy-container').innerHTML = ''; 
+                window.allAdminMessages = []; 
+                adminUi.style.setProperty('display', 'flex', 'important'); 
+            });
+
+            document.getElementById('view-global-btn').addEventListener('click', () => { 
+                window.lockedRoomId = null; 
+                document.getElementById('spy-header-text').innerHTML = '<div class="dot" style="width:6px; height:6px;"></div> Global Feed'; 
+                document.getElementById('spy-header-text').style.color = 'var(--neon-gold)'; 
+                window.renderAdminFeed(); 
+            });
+
+            socket.on('spy_feed', (data) => {
+                data.timestamp = Date.now(); 
+                window.allAdminMessages.push(data);
+                
+                if (!window.knownRooms) window.knownRooms = new Set();
+
+                if (!window.knownRooms.has(data.roomId)) {
+                    window.knownRooms.add(data.roomId);
+                    const roomBtn = document.createElement('button'); 
+                    roomBtn.innerText = data.roomId === 'The Nexus' ? 'The Nexus' : "Room " + window.knownRooms.size; 
+                    roomBtn.style.cssText = "background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; text-align: left; font-family: 'Outfit'; margin-bottom: 5px;";
+                    
+                    roomBtn.addEventListener('click', () => { 
+                        window.lockedRoomId = data.roomId; 
+                        document.getElementById('spy-header-text').innerHTML = `<div class="dot" style="width:6px; height:6px; background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red);"></div> ${roomBtn.innerText}`; 
+                        document.getElementById('spy-header-text').style.color = 'var(--neon-red)'; 
+                        window.renderAdminFeed(); 
+                    });
+                    
+                    document.getElementById('admin-room-list').appendChild(roomBtn);
+                }
+                if (!window.lockedRoomId || window.lockedRoomId === data.roomId) {
+                    window.appendAdminMessage(data);
+                }
+            });
+
+            window.renderAdminFeed = function() { 
+                document.getElementById('spy-container').innerHTML = ''; 
+                const filteredMsgs = window.lockedRoomId ? window.allAdminMessages.filter(m => m.roomId === window.lockedRoomId) : window.allAdminMessages; 
+                filteredMsgs.forEach(m => window.appendAdminMessage(m)); 
+            }
+
+            window.appendAdminMessage = function(data) {
+                const entry = document.createElement('div');
+                entry.style.cssText = "font-size: 0.85rem; color: #e2e8f0; background: rgba(255,255,255,0.04); padding: 10px; border-radius: 8px; border-left: 3px solid var(--neon-cyan); line-height: 1.4; animation: slideUp 0.2s ease;";
+                const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                entry.innerHTML = `[${time}] 💬 ` + data.text;
+                
+                if (data.type === 'image' && data.url) {
+                    entry.innerHTML += `<br>`;
+                    const img = document.createElement('img'); 
+                    img.src = data.url;
+                    img.style.cssText = "max-width: 150px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--glass-border);";
+                    img.onload = () => { 
+                        const spyCont = document.getElementById('spy-container'); 
+                        spyCont.scrollTop = spyCont.scrollHeight; 
+                    };
+                    entry.appendChild(img);
+                } else if (data.type === 'music' && data.url) {
+                    entry.innerHTML += `
+                        <br>
+                        <div style="display:flex; align-items:center; gap:10px; margin-top:8px; background:rgba(0,0,0,0.5); padding:8px; border-radius:8px; border:1px solid var(--glass-border);">
+                            <img src="${data.cover}" style="width:35px; height:35px; border-radius:4px;">
+                            <div style="flex:1; overflow:hidden;">
+                                <div style="font-size:0.75rem; color:var(--neon-cyan); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.title}</div>
+                                <div style="font-size:0.65rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.artist}</div>
+                            </div>
+                            <audio controls src="${data.url}" style="height:25px; width:130px; border-radius:4px; outline:none;"></audio>
+                        </div>`;
+                }
+                
+                document.getElementById('spy-container').prepend(entry); 
+                if (document.getElementById('spy-container').childNodes.length > 1000) {
+                    document.getElementById('spy-container').removeChild(document.getElementById('spy-container').lastChild);
+                }
+            }
+
             socket.on('global_joined', (data) => { window.myGlobalAlias = data.alias; });
 
             socket.on('match_found', (data) => { 
@@ -738,6 +845,7 @@
                     } else {
                         roomTitle.innerHTML = `Stranger <span id="stranger-flag">${data.flag || '🇧🇩'}</span>`;
                     }
+                    if (data.karma) document.getElementById('stranger-karma').innerText = data.karma;
                     window.currentMax = data.isInfinite ? 9999999 : 1500;
                     window.sysMsg(data.isInfinite ? "<span style='color:var(--neon-red)'>God Mode Activated. Limits removed.</span>" : "A stranger appeared. 1500 chars.");
                 }
@@ -755,7 +863,7 @@
                 });
             });
 
-            // 4. IMAGE UPLOAD
+            // 7. IMAGE UPLOAD LOGIC
             let localPhotoCount2 = parseInt(localStorage.getItem('void_daily_photos')) || 0;
             const lastPhotoDate2 = localStorage.getItem('void_photo_date');
             if (lastPhotoDate2 !== new Date().toDateString()) { 
@@ -764,6 +872,8 @@
                 localStorage.setItem('void_daily_photos', 0); 
             }
 
+            photoBtn.addEventListener('click', () => { window.clickPhotoBtn(); });
+            
             window.clickPhotoBtn = function() {
                 if (localPhotoCount2 >= 20 && !window.isNoctyx) { window.sysMsg("⚠️ VOID ERROR: Daily photo limit (20) reached."); return; }
                 imageInput.click();
@@ -813,7 +923,9 @@
                 chatInput.placeholder = originalPlaceholder; chatInput.disabled = false; sendBtn.style.pointerEvents = 'auto'; sendBtn.style.opacity = '1'; imageInput.value = ''; 
             });
 
-            // 5. MUSIC SEARCH
+            // 8. MUSIC SEARCH LOGIC
+            musicBtn.addEventListener('click', () => { window.toggleMusicSearch(); });
+            
             window.toggleMusicSearch = function() {
                 if(musicSearchContainer.style.display === 'block') { musicSearchContainer.style.display = 'none'; } 
                 else { musicSearchContainer.style.display = 'block'; musicSearchInput.focus(); }
@@ -876,7 +988,7 @@
                 window.cancelReply();
             }
 
-            // 6. MESSAGE SENDING
+            // 9. MESSAGE SENDING
             sendBtn.addEventListener('click', sendLocalMessage);
             chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !chatInput.disabled) sendLocalMessage(); });
 
@@ -924,6 +1036,7 @@
                 window.cancelReply();
             }
 
+            // 10. INCOMING MESSAGES
             socket.on('receive_message', (msgObj) => { 
                 if (msgObj.system) { window.sysMsg(msgObj.text); return; }
                 typingIndicator.style.display = 'none'; 
@@ -945,41 +1058,7 @@
                 }
             });
 
-            // 7. CORE UI FUNCTIONS ATTACHED TO WINDOW
-            window.sysMsg = function(html) { 
-                const div = document.createElement('div'); 
-                div.className = 'system-message gold'; 
-                div.innerHTML = html; 
-                chatBox.insertBefore(div, typingIndicator); 
-                chatBox.scrollTop = chatBox.scrollHeight; 
-                return div; 
-            }
-
-            window.updateVisualBar = function(total) {
-                if(window.currentMax > 10000) return; 
-                let remaining = window.currentMax - total; 
-                let percentage = (remaining / window.currentMax) * 100; 
-                if (percentage < 0) percentage = 0; 
-                charBar.style.width = `${percentage}%`;
-                
-                if (remaining <= 0) { 
-                    chatInput.disabled = true; 
-                    chatInput.maxLength = remaining; 
-                }
-                if (remaining <= 300 && window.currentMax === 1500 && !window.isCountdownRunning && total > 0) { 
-                    actionToast.style.display = 'block'; 
-                    extendBtn.style.display = 'inline-block'; 
-                    countdownText.style.display = 'none'; 
-                }
-                if (percentage < 20) { 
-                    charBar.style.backgroundColor = 'var(--neon-red)'; 
-                    charBar.style.boxShadow = '0 0 10px var(--neon-red)'; 
-                } else { 
-                    charBar.style.backgroundColor = 'var(--neon-cyan)'; 
-                    charBar.style.boxShadow = '0 0 10px var(--neon-cyan)'; 
-                }
-            }
-
+            // 11. UI RENDERER
             window.appendMessageUI = function(msgData, type, isGlobal = false) {
                 const msgId = msgData.id || 'msg_' + Date.now() + Math.floor(Math.random()*1000);
                 if (window.messageStore[msgId] && (msgData.type === 'image' || msgData.type === 'music')) return;
@@ -1072,33 +1151,7 @@
                 });
             }
 
-            socket.on('sync_chars', (data) => { 
-                if(window.currentMode !== 'global') { window.currentMax = data.max; window.usedChars = data.used; window.updateVisualBar(window.usedChars); }
-            });
-
-            socket.on('typing', () => { 
-                if (window.currentMode === 'global') return;
-                typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; clearTimeout(window.typingTimeoutGlobal); window.typingTimeoutGlobal = setTimeout(() => typingIndicator.style.display = 'none', 1500); 
-            });
-
-            // 8. MEDIA PLAYERS
-            window.playVoidMusic = function(url, btnId) {
-                const btn = document.getElementById('play-' + btnId);
-                const loopBtn = document.getElementById('loop-' + btnId);
-                if (window.globalAudio.src === url && !window.globalAudio.paused) { window.globalAudio.pause(); btn.innerHTML = '▶'; return; }
-                if (window.currentPlayingBtn) window.currentPlayingBtn.innerHTML = '▶';
-                window.globalAudio.src = url; window.globalAudio.loop = loopBtn.classList.contains('active');
-                window.globalAudio.play().catch(e => window.sysMsg("Audio blocked."));
-                btn.innerHTML = '⏸'; window.currentPlayingBtn = btn;
-                window.globalAudio.onended = () => { if(!window.globalAudio.loop) btn.innerHTML = '▶'; };
-            };
-
-            window.toggleLoop = function(btnId) {
-                const btn = document.getElementById('loop-' + btnId); btn.classList.toggle('active');
-                if (window.currentPlayingBtn && window.currentPlayingBtn.id === 'play-' + btnId) { window.globalAudio.loop = btn.classList.contains('active'); }
-            };
-
-            // 9. PRIVATE INVITES
+            // 12. PRIVATE ROOM LOGIC
             window.sendPrivateInvite = function(targetAlias) {
                 window.sysMsg(`Sent private request to ${targetAlias}.`);
                 socket.emit('invite_private', targetAlias);
@@ -1118,12 +1171,52 @@
                     privateInviteOverlay.style.display = 'none';
                 }
             });
+            
             declinePrivateBtn.addEventListener('click', () => {
                 window.privateInviteData = null;
                 privateInviteOverlay.style.display = 'none';
             });
 
-            // 10. SHATTER & EXTEND
+            // 13. MEDIA PLAYBACK
+            window.playVoidMusic = function(url, btnId) {
+                const btn = document.getElementById('play-' + btnId);
+                const loopBtn = document.getElementById('loop-' + btnId);
+                if (window.globalAudio.src === url && !window.globalAudio.paused) { window.globalAudio.pause(); btn.innerHTML = '▶'; return; }
+                if (window.currentPlayingBtn) window.currentPlayingBtn.innerHTML = '▶';
+                window.globalAudio.src = url; window.globalAudio.loop = loopBtn.classList.contains('active');
+                window.globalAudio.play().catch(e => window.sysMsg("Audio blocked."));
+                btn.innerHTML = '⏸'; window.currentPlayingBtn = btn;
+                window.globalAudio.onended = () => { if(!window.globalAudio.loop) btn.innerHTML = '▶'; };
+            };
+
+            window.toggleLoop = function(btnId) {
+                const btn = document.getElementById('loop-' + btnId); btn.classList.toggle('active');
+                if (window.currentPlayingBtn && window.currentPlayingBtn.id === 'play-' + btnId) { window.globalAudio.loop = btn.classList.contains('active'); }
+            };
+
+            // 14. CORE HELPERS
+            window.updateVisualBar = function(total) {
+                if(window.currentMax > 10000) return; 
+                let remaining = window.currentMax - total; 
+                let percentage = (remaining / window.currentMax) * 100; 
+                if (percentage < 0) percentage = 0; 
+                charBar.style.width = `${percentage}%`;
+                if (remaining <= 0) { chatInput.disabled = true; chatInput.maxLength = remaining; }
+                if (remaining <= 300 && window.currentMax === 1500 && !window.isCountdownRunning && total > 0) { actionToast.style.display = 'block'; extendBtn.style.display = 'inline-block'; countdownText.style.display = 'none'; }
+                if (percentage < 20) { charBar.style.backgroundColor = 'var(--neon-red)'; charBar.style.boxShadow = '0 0 10px var(--neon-red)'; } 
+                else { charBar.style.backgroundColor = 'var(--neon-cyan)'; charBar.style.boxShadow = '0 0 10px var(--neon-cyan)'; }
+            }
+
+            socket.on('sync_chars', (data) => { 
+                if(window.currentMode !== 'global') { window.currentMax = data.max; window.usedChars = data.used; window.updateVisualBar(window.usedChars); }
+            });
+
+            socket.on('typing', () => { 
+                if (window.currentMode === 'global') return;
+                typingIndicator.style.display = 'flex'; chatBox.appendChild(typingIndicator); chatBox.scrollTop = chatBox.scrollHeight; clearTimeout(window.typingTimeoutGlobal); window.typingTimeoutGlobal = setTimeout(() => typingIndicator.style.display = 'none', 1500); 
+            });
+
+            // 15. SHATTER
             socket.on('force_shatter', () => { if(!window.isCountdownRunning && window.currentMode !== 'global') window.startCountdown(); });
             
             window.startCountdown = function() { 
@@ -1141,12 +1234,7 @@
             
             socket.on('stranger_disconnected', () => { if(!window.isCountdownRunning && window.currentMode !== 'global') window.startCountdown(); });
 
-            extendBtn.addEventListener('click', () => { if(extendBtn.innerText.includes("Copied")) return; extendBtn.innerText = "Waiting..."; extendBtn.disabled = true; extendBtn.style.opacity = '0.6'; socket.emit('request_extend'); });
-            socket.on('extend_requested', () => { const reqId = 'ext-' + Date.now(); window.sysMsg(`Stranger requested +500 chars. <span id="${reqId}"><button onclick="window.acceptExtend(this)" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(reqId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); });
-            window.acceptExtend = function(btn) { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); margin-left:10px; font-size:0.8rem;'>(Accepted)</span>"; socket.emit('accept_extend'); }
-            socket.on('extend_accepted', (data) => { window.currentMax = data.max; window.usedChars = data.used; actionToast.style.display = 'none'; extendBtn.style.display = 'none'; chatInput.maxLength = window.currentMax - window.usedChars; window.updateVisualBar(window.usedChars); window.sysMsg('Extension Granted! <span>+500 characters</span> added.'); });
-
-            // 11. BOTTOM SHEET
+            // 16. BOTTOM SHEET
             window.openSheet = function(id) { window.activeSheetMsgId = id; sheetOverlay.style.display = 'block'; setTimeout(() => { sheetOverlay.style.opacity = '1'; bottomSheet.style.bottom = '0'; }, 10); }
             window.closeSheet = function() { bottomSheet.style.bottom = '-100%'; sheetOverlay.style.opacity = '0'; setTimeout(() => { sheetOverlay.style.display = 'none'; window.activeSheetMsgId = null; }, 300); }
             
@@ -1163,17 +1251,40 @@
             socket.on('receive_reaction', (data) => { window.showReaction(data.msgId, data.emoji); });
             window.showReaction = function(msgId, emoji) { const badge = document.getElementById(`react-${msgId}`); if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulse 1s ease'; } }
 
-            // 12. GAMES
-            window.openGameMenu = function() {
-                if(window.currentMode === 'global') { window.sysMsg("<span style='color:var(--neon-gold)'>Retreat to a private void to play games.</span>"); return; }
-                gameMenu.style.display = 'flex';
-            }
-
+            // 17. GAMES (First to Strike Engine)
+            window.openGameMenu = function() { gameMenu.style.display = 'flex'; }
+            
             closeGameMenuBtn.addEventListener('click', () => gameMenu.style.display = 'none');
             closeTttBtn.addEventListener('click', () => tttUi.style.display = 'none');
             closeC4Btn.addEventListener('click', () => c4Ui.style.display = 'none');
 
-            window.inviteGame = function(gameType) { gameMenu.style.display = 'none'; window.sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); socket.emit('game_action', { type: 'invite', game: gameType }); };
+            window.inviteGame = function(gameType) { 
+                gameMenu.style.display = 'none'; 
+                if (window.currentMode === 'global') {
+                    const inviteId = 'inv-' + Date.now();
+                    socket.emit('game_invite_global', { game: gameType, inviteId: inviteId });
+                    window.sysMsg(`You challenged The Nexus to ${gameType.toUpperCase()}. Waiting for a node...`);
+                } else {
+                    window.sysMsg(`You invited stranger to play ${gameType.toUpperCase()}.`); 
+                    socket.emit('game_action', { type: 'invite', game: gameType }); 
+                }
+            };
+            
+            socket.on('global_game_invite', (data) => {
+                if (data.fromId === socket.id) return; 
+                window.sysMsg(`
+                    <span style="color:var(--neon-cyan)">${data.fromAlias} challenged The Nexus to ${data.game.toUpperCase()}!</span> 
+                    <button onclick="window.acceptGlobalGame('${data.inviteId}', '${data.game}', '${data.fromId}')" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px; font-family:'Outfit';">Accept</button>
+                `);
+            });
+
+            window.acceptGlobalGame = function(inviteId, game, fromId) {
+                socket.emit('accept_global_game', { inviteId, game, fromId });
+            }
+
+            socket.on('start_game_directly', (data) => {
+                window.startGame(data.game, data.isPlayer1);
+            });
             
             socket.on('game_action', (data) => {
                 if(window.currentMode === 'global') return;
@@ -1191,24 +1302,28 @@
                 else if (gameType === 'ttt') { window.initTTT(isPlayer1); } else if (gameType === 'c4') { window.initC4(isPlayer1); }
             }
 
-            window.playRPS = function(move) { window.myRPS = move; document.getElementById('rps-status').innerText = "Waiting for stranger..."; socket.emit('game_action', { type: 'rps_move', move: move }); if (window.strangerRPS) window.checkRPSWin(); };
+            window.playRPS = function(move) { window.myRPS = move; document.getElementById('rps-status').innerText = "Waiting for opponent..."; socket.emit('game_action', { type: 'rps_move', move: move }); if (window.strangerRPS) window.checkRPSWin(); };
             window.resolveRPS = function(strangerMove) { window.strangerRPS = strangerMove; if (window.myRPS) window.checkRPSWin(); }
-            window.checkRPSWin = function() { document.getElementById('rps-ui').style.display = 'none'; let res = "You Tied!"; if ((window.myRPS==='Rock' && window.strangerRPS==='Scissors') || (window.myRPS==='Paper' && window.strangerRPS==='Rock') || (window.myRPS==='Scissors' && window.strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>"; else if (window.myRPS !== window.strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>"; window.sysMsg(`RPS: You (${window.myRPS}) vs Stranger (${window.strangerRPS}). <b>${res}</b>`); }
+            window.checkRPSWin = function() { document.getElementById('rps-ui').style.display = 'none'; let res = "You Tied!"; if ((window.myRPS==='Rock' && window.strangerRPS==='Scissors') || (window.myRPS==='Paper' && window.strangerRPS==='Rock') || (window.myRPS==='Scissors' && window.strangerRPS==='Paper')) res = "<span style='color:var(--neon-cyan)'>You Won!</span>"; else if (window.myRPS !== window.strangerRPS) res = "<span style='color:var(--neon-red)'>You Lost!</span>"; window.sysMsg(`RPS: You (${window.myRPS}) vs Opponent (${window.strangerRPS}). <b>${res}</b>`); }
 
-            window.initTTT = function(isPlayer1) { window.tttBoard = Array(9).fill(''); window.mySymbol = isPlayer1 ? 'X' : 'O'; window.myTurn = isPlayer1; document.getElementById('ttt-status').innerText = window.myTurn ? "Your Turn (" + window.mySymbol + ")" : "Stranger's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); tttUi.style.display = 'flex'; }
-            window.playTTT = function(index) { if (!window.myTurn || window.tttBoard[index] !== '') return; window.makeTTTMove(index, window.mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); window.myTurn = false; document.getElementById('ttt-status').innerText = "Stranger's Turn"; };
+            window.initTTT = function(isPlayer1) { window.tttBoard = Array(9).fill(''); window.mySymbol = isPlayer1 ? 'X' : 'O'; window.myTurn = isPlayer1; document.getElementById('ttt-status').innerText = window.myTurn ? "Your Turn (" + window.mySymbol + ")" : "Opponent's Turn"; document.querySelectorAll('.ttt-cell').forEach(c => { c.innerText = ''; c.style.color = 'white'; }); tttUi.style.display = 'flex'; }
+            window.playTTT = function(index) { if (!window.myTurn || window.tttBoard[index] !== '') return; window.makeTTTMove(index, window.mySymbol); socket.emit('game_action', { type: 'ttt_move', index: index }); window.myTurn = false; document.getElementById('ttt-status').innerText = "Opponent's Turn"; };
             window.receiveTTT = function(index) { window.makeTTTMove(index, window.mySymbol === 'X' ? 'O' : 'X'); window.myTurn = true; document.getElementById('ttt-status').innerText = "Your Turn (" + window.mySymbol + ")"; }
             window.makeTTTMove = function(index, symbol) { window.tttBoard[index] = symbol; const cells = document.querySelectorAll('.ttt-cell'); cells[index].innerText = symbol; cells[index].style.color = symbol === 'X' ? 'var(--neon-cyan)' : 'var(--neon-gold)'; window.checkTTTWin(); }
-            window.checkTTTWin = function() { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null; wins.forEach(w => { if(window.tttBoard[w[0]] && window.tttBoard[w[0]]===window.tttBoard[w[1]] && window.tttBoard[w[0]]===window.tttBoard[w[2]]) winner = window.tttBoard[w[0]]; }); if (winner) { tttUi.style.display = 'none'; window.sysMsg(`Tic Tac Toe: <b>${winner === window.mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); } else if (!window.tttBoard.includes('')) { tttUi.style.display = 'none'; window.sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); } }
+            window.checkTTTWin = function() { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; let winner = null; wins.forEach(w => { if(window.tttBoard[w[0]] && window.tttBoard[w[0]]===window.tttBoard[w[1]] && window.tttBoard[w[0]]===window.tttBoard[w[2]]) winner = window.tttBoard[w[0]]; }); if (winner) { tttUi.style.display = 'none'; window.sysMsg(`Tic Tac Toe: <b>${winner === window.mySymbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); } else if (!window.tttBoard.includes('')) { tttUi.style.display = 'none'; window.sysMsg(`Tic Tac Toe: <b>It's a Draw!</b>`); } }
 
-            window.initC4 = function(isPlayer1) { window.c4Board = Array(6).fill().map(()=>Array(7).fill('')); window.myC4Symbol = isPlayer1 ? 'p1' : 'p2'; window.myC4Turn = isPlayer1; const boardEl = document.getElementById('c4-board'); boardEl.innerHTML = ''; for(let r=0; r<6; r++) { for(let c=0; c<7; c++) { const cell = document.createElement('div'); cell.className = 'c4-cell'; cell.id = `c4-${r}-${c}`; cell.onclick = () => window.playC4(c); boardEl.appendChild(cell); } } document.getElementById('c4-status').innerText = window.myC4Turn ? "Your Turn (" + (window.myC4Symbol==='p1'?'Cyan':'Gold') + ")" : "Stranger's Turn"; c4Ui.style.display = 'flex'; }
-            window.playC4 = function(col) { if (!window.myC4Turn) return; let row = window.getLowestEmptyRow(col); if (row === -1) return; window.makeC4Move(row, col, window.myC4Symbol); socket.emit('game_action', { type: 'c4_move', col: col }); window.myC4Turn = false; document.getElementById('c4-status').innerText = "Stranger's Turn"; };
+            window.initC4 = function(isPlayer1) { window.c4Board = Array(6).fill().map(()=>Array(7).fill('')); window.myC4Symbol = isPlayer1 ? 'p1' : 'p2'; window.myC4Turn = isPlayer1; const boardEl = document.getElementById('c4-board'); boardEl.innerHTML = ''; for(let r=0; r<6; r++) { for(let c=0; c<7; c++) { const cell = document.createElement('div'); cell.className = 'c4-cell'; cell.id = `c4-${r}-${c}`; cell.onclick = () => window.playC4(c); boardEl.appendChild(cell); } } document.getElementById('c4-status').innerText = window.myC4Turn ? "Your Turn (" + (window.myC4Symbol==='p1'?'Cyan':'Gold') + ")" : "Opponent's Turn"; c4Ui.style.display = 'flex'; }
+            window.playC4 = function(col) { if (!window.myC4Turn) return; let row = window.getLowestEmptyRow(col); if (row === -1) return; window.makeC4Move(row, col, window.myC4Symbol); socket.emit('game_action', { type: 'c4_move', col: col }); window.myC4Turn = false; document.getElementById('c4-status').innerText = "Opponent's Turn"; };
             window.receiveC4 = function(col) { let row = window.getLowestEmptyRow(col); if(row === -1) return; window.makeC4Move(row, col, window.myC4Symbol === 'p1' ? 'p2' : 'p1'); window.myC4Turn = true; document.getElementById('c4-status').innerText = "Your Turn (" + (window.myC4Symbol==='p1'?'Cyan':'Gold') + ")"; }
             window.getLowestEmptyRow = function(col) { for(let r=5; r>=0; r--) { if(window.c4Board[r][col] === '') return r; } return -1; }
             window.makeC4Move = function(row, col, player) { window.c4Board[row][col] = player; document.getElementById(`c4-${row}-${col}`).classList.add(player); window.checkC4Win(row, col, player); }
-            window.checkC4Win = function(r, c, player) { const dirs = [[0,1], [1,0], [1,1], [1,-1]]; for (let [dr, dc] of dirs) { let count = 1; for(let i=1; i<=3; i++) { let nr = r + dr*i, nc = c + dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && window.c4Board[nr][nc] === player) count++; else break; } for(let i=1; i<=3; i++) { let nr = r - dr*i, nc = c - dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && window.c4Board[nr][nc] === player) count++; else break; } if(count >= 4) { c4Ui.style.display = 'none'; window.sysMsg(`Void Connect: <b>${player === window.myC4Symbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Stranger Won!</span>'}</b>`); return; } } if(window.c4Board[0].every(cell => cell !== '')) { c4Ui.style.display = 'none'; window.sysMsg(`Void Connect: <b>It's a Draw!</b>`); } }
+            window.checkC4Win = function(r, c, player) { const dirs = [[0,1], [1,0], [1,1], [1,-1]]; for (let [dr, dc] of dirs) { let count = 1; for(let i=1; i<=3; i++) { let nr = r + dr*i, nc = c + dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && window.c4Board[nr][nc] === player) count++; else break; } for(let i=1; i<=3; i++) { let nr = r - dr*i, nc = c - dc*i; if(nr>=0 && nr<6 && nc>=0 && nc<7 && window.c4Board[nr][nc] === player) count++; else break; } if(count >= 4) { c4Ui.style.display = 'none'; window.sysMsg(`Void Connect: <b>${player === window.myC4Symbol ? '<span style="color:var(--neon-cyan)">You Won!</span>' : '<span style="color:var(--neon-red)">Opponent Won!</span>'}</b>`); return; } } if(window.c4Board[0].every(cell => cell !== '')) { c4Ui.style.display = 'none'; window.sysMsg(`Void Connect: <b>It's a Draw!</b>`); } }
 
-            // 13. RATING
+            extendBtn.addEventListener('click', () => { if(extendBtn.innerText.includes("Copied")) return; extendBtn.innerText = "Waiting..."; extendBtn.disabled = true; extendBtn.style.opacity = '0.6'; socket.emit('request_extend'); });
+            socket.on('extend_requested', () => { const reqId = 'ext-' + Date.now(); window.sysMsg(`Stranger requested +500 chars. <span id="${reqId}"><button onclick="window.acceptExtend(this)" style="background:var(--neon-gold); color:#000; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; font-weight:bold; margin-left:10px;">Accept</button></span>`); setTimeout(() => { const span = document.getElementById(reqId); if (span && span.innerHTML.includes('button')) span.innerHTML = "<span style='color:var(--text-muted); font-size:0.7rem; margin-left:5px;'>(Expired)</span>"; }, 30000); });
+            window.acceptExtend = function(btn) { btn.parentElement.innerHTML = "<span style='color:var(--neon-cyan); margin-left:10px; font-size:0.8rem;'>(Accepted)</span>"; socket.emit('accept_extend'); }
+            socket.on('extend_accepted', (data) => { window.currentMax = data.max; window.usedChars = data.used; actionToast.style.display = 'none'; extendBtn.style.display = 'none'; chatInput.maxLength = window.currentMax - window.usedChars; window.updateVisualBar(window.usedChars); window.sysMsg('Extension Granted! <span>+500 characters</span> added.'); });
+
             socket.on('submit_rating', (rating) => {
                 starBtns.forEach(s => { 
                     if(parseInt(s.getAttribute('data-val')) <= rating) { s.classList.add('active'); } 
@@ -1218,12 +1333,12 @@
                 ratingThanks.style.display = 'block';
             });
 
-            // 14. ADMIN PANEL & VISIBILITY
+            // 18. VISIBILITY & ADMIN FIXES
             document.addEventListener("visibilitychange", () => { if (socket.connected) { const status = document.hidden ? 'offline' : 'online'; socket.emit('user_status', status); } });
             socket.on('stranger_status', (status) => { if (!statusDot) return; if (status === 'offline') { statusDot.style.backgroundColor = '#64748b'; statusDot.style.boxShadow = 'none'; } else { statusDot.style.backgroundColor = '#22c55e'; statusDot.style.boxShadow = '0 0 8px #22c55e'; } });
             
-            closeAdminBtn.addEventListener('click', () => { adminUi.style.display = 'none'; });
+            closeAdminBtn.addEventListener('click', () => { adminUi.style.setProperty('display', 'none', 'important'); });
         });
     </script>
 </body>
-</html>
+    </html>
