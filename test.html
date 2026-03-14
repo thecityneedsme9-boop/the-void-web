@@ -63,7 +63,7 @@
 
         /* === LOBBY SCREEN === */
         #lobby-screen { flex: 1; display: flex; justify-content: center; align-items: center; animation: fadeIn 1s ease-in; padding: 20px; overflow-y: auto;}
-        .lobby-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); margin: auto;}
+        .lobby-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); margin: auto; transition: 0.3s;}
 
         .void-portal { width: 90px; height: 90px; margin: 0 auto 20px auto; border-radius: 50%; background: radial-gradient(circle, #000 30%, var(--neon-cyan) 100%); box-shadow: 0 0 25px rgba(6, 182, 212, 0.3), inset 0 0 15px #000; animation: spinPortal 10s linear infinite, pulsePortal 3s ease-in-out infinite alternate; border: 1px solid rgba(6, 182, 212, 0.2); }
         
@@ -91,13 +91,14 @@
 
         .disclaimer { margin-top: 20px; font-size: 0.7rem; font-weight: 300; color: #475569; }
 
-        /* Auth UI */
-        .auth-wrapper { margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; position: relative;}
+        /* === FLAWLESS AUTH UI (DOES NOT PUSH OFF SCREEN) === */
+        .auth-wrapper { margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .auth-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 5px 15px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; font-family: 'Outfit', sans-serif; transition: 0.2s; }
         .noctyx-trigger { background: none; border: none; color: #3b82f6; font-size: 0.8rem; cursor: pointer; opacity: 0.5; transition: 0.2s;}
         .noctyx-trigger:hover { opacity: 1; text-shadow: 0 0 8px #3b82f6;}
         
-        .auth-input-group { display: none; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); width: 100%; animation: fadeIn 0.3s ease;}
+        /* Changed from Absolute to Relative to respect the container boundary */
+        .auth-input-group { display: none; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); width: 100%; position: relative; animation: fadeIn 0.3s ease;}
         .auth-input { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: white; padding: 10px; border-radius: 8px; font-size: 0.85rem; text-align: center; outline: none; width: 100%; font-family: 'Outfit';}
         .auth-input:focus { border-color: var(--neon-cyan); }
         .auth-submit { background: var(--neon-cyan); border: none; color: #000; padding: 10px; border-radius: 8px; cursor: pointer; font-family: 'Outfit'; font-weight: bold; font-size: 0.85rem; width: 100%; transition: 0.2s;}
@@ -270,11 +271,11 @@
 
         #reply-banner { display: none; background: rgba(6, 182, 212, 0.1); border-left: 3px solid var(--neon-cyan); padding: 10px 15px; font-size: 0.85rem; color: var(--text-main); position: absolute; bottom: 100%; left: 0; width: 100%; backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); justify-content: space-between; align-items: center; }
 
-        /* === GAME MODALS === */
-        .game-modal { position: fixed; inset: 0; background: rgba(3,7,18,0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        /* === ADMIN MODAL CSS FIX (ENSURES VISIBILITY) === */
+        .game-modal { position: fixed; inset: 0; background: rgba(3,7,18,0.95); z-index: 100000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .game-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--neon-cyan); color: var(--text-main); padding: 15px 30px; border-radius: 12px; font-size: 1.2rem; cursor: pointer; margin: 10px; width: 80%; max-width: 250px; font-family: 'Outfit'; transition: 0.2s;}
         .game-btn:hover { background: rgba(6, 182, 212, 0.1); }
-        .close-game { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; z-index: 50;}
+        .close-game { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; z-index: 100001;}
         
         #ttt-board { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; margin-top: 20px; }
         .ttt-cell { width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; cursor: pointer; color: white; }
@@ -284,7 +285,6 @@
         .c4-cell.p1 { background: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan); border-color: #fff; }
         .c4-cell.p2 { background: var(--neon-gold); box-shadow: 0 0 15px var(--neon-gold); border-color: #fff; }
 
-        /* === ADMIN UI === */
         .admin-stat { font-size: 1.2rem; color: white; margin: 10px 0; font-family: 'Outfit'; }
         .admin-stat span { color: var(--neon-cyan); font-weight: bold; }
 
@@ -433,16 +433,16 @@
             </div>
             
             <div class="action-group">
-                <button class="icon-btn" id="game-btn" title="Games" onclick="window.openGameMenu()">
+                <button class="icon-btn" id="game-btn" title="Games">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="13" x2="15.01" y2="13"></line><line x1="18" y1="11" x2="18.01" y2="11"></line><rect x="2" y="6" width="20" height="12" rx="2"></rect></svg>
                 </button>
                 
-                <button class="icon-btn" id="music-btn" title="Share Music" onclick="window.toggleMusicSearch()">
+                <button class="icon-btn" id="music-btn" title="Share Music">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
                 </button>
 
                 <input type="file" id="image-input" accept="image/*" style="display:none">
-                <button class="icon-btn" id="photo-btn" title="Send Photo" onclick="window.clickPhotoBtn()">
+                <button class="icon-btn" id="photo-btn" title="Send Photo">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                 </button>
             </div>
@@ -485,9 +485,9 @@
     <div class="game-modal" id="game-menu">
         <button class="close-game" id="close-game-menu-btn">✖</button>
         <h2 style="font-family:'Cinzel'; color:var(--neon-cyan); margin-bottom: 20px;">VOID GAMES</h2>
-        <button class="game-btn" onclick="window.inviteGame('rps')">Rock Paper Scissors</button>
-        <button class="game-btn" onclick="window.inviteGame('ttt')">Tic Tac Toe</button>
-        <button class="game-btn" onclick="window.inviteGame('c4')">Void Connect 4</button>
+        <button class="game-btn" id="launch-rps">Rock Paper Scissors</button>
+        <button class="game-btn" id="launch-ttt">Tic Tac Toe</button>
+        <button class="game-btn" id="launch-c4">Void Connect 4</button>
     </div>
 
     <div class="game-modal" id="rps-ui">
@@ -531,40 +531,36 @@
     </div>
 
     <script>
-        'use strict';
-
-        // 1. GLOBALS
+        // GLOBALS ASSIGNED TO WINDOW FOR INLINE HTML ACCESS
         const IMGBB_API_KEY = "e4920da45c283d4ae48a5ca34df75005"; 
         const socket = io("https://the-void-server.onrender.com"); 
         const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+        
         window.globalAudio = new Audio();
         window.currentPlayingBtn = null;
-
-        // 3. APP STATE
         window.currentMode = 'lobby'; 
         window.isNoctyx = false;
         window.myGlobalAlias = '';
-        
         window.currentMax = 1500; 
         window.usedChars = 0; 
         window.myCurrentRoom = null; 
         window.isCountdownRunning = false; 
         window.countdownTimer = null; 
-        
         window.globalCharCount = parseInt(sessionStorage.getItem('void_global_chars')) || 0;
         window.lastGlobalSend = parseInt(sessionStorage.getItem('void_global_time')) || 0;
-        
         window.messageStore = {}; 
         window.currentReplyTo = null; 
         window.allAdminMessages = [];
         window.privateInviteData = null;
+        window.typingTimeoutGlobal = null;
+        window.activeSheetMsgId = null;
 
-        // EXECUTE ONLY WHEN DOM IS READY
+        // EXECUTE ONLY AFTER DOM IS FULLY RENDERED
         document.addEventListener('DOMContentLoaded', () => {
 
+            // DOM DECLARATIONS
             const lobbyScreen = document.getElementById('lobby-screen');
             const chatScreen = document.getElementById('chat-screen');
-            
             const activeUsersCount = document.getElementById('active-users-count');
             const vanishedCount = document.getElementById('vanished-count');
             
@@ -586,6 +582,7 @@
             const statusDot = document.getElementById('status-dot');
             const themeBtn = document.getElementById('theme-btn');
             const exitBtn = document.getElementById('exit-btn');
+            const strangerKarma = document.getElementById('stranger-karma');
             
             const progressWrapper = document.getElementById('progress-wrapper');
             const charBar = document.getElementById('char-bar');
@@ -609,6 +606,8 @@
             const shatterOverlay = document.getElementById('shatter-overlay');
             const returnLobbyBtn = document.getElementById('return-lobby-btn');
             const newStrangerBtn = document.getElementById('new-stranger-btn');
+            const starBtns = document.querySelectorAll('.star-btn');
+            const ratingThanks = document.getElementById('rating-thanks');
             
             const replyBanner = document.getElementById('reply-banner');
             const replyText = document.getElementById('reply-text');
@@ -628,14 +627,16 @@
             
             const gameMenu = document.getElementById('game-menu');
             const closeGameMenuBtn = document.getElementById('close-game-menu-btn');
+            const launchRps = document.getElementById('launch-rps');
+            const launchTtt = document.getElementById('launch-ttt');
+            const launchC4 = document.getElementById('launch-c4');
+            
             const tttUi = document.getElementById('ttt-ui');
             const closeTttBtn = document.getElementById('close-ttt-btn');
             const c4Ui = document.getElementById('c4-ui');
             const closeC4Btn = document.getElementById('close-c4-btn');
-            const starBtns = document.querySelectorAll('.star-btn');
-            const ratingThanks = document.getElementById('rating-thanks');
 
-            // 4. PWA SETUP
+            // 1. PWA SETUP
             if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
             let deferredPrompt;
             const installBtn = document.getElementById('install-btn');
@@ -654,7 +655,7 @@
                 });
             }
 
-            // 5. EVENT LISTENERS: AUTH & LOBBY
+            // 2. LOBBY & AUTH
             adminLoginBtn.addEventListener('click', () => {
                 noctyxAuthGroup.style.display = 'none';
                 adminAuthGroup.style.display = adminAuthGroup.style.display === 'flex' ? 'none' : 'flex';
@@ -707,7 +708,7 @@
             returnLobbyBtn.addEventListener('click', () => { socket.emit('leave_chat'); location.reload(); });
             newStrangerBtn.addEventListener('click', () => { socket.emit('leave_chat'); sessionStorage.setItem('void_auto_search', 'true'); location.reload(); });
 
-            // 6. SOCKET EVENTS: CORE & STATS
+            // 3. SOCKET CORE EVENTS
             socket.on('connect', () => { 
                 if (statusDot && chatScreen.style.display === 'flex') { 
                     statusDot.style.backgroundColor = '#22c55e'; 
@@ -736,6 +737,7 @@
             socket.on('auth_failed', () => { alert("Authorization Denied."); });
             socket.on('admin_error', () => { alert("Admin Access Denied."); });
 
+            // Admin Panel Visibility Logic
             socket.on('admin_dashboard', (data) => {
                 document.getElementById('ad-total').innerText = data.totalUsers; 
                 document.getElementById('ad-wait').innerText = data.waitingUsers; 
@@ -845,7 +847,7 @@
                     } else {
                         roomTitle.innerHTML = `Stranger <span id="stranger-flag">${data.flag || '🇧🇩'}</span>`;
                     }
-                    if (data.karma) document.getElementById('stranger-karma').innerText = data.karma;
+                    if (data.karma && strangerKarma) strangerKarma.innerText = data.karma;
                     window.currentMax = data.isInfinite ? 9999999 : 1500;
                     window.sysMsg(data.isInfinite ? "<span style='color:var(--neon-red)'>God Mode Activated. Limits removed.</span>" : "A stranger appeared. 1500 chars.");
                 }
@@ -863,7 +865,7 @@
                 });
             });
 
-            // 7. IMAGE UPLOAD LOGIC
+            // 4. IMAGE UPLOAD LOGIC
             let localPhotoCount2 = parseInt(localStorage.getItem('void_daily_photos')) || 0;
             const lastPhotoDate2 = localStorage.getItem('void_photo_date');
             if (lastPhotoDate2 !== new Date().toDateString()) { 
@@ -872,19 +874,17 @@
                 localStorage.setItem('void_daily_photos', 0); 
             }
 
-            photoBtn.addEventListener('click', () => { window.clickPhotoBtn(); });
-            
-            window.clickPhotoBtn = function() {
+            photoBtn.addEventListener('click', () => {
                 if (localPhotoCount2 >= 20 && !window.isNoctyx) { window.sysMsg("⚠️ VOID ERROR: Daily photo limit (20) reached."); return; }
                 imageInput.click();
-            }
+            });
 
             imageInput.addEventListener('change', async (e) => {
                 const file = e.target.files[0]; if(!file) return;
                 
                 if (window.currentMode === 'global' && !window.isNoctyx) {
                     if (Date.now() - window.lastGlobalSend < 10000) {
-                        window.sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait 10 seconds before sending media.</span>');
+                        window.sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait for cooldown.</span>');
                         imageInput.value = '';
                         return;
                     }
@@ -911,6 +911,7 @@
                         if (window.currentMode === 'global') {
                             window.lastGlobalSend = Date.now();
                             sessionStorage.setItem('void_global_time', window.lastGlobalSend);
+                            window.startGlobalCooldown();
                             window.appendMessageUI({ ...msgObj, sender: window.myGlobalAlias, isNoctyx: window.isNoctyx }, 'my-msg', true);
                             socket.emit('send_global', msgObj);
                         } else {
@@ -923,13 +924,11 @@
                 chatInput.placeholder = originalPlaceholder; chatInput.disabled = false; sendBtn.style.pointerEvents = 'auto'; sendBtn.style.opacity = '1'; imageInput.value = ''; 
             });
 
-            // 8. MUSIC SEARCH LOGIC
-            musicBtn.addEventListener('click', () => { window.toggleMusicSearch(); });
-            
-            window.toggleMusicSearch = function() {
+            // 5. MUSIC SEARCH LOGIC
+            musicBtn.addEventListener('click', () => {
                 if(musicSearchContainer.style.display === 'block') { musicSearchContainer.style.display = 'none'; } 
                 else { musicSearchContainer.style.display = 'block'; musicSearchInput.focus(); }
-            }
+            });
 
             let searchTimeout;
             musicSearchInput.addEventListener('input', (e) => {
@@ -963,7 +962,7 @@
             window.sendMusic = function(track) {
                 if (window.currentMode === 'global' && !window.isNoctyx) {
                     if (Date.now() - window.lastGlobalSend < 10000) {
-                        window.sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait 10 seconds before sending media.</span>');
+                        window.sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait for cooldown.</span>');
                         return;
                     }
                 }
@@ -980,6 +979,7 @@
                 if (window.currentMode === 'global') {
                     window.lastGlobalSend = Date.now();
                     sessionStorage.setItem('void_global_time', window.lastGlobalSend);
+                    window.startGlobalCooldown();
                     window.appendMessageUI({ ...msgObj, sender: window.myGlobalAlias, isNoctyx: window.isNoctyx }, 'my-msg', true);
                     socket.emit('send_global', msgObj);
                 } else {
@@ -988,9 +988,31 @@
                 window.cancelReply();
             }
 
-            // 9. MESSAGE SENDING
+            // 6. MESSAGE SENDING & VISUAL COOLDOWN
             sendBtn.addEventListener('click', sendLocalMessage);
             chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !chatInput.disabled) sendLocalMessage(); });
+
+            window.startGlobalCooldown = function() {
+                let timeLeft = 10;
+                chatInput.disabled = true;
+                sendBtn.disabled = true;
+                chatInput.placeholder = `Cooldown: ${timeLeft}s...`;
+                chatInput.style.opacity = '0.5';
+                
+                const cdTimer = setInterval(() => {
+                    timeLeft--;
+                    if(timeLeft <= 0) {
+                        clearInterval(cdTimer);
+                        chatInput.disabled = false;
+                        sendBtn.disabled = false;
+                        chatInput.placeholder = "Type a message...";
+                        chatInput.style.opacity = '1';
+                        chatInput.focus();
+                    } else {
+                        chatInput.placeholder = `Cooldown: ${timeLeft}s...`;
+                    }
+                }, 1000);
+            };
 
             function sendLocalMessage() {
                 const rawText = chatInput.value; 
@@ -999,10 +1021,7 @@
                 
                 if (window.currentMode === 'global') {
                     if (!window.isNoctyx) {
-                        if (Date.now() - window.lastGlobalSend < 10000) {
-                            window.sysMsg('<span style="color:var(--neon-red)">Frequency jammed. Wait 10 seconds.</span>');
-                            return;
-                        }
+                        if (Date.now() - window.lastGlobalSend < 10000) { return; }
                         if (window.globalCharCount + textToDisplay.length > 7000) {
                             window.sysMsg('<span style="color:var(--neon-red)">Your signal faded. 7000 chars reached.</span>');
                             chatInput.disabled = true;
@@ -1012,6 +1031,7 @@
                         window.globalCharCount += textToDisplay.length;
                         sessionStorage.setItem('void_global_time', window.lastGlobalSend);
                         sessionStorage.setItem('void_global_chars', window.globalCharCount);
+                        window.startGlobalCooldown();
                     }
                     
                     const msgId = 'gmsg_' + Date.now();
@@ -1177,23 +1197,6 @@
                 privateInviteOverlay.style.display = 'none';
             });
 
-            // 13. MEDIA PLAYBACK
-            window.playVoidMusic = function(url, btnId) {
-                const btn = document.getElementById('play-' + btnId);
-                const loopBtn = document.getElementById('loop-' + btnId);
-                if (window.globalAudio.src === url && !window.globalAudio.paused) { window.globalAudio.pause(); btn.innerHTML = '▶'; return; }
-                if (window.currentPlayingBtn) window.currentPlayingBtn.innerHTML = '▶';
-                window.globalAudio.src = url; window.globalAudio.loop = loopBtn.classList.contains('active');
-                window.globalAudio.play().catch(e => window.sysMsg("Audio blocked."));
-                btn.innerHTML = '⏸'; window.currentPlayingBtn = btn;
-                window.globalAudio.onended = () => { if(!window.globalAudio.loop) btn.innerHTML = '▶'; };
-            };
-
-            window.toggleLoop = function(btnId) {
-                const btn = document.getElementById('loop-' + btnId); btn.classList.toggle('active');
-                if (window.currentPlayingBtn && window.currentPlayingBtn.id === 'play-' + btnId) { window.globalAudio.loop = btn.classList.contains('active'); }
-            };
-
             // 14. CORE HELPERS
             window.updateVisualBar = function(total) {
                 if(window.currentMax > 10000) return; 
@@ -1252,11 +1255,16 @@
             window.showReaction = function(msgId, emoji) { const badge = document.getElementById(`react-${msgId}`); if(badge) { badge.innerText = emoji; badge.style.display = 'block'; badge.style.animation = 'none'; badge.offsetHeight; badge.style.animation = 'pulse 1s ease'; } }
 
             // 17. GAMES (First to Strike Engine)
-            window.openGameMenu = function() { gameMenu.style.display = 'flex'; }
+            gameBtn.addEventListener('click', () => { gameMenu.style.display = 'flex'; });
             
             closeGameMenuBtn.addEventListener('click', () => gameMenu.style.display = 'none');
             closeTttBtn.addEventListener('click', () => tttUi.style.display = 'none');
             closeC4Btn.addEventListener('click', () => c4Ui.style.display = 'none');
+
+            // Launchers
+            launchRps.addEventListener('click', () => window.inviteGame('rps'));
+            launchTtt.addEventListener('click', () => window.inviteGame('ttt'));
+            launchC4.addEventListener('click', () => window.inviteGame('c4'));
 
             window.inviteGame = function(gameType) { 
                 gameMenu.style.display = 'none'; 
@@ -1341,4 +1349,4 @@
         });
     </script>
 </body>
-    </html>
+            </html>
